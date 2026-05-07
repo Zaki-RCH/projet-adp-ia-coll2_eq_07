@@ -5,7 +5,7 @@
 ## Identité du groupe
 - **Code équipe** : COLL2_EQ_07
 - **Code projet** : ES-BKT
-- **APS** : BASKETTBALL
+- **APS** : BASKETBALL
 - **Famille** : ES
 
 ## Membres
