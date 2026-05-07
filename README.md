@@ -3,18 +3,18 @@
 # Projet ADP 2026
 
 ## Identité du groupe
-- **Code équipe** : À compléter (ex : COLL1_EQ_03)
-- **Code projet** : À compléter (ex : DI-BKT)
-- **APS** : À compléter
-- **Famille** : DI / ES / EN
+- **Code équipe** : COLL2_EQ_07
+- **Code projet** : ES-BKT
+- **APS** : BASKETTBALL
+- **Famille** : ES
 
 ## Membres
 | Prénom NOM | Rôle |
 |---|---|
-| | Référent terrain |
-| | Référent outil |
-| | Référent IA |
-| | Référent pédagogique |
+| Ali OUKACHA | Référent terrain |
+| Zakaria RACHAD | Référent outil |
+| Youssef ZILAL | Référent IA |
+| Noura HRAMCH | Référent pédagogique |
 
 ## Structure du dépôt
 - `terrain/` → fiche terrain, observables, référentiel didactique
