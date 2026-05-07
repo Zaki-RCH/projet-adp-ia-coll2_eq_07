@@ -13,12 +13,12 @@
 
 | Champ | Info |
 |-------|------|
-| Code projet | _(ex : DI-BKT)_ |
-| APS | _(ex : Basketball)_ |
-| Classe | _(ex : COLL1)_ |
-| Code équipe | _(ex : COLL1_EQ_03)_ |
-| Membres | Prénom NOM · Prénom NOM · Prénom NOM · Prénom NOM |
-| Formateur responsable | BOUARGANE |
+| Code projet | _ES-BKT_ |
+| APS | _Basketball_ |
+| Classe | _COLL2_ |
+| Code équipe | _COLL2_ES_07_ |
+| Membres | Zakaria RACHAD · Ali OUKACHA · Youssef ZILAL · Noura HRAMCH |
+| Formateur responsable | BOUFRIOUA |
 
 ---
 
@@ -51,7 +51,7 @@ _(Ajouter les messages suivants ici en copiant le bloc ci-dessus)_
 -->
 
 ### Réponse #1 — [Date]
-**De :** BOUARGANE
+**De :** BOUAFRIOUA
 **En réponse à :** Message #1
 
 _Réponse du formateur ici._
