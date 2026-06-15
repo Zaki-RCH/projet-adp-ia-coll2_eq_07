@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Outil EPS — Basketball ES-BKT · Évaluation sommative</title>
+<style>
+/* ══ RESET & BASE ══════════════════════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;scroll-behavior:smooth}
+body{font-family:'Segoe UI',system-ui,Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;transition:background .25s,color .25s}
+button{font-family:inherit;cursor:pointer}
+input,select,textarea{font-family:inherit}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* ══ DESIGN TOKENS — LIGHT ═════════════════════════════════════ */
+:root{
+  --court-navy:#0d2137;
+  --court-blue:#1a4f82;
+  --court-blue-d:#163f68;
+  --hoop-orange:#e8580a;
+  --hoop-orange-d:#c44a06;
+  --hoop-light:#fde8d8;
+
+  --bg:#eef2f6;
+  --surface:#ffffff;
+  --surface-2:#f8fafc;
+  --surface-3:#f1f5f9;
+  --text:#1a2332;
+  --text-soft:#475569;
+  --text-mute:#64748b;
+  --border:#e2e8f0;
+  --border-in:#cbd5e1;
+  --header-bg:#0d2137;
+  --header-text:#ffffff;
+  --header-sub:#7fb3d9;
+
+  --deg-a-bg:#FCEBEB;--deg-a-border:#c00000;--deg-a-text:#7b1010;
+  --deg-b-bg:#FAEEDA;--deg-b-border:#c07000;--deg-b-text:#7a4500;
+  --deg-c-bg:#EAF3DE;--deg-c-border:#375623;--deg-c-text:#1e3d0f;
+
+  --shadow-card:0 1px 3px rgba(13,33,55,.08),0 4px 14px rgba(13,33,55,.06);
+  --shadow-lift:0 6px 22px rgba(13,33,55,.14);
+  --radius:12px;--radius-sm:7px;
+}
+/* ══ DESIGN TOKENS — DARK ══════════════════════════════════════ */
+:root[data-theme="dark"]{
+  --bg:#0a141f;
+  --surface:#13212f;
+  --surface-2:#0f1b27;
+  --surface-3:#1b2c3c;
+  --text:#e6edf3;
+  --text-soft:#a9bccd;
+  --text-mute:#7e93a6;
+  --border:#23394e;
+  --border-in:#33506b;
+  --header-bg:#081019;
+  --header-text:#f1f6fb;
+  --header-sub:#6fa3cb;
+
+  --deg-a-bg:#3a1414;--deg-a-border:#e15a5a;--deg-a-text:#ffb3b3;
+  --deg-b-bg:#3a2c10;--deg-b-border:#e0a040;--deg-b-text:#ffd591;
+  --deg-c-bg:#16300f;--deg-c-border:#7bbf4e;--deg-c-text:#bdeb8f;
+
+  --shadow-card:0 1px 3px rgba(0,0,0,.4),0 4px 16px rgba(0,0,0,.35);
+  --shadow-lift:0 6px 26px rgba(0,0,0,.5);
+}
+
+/* ══ HEADER (sticky) ═══════════════════════════════════════════ */
+.site-header{
+  background:var(--header-bg);padding:0 1.25rem;
+  display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  height:60px;position:sticky;top:0;z-index:200;
+  box-shadow:0 2px 10px rgba(0,0,0,.35);
+}
+.header-brand{display:flex;align-items:center;gap:.7rem;min-width:0}
+.header-ball{font-size:1.7rem;line-height:1}
+.header-title{color:var(--header-text);font-size:.95rem;font-weight:800;letter-spacing:.01em;line-height:1.15}
+.header-sub{color:var(--header-sub);font-size:.7rem;font-weight:500;letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.header-tools{display:flex;align-items:center;gap:.6rem}
+.header-badge{
+  background:var(--hoop-orange);color:#fff;font-size:.68rem;font-weight:800;
+  letter-spacing:.05em;text-transform:uppercase;padding:.25rem .6rem;border-radius:5px;white-space:nowrap;
+}
+.theme-toggle{
+  background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);
+  color:var(--header-text);border-radius:20px;padding:.32rem .7rem;font-size:.74rem;font-weight:600;
+  display:inline-flex;align-items:center;gap:.35rem;transition:background .15s;white-space:nowrap;
+}
+.theme-toggle:hover{background:rgba(255,255,255,.2)}
+
+/* ══ TABS NAV (sticky under header) ════════════════════════════ */
+.tabs{
+  background:var(--court-blue);padding:0 1.25rem;
+  display:flex;align-items:stretch;gap:0;overflow-x:auto;scrollbar-width:none;
+  position:sticky;top:60px;z-index:150;box-shadow:0 2px 6px rgba(0,0,0,.18);
+}
+.tabs::-webkit-scrollbar{display:none}
+.tab-btn{
+  background:none;border:none;color:#bcd6ec;font-size:.82rem;font-weight:600;
+  letter-spacing:.02em;padding:.85rem 1.05rem;white-space:nowrap;position:relative;
+  display:inline-flex;align-items:center;gap:.4rem;transition:color .15s;
+}
+.tab-btn:hover{color:#fff}
+.tab-btn.active{color:#fff}
+.tab-btn.active::after{
+  content:"";position:absolute;left:.7rem;right:.7rem;bottom:0;height:3px;
+  background:var(--hoop-orange);border-radius:3px 3px 0 0;
+}
+
+/* ══ MAIN ══════════════════════════════════════════════════════ */
+.main{max-width:1080px;margin:0 auto;padding:1.5rem 1rem 5.5rem}
+.view{display:none;animation:fade .25s ease}
+.view.visible{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ══ CARDS ═════════════════════════════════════════════════════ */
+.card{
+  background:var(--surface);border-radius:var(--radius);
+  box-shadow:var(--shadow-card);padding:1.4rem;margin-bottom:1.15rem;
+  border:1px solid var(--border);
+}
+.card-title{
+  font-size:1rem;font-weight:800;color:var(--text);
+  margin-bottom:1rem;display:flex;align-items:center;gap:.55rem;letter-spacing:-.01em;
+}
+.card-title .ico{font-size:1.15rem}
+.card-sub{font-size:.8rem;color:var(--text-mute);margin:-.6rem 0 1rem;line-height:1.5}
+
+/* ══ DEGREE BADGES ═════════════════════════════════════════════ */
+.deg-badge{
+  display:inline-block;padding:.18rem .5rem;border-radius:5px;
+  font-size:.74rem;font-weight:800;letter-spacing:.03em;border:1.5px solid;
+}
+.deg-a{background:var(--deg-a-bg);border-color:var(--deg-a-border);color:var(--deg-a-text)}
+.deg-b{background:var(--deg-b-bg);border-color:var(--deg-b-border);color:var(--deg-b-text)}
+.deg-c{background:var(--deg-c-bg);border-color:var(--deg-c-border);color:var(--deg-c-text)}
+
+/* ══ TOOLBAR (groups + actions) ════════════════════════════════ */
+.toolbar{
+  display:flex;flex-wrap:wrap;gap:.75rem;align-items:center;
+  margin-bottom:1.1rem;
+}
+.field{display:flex;flex-direction:column;gap:.25rem}
+.field label{font-size:.66rem;font-weight:700;color:var(--text-mute);text-transform:uppercase;letter-spacing:.05em}
+.field select,.field input[type=number]{
+  border:1.5px solid var(--border-in);border-radius:var(--radius-sm);
+  padding:.42rem .6rem;font-size:.85rem;background:var(--surface);color:var(--text);min-height:38px;
+}
+.field select:focus,.field input:focus{border-color:var(--court-blue);outline:none}
+.toolbar-spacer{flex:1 1 auto}
+
+/* ══ BUTTONS ═══════════════════════════════════════════════════ */
+.btn{
+  display:inline-flex;align-items:center;gap:.4rem;
+  padding:.55rem 1.1rem;border-radius:var(--radius-sm);
+  font-size:.86rem;font-weight:700;border:none;transition:all .16s;letter-spacing:.01em;
+}
+.btn-primary{background:var(--court-blue);color:#fff}
+.btn-primary:hover{background:var(--court-blue-d)}
+.btn-orange{background:var(--hoop-orange);color:#fff}
+.btn-orange:hover{background:var(--hoop-orange-d)}
+.btn-ghost{background:transparent;border:1.5px solid var(--border-in);color:var(--text-soft)}
+.btn-ghost:hover{border-color:var(--court-blue);color:var(--court-blue)}
+.btn-danger{background:#fee2e2;border:1.5px solid #fca5a5;color:#991b1b}
+:root[data-theme="dark"] .btn-danger{background:#3a1414;border-color:#e15a5a;color:#ffb3b3}
+.btn-danger:hover{filter:brightness(.95)}
+.btn-sm{padding:.4rem .8rem;font-size:.78rem}
+.btn-row{display:flex;gap:.65rem;flex-wrap:wrap;align-items:center;margin-top:1rem}
+
+/* ══ IMPORT ZONE ═══════════════════════════════════════════════ */
+.import-zone{
+  border:2px dashed var(--border-in);border-radius:var(--radius);padding:1.1rem;
+  text-align:center;cursor:pointer;transition:all .2s;background:var(--surface-2);
+}
+.import-zone:hover,.import-zone.drag-over{border-color:var(--court-blue);background:var(--surface-3)}
+.import-zone input{display:none}
+.iz-icon{font-size:1.7rem;margin-bottom:.35rem}
+.iz-text{font-size:.84rem;color:var(--text-mute)}
+.iz-text strong{color:var(--court-blue)}
+.csv-format{
+  margin-top:.7rem;font-family:'Courier New',monospace;font-size:.74rem;
+  background:var(--surface-3);border:1px solid var(--border);border-radius:var(--radius-sm);
+  padding:.55rem .7rem;color:var(--text-soft);overflow-x:auto;white-space:nowrap;
+}
+
+/* ══ STUDENT TABLE (saisie) ════════════════════════════════════ */
+.tbl-wrap{overflow-x:auto;border-radius:var(--radius-sm);border:1px solid var(--border)}
+table.grid{width:100%;border-collapse:collapse;font-size:.84rem;min-width:760px}
+table.grid th{
+  background:var(--court-navy);color:#fff;padding:.55rem .6rem;font-weight:700;
+  font-size:.68rem;letter-spacing:.04em;text-transform:uppercase;text-align:center;white-space:nowrap;
+}
+table.grid th.name-col,table.grid td.name-col{text-align:left}
+table.grid td{
+  padding:.4rem .5rem;border-bottom:1px solid var(--border);text-align:center;
+  background:var(--surface);
+}
+table.grid tr:hover td{background:var(--surface-3)}
+table.grid tr:last-child td{border-bottom:none}
+.cell-num{font-size:.78rem;color:var(--text-mute);font-weight:700;width:2.2rem}
+
+.in-name{
+  width:100%;min-width:130px;border:1.5px solid var(--border-in);border-radius:var(--radius-sm);
+  padding:.4rem .55rem;font-size:.85rem;background:var(--surface);color:var(--text);
+}
+.in-name:focus{border-color:var(--court-blue);outline:none}
+.in-name.error{border-color:var(--deg-a-border)}
+.sel-group,.sel-deg{
+  border:1.5px solid var(--border-in);border-radius:var(--radius-sm);
+  padding:.38rem .35rem;font-size:.82rem;background:var(--surface);color:var(--text);min-width:64px;
+}
+.sel-group:focus,.sel-deg:focus{border-color:var(--court-blue);outline:none}
+.sel-deg.deg-a{background:var(--deg-a-bg);border-color:var(--deg-a-border);color:var(--deg-a-text);font-weight:700}
+.sel-deg.deg-b{background:var(--deg-b-bg);border-color:var(--deg-b-border);color:var(--deg-b-text);font-weight:700}
+.sel-deg.deg-c{background:var(--deg-c-bg);border-color:var(--deg-c-border);color:var(--deg-c-text);font-weight:700}
+.in-note{
+  width:62px;border:1.5px solid var(--border-in);border-radius:var(--radius-sm);
+  padding:.38rem .3rem;font-size:.85rem;font-weight:700;text-align:center;background:var(--surface);color:var(--text);
+}
+.in-note:focus{border-color:var(--court-blue);outline:none}
+.in-note.oob{border-color:var(--deg-a-border);background:var(--deg-a-bg);color:var(--deg-a-text)}
+.in-note.c3-note{width:54px}
+.note-pair{display:inline-flex;gap:.3rem;align-items:center;justify-content:center}
+.cell-final{font-weight:800;font-size:.95rem;color:var(--court-blue)}
+:root[data-theme="dark"] .cell-final{color:#7fb3d9}
+.cell-rank{font-weight:800;font-size:.9rem}
+.rank-medal{font-size:.95rem}
+.del-btn{
+  background:none;border:none;color:var(--text-mute);font-size:1.05rem;line-height:1;
+  padding:.2rem .35rem;border-radius:5px;transition:all .15s;
+}
+.del-btn:hover{background:#fee2e2;color:#991b1b}
+:root[data-theme="dark"] .del-btn:hover{background:#3a1414;color:#ffb3b3}
+.oob-msg{font-size:.62rem;color:var(--deg-a-border);font-weight:700;margin-top:.15rem;display:block}
+
+/* ══ STAT CARDS ════════════════════════════════════════════════ */
+.stat-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.7rem;margin-bottom:1.15rem}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:.95rem;box-shadow:var(--shadow-card);text-align:center}
+.stat-card .val{font-size:1.9rem;font-weight:800;color:var(--text);line-height:1}
+.stat-card .lbl{font-size:.68rem;color:var(--text-mute);margin-top:.3rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+
+/* ══ CLASSEMENT TABLE ══════════════════════════════════════════ */
+table.rank{width:100%;border-collapse:collapse;font-size:.85rem;min-width:560px}
+table.rank th{
+  background:var(--court-navy);color:#fff;padding:.55rem .7rem;font-weight:700;
+  font-size:.68rem;letter-spacing:.04em;text-transform:uppercase;text-align:center;
+}
+table.rank th.l,table.rank td.l{text-align:left}
+table.rank td{padding:.5rem .7rem;border-bottom:1px solid var(--border);text-align:center;background:var(--surface)}
+table.rank tr:hover td{background:var(--surface-3)}
+.grp-tag{
+  display:inline-block;font-size:.68rem;font-weight:800;padding:.12rem .45rem;border-radius:5px;
+  background:var(--surface-3);color:var(--text-soft);border:1px solid var(--border);
+}
+.bonus-chip{
+  display:inline-block;font-size:.66rem;font-weight:800;padding:.1rem .4rem;border-radius:5px;
+  background:var(--hoop-light);color:#92340a;border:1px solid var(--hoop-orange);
+}
+:root[data-theme="dark"] .bonus-chip{background:#3a2310;color:#ffcfa3;border-color:var(--hoop-orange)}
+.bonus-none{color:var(--text-mute);font-size:.74rem}
+.grp-header-row td{
+  background:var(--court-blue)!important;color:#fff;font-weight:800;font-size:.78rem;
+  text-align:left;letter-spacing:.03em;padding:.45rem .7rem;
+}
+
+/* ══ REFERENTIEL ═══════════════════════════════════════════════ */
+.ref-crit{border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:1rem}
+.ref-crit-head{background:var(--court-navy);color:#fff;padding:.7rem 1rem;display:flex;align-items:center;gap:.6rem;flex-wrap:wrap}
+.ref-crit-head .rc-code{background:var(--hoop-orange);font-size:.74rem;font-weight:800;padding:.15rem .5rem;border-radius:5px}
+.ref-crit-head .rc-title{font-size:.88rem;font-weight:700}
+.ref-crit-head .rc-pts{margin-left:auto;font-size:.72rem;color:var(--header-sub);font-weight:700}
+.ref-deg-row{display:flex;gap:.7rem;padding:.7rem 1rem;border-bottom:1px solid var(--border);align-items:flex-start}
+.ref-deg-row:last-child{border-bottom:none}
+.ref-deg-row .rd-badge{min-width:120px}
+.ref-deg-row .rd-body{flex:1;font-size:.8rem;color:var(--text-soft);line-height:1.5}
+.ref-deg-row .rd-body strong{color:var(--text)}
+.consigne-list{list-style:none;display:flex;flex-direction:column;gap:.5rem}
+.consigne-list li{display:flex;gap:.6rem;align-items:flex-start;font-size:.84rem;color:var(--text-soft);line-height:1.5}
+.consigne-list li .ci{font-size:1rem;flex-shrink:0}
+.ref-meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:.6rem}
+.ref-meta-item{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.7rem .85rem}
+.ref-meta-item .rm-k{font-size:.66rem;font-weight:700;color:var(--text-mute);text-transform:uppercase;letter-spacing:.04em;margin-bottom:.2rem}
+.ref-meta-item .rm-v{font-size:.84rem;color:var(--text);font-weight:600;line-height:1.4}
+
+/* ══ EXPORT ════════════════════════════════════════════════════ */
+.export-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.85rem;margin-bottom:1.1rem}
+.export-action{
+  background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);
+  padding:1.1rem;text-align:center;display:flex;flex-direction:column;align-items:center;gap:.6rem;
+}
+.export-action .ea-ico{font-size:1.8rem}
+.export-action .ea-desc{font-size:.78rem;color:var(--text-mute);line-height:1.45}
+.csv-preview{
+  font-family:'Courier New',monospace;font-size:.74rem;line-height:1.7;
+  background:var(--court-navy);color:#cfe3f5;border-radius:var(--radius-sm);
+  padding:.85rem 1rem;overflow-x:auto;white-space:pre;
+}
+
+/* ══ ALERTS ════════════════════════════════════════════════════ */
+.alert{border-radius:var(--radius-sm);padding:.6rem .85rem;font-size:.82rem;margin-bottom:.7rem;display:flex;gap:.5rem;align-items:flex-start;line-height:1.5}
+.alert-info{background:var(--deg-c-bg);border:1px solid var(--deg-c-border);color:var(--deg-c-text)}
+.alert-warn{background:var(--deg-b-bg);border:1px solid var(--deg-b-border);color:var(--deg-b-text)}
+.alert-ok{background:var(--deg-c-bg);border:1px solid var(--deg-c-border);color:var(--deg-c-text)}
+.alert-err{background:var(--deg-a-bg);border:1px solid var(--deg-a-border);color:var(--deg-a-text)}
+
+/* ══ MODAL ═════════════════════════════════════════════════════ */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(8,16,25,.55);backdrop-filter:blur(2px);
+  display:none;align-items:center;justify-content:center;z-index:500;padding:1rem;
+}
+.modal-overlay.open{display:flex}
+.modal{
+  background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow-lift);
+  max-width:420px;width:100%;padding:1.5rem;border:1px solid var(--border);
+}
+.modal h3{font-size:1.05rem;font-weight:800;color:var(--text);margin-bottom:.6rem;display:flex;align-items:center;gap:.5rem}
+.modal p{font-size:.86rem;color:var(--text-soft);line-height:1.55;margin-bottom:1.2rem}
+.modal .btn-row{margin-top:0;justify-content:flex-end}
+
+/* ══ EMPTY STATE ═══════════════════════════════════════════════ */
+.empty{text-align:center;padding:2.5rem 1rem;color:var(--text-mute)}
+.empty .e-ico{font-size:2.2rem;margin-bottom:.6rem;opacity:.7}
+.empty .e-title{font-size:.95rem;font-weight:700;color:var(--text-soft);margin-bottom:.3rem}
+.empty .e-sub{font-size:.82rem}
+
+/* ══ FOOTER BAR ════════════════════════════════════════════════ */
+.footer-bar{
+  position:fixed;bottom:0;left:0;right:0;background:var(--header-bg);
+  border-top:2px solid var(--hoop-orange);display:flex;align-items:center;gap:.6rem;
+  padding:.5rem 1.25rem;z-index:120;flex-wrap:wrap;
+}
+.footer-bar .fb-label{color:var(--header-sub);font-size:.74rem;margin-right:auto;font-weight:600}
+.footer-bar .btn-ghost{border-color:rgba(255,255,255,.25);color:#cfe3f5}
+.footer-bar .btn-ghost:hover{border-color:#fff;color:#fff}
+
+/* ══ RESPONSIVE ════════════════════════════════════════════════ */
+@media(max-width:640px){
+  .header-title{font-size:.82rem}
+  .header-sub{display:none}
+  .main{padding:1.1rem .7rem 5.5rem}
+  .card{padding:1.1rem}
+  .stat-cards{grid-template-columns:repeat(2,1fr)}
+}
+
+/* ══ PRINT ═════════════════════════════════════════════════════ */
+@media print{
+  .tabs,.footer-bar,.site-header,.btn,.toolbar .btn,.import-zone,
+  .theme-toggle,.del-btn,.add-row-bar,.export-grid,.no-print{display:none!important}
+  .view{display:block!important;page-break-inside:avoid}
+  #view-saisie,#view-referentiel,#view-export{display:none!important}
+  #view-classement{display:block!important}
+  .main{max-width:100%;padding:0}
+  body{background:#fff;color:#000}
+  .card{box-shadow:none;border:1px solid #ccc}
+  table.rank th{background:#0d2137!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ HEADER ══ -->
+<header class="site-header">
+  <div class="header-brand">
+    <span class="header-ball">🏀</span>
+    <div style="min-width:0">
+      <div class="header-title">Outil d'évaluation EPS — Basketball</div>
+      <div class="header-sub">ES-BKT · COLL2_EQ_07 · DNB Niveau 2 · Note /14</div>
+    </div>
+  </div>
+  <div class="header-tools">
+    <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()">
+      <span id="theme-ico">🌙</span><span id="theme-label">Sombre</span>
+    </button>
+    <span class="header-badge">ADP 2026</span>
+  </div>
+</header>
+
+<!-- ══ TABS ══ -->
+<nav class="tabs" id="tabs">
+  <button class="tab-btn active" data-view="saisie" onclick="showView('saisie')">✏️ Saisie & notes</button>
+  <button class="tab-btn" data-view="classement" onclick="showView('classement')">🏆 Classement</button>
+  <button class="tab-btn" data-view="referentiel" onclick="showView('referentiel')">📖 Référentiel</button>
+  <button class="tab-btn" data-view="export" onclick="showView('export')">⬇️ Export</button>
+</nav>
+
+<main class="main">
+
+<!-- ════════════ VUE 1 — SAISIE ════════════ -->
+<section class="view visible" id="view-saisie">
+
+  <div class="card">
+    <div class="card-title"><span class="ico">📥</span>Importer un fichier CSV</div>
+    <div class="card-sub">Les valeurs sont importées <strong>directement</strong> — aucune conversion de code. Une note saisie est une note réelle.</div>
+    <div class="import-zone" id="drop-zone" onclick="document.getElementById('csv-input').click()">
+      <input type="file" id="csv-input" accept=".csv,.txt">
+      <div class="iz-icon">📂</div>
+      <div class="iz-text">Cliquez ou déposez un fichier CSV</div>
+      <div class="csv-format">Nom_Eleve,Groupe,C1_Degre,C1_Note,C2_Degre,C2_Note,C3</div>
+    </div>
+    <div id="import-feedback" style="margin-top:.6rem"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="ico">✏️</span>Élèves & notation</div>
+
+    <div class="alert alert-info">
+      <span>ℹ️</span>
+      <div>
+        <strong>Procédure C1 / C2 en 2 temps :</strong> choisir le <strong>degré</strong> (A · B · C) puis saisir la <strong>valeur</strong> dans sa fourchette.<br>
+        Échelle des degrés : <span class="deg-badge deg-a">A = 0 → 3</span> <span class="deg-badge deg-b">B = 4 → 7</span> <span class="deg-badge deg-c">C = 8 → 10</span> &nbsp;·&nbsp; C3 = bonus optionnel /4.
+      </div>
+    </div>
+
+    <!-- Toolbar : groupes + actions -->
+    <div class="toolbar">
+      <div class="field">
+        <label for="nb-groups">Nombre de groupes</label>
+        <input type="number" id="nb-groups" min="1" max="20" value="4" onchange="onNbGroupsChange()">
+      </div>
+      <div class="field">
+        <label for="filter-group">Filtrer par groupe</label>
+        <select id="filter-group" onchange="renderStudents()"><option value="">Tous les groupes</option></select>
+      </div>
+      <div class="toolbar-spacer"></div>
+      <button class="btn btn-ghost btn-sm" onclick="addStudent()">＋ Ajouter un élève</button>
+    </div>
+
+    <div class="tbl-wrap">
+      <table class="grid">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th class="name-col">Nom / Prénom</th>
+            <th>Groupe</th>
+            <th>C1 — degré · note /10</th>
+            <th>C2 — degré · note /10</th>
+            <th>C3 /4<br><span style="font-weight:500;text-transform:none">bonus</span></th>
+            <th>Note /14</th>
+            <th>Rang</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="student-tbody"></tbody>
+      </table>
+    </div>
+
+    <div class="add-row-bar btn-row">
+      <button class="btn btn-orange" onclick="addStudent()">＋ Ajouter un élève</button>
+      <button class="btn btn-danger btn-sm" onclick="askReset()">🗑 Tout réinitialiser</button>
+    </div>
+    <div id="saisie-note" class="card-sub" style="margin:.9rem 0 0">
+      <strong>Calcul officiel :</strong> Note /14 = (C1 × 0,8) + (C2 × 0,6). Affichage automatique à chaque saisie. Source : BO spécial n°5 du 19 juillet 2012.
+    </div>
+  </div>
+</section>
+
+<!-- ════════════ VUE 2 — CLASSEMENT ════════════ -->
+<section class="view" id="view-classement">
+  <div class="stat-cards" id="stat-cards"></div>
+
+  <div class="card">
+    <div class="card-title"><span class="ico">🏆</span>Classement</div>
+    <div class="toolbar no-print">
+      <div class="field">
+        <label for="rank-scope">Affichage</label>
+        <select id="rank-scope" onchange="renderClassement()">
+          <option value="global">Classement par groupe</option>
+          <option value="overall">Classement général unique</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="rank-filter">Filtre groupe</label>
+        <select id="rank-filter" onchange="renderClassement()"><option value="">Tous les groupes</option></select>
+      </div>
+      <div class="toolbar-spacer"></div>
+      <button class="btn btn-ghost btn-sm no-print" onclick="window.print()">🖨 Imprimer</button>
+    </div>
+    <div id="classement-content"></div>
+  </div>
+</section>
+
+<!-- ════════════ VUE 3 — RÉFÉRENTIEL ════════════ -->
+<section class="view" id="view-referentiel">
+  <div class="card">
+    <div class="card-title"><span class="ico">📖</span>Référentiel certificatif — Basketball DNB Niveau 2</div>
+    <div class="card-sub">Termes <strong>exacts</strong> du référentiel officiel. « assurés » ≠ « assumés » : ne jamais confondre les degrés de C3.</div>
+    <div id="ref-criteres"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="ico">🗒️</span>Registre d'observation — consignes de terrain</div>
+    <ul class="consigne-list">
+      <li><span class="ci">🖊️</span><div><strong>Stylo noir</strong> — relevé manuscrit sur le registre papier, pas de crayon (pas de modification après coup).</div></li>
+      <li><span class="ci">⏱️</span><div><strong>Observation en temps réel</strong> — la notation se fait pendant le jeu, sans rejouer l'action.</div></li>
+      <li><span class="ci">⏳</span><div><strong>Maximum 3 secondes</strong> d'observation par décision — au-delà, ne pas se figer : revenir au flux du match.</div></li>
+      <li><span class="ci">🏷️</span><div><strong>Type 1</strong> — critère qualitatif : on identifie le niveau (A · B · C) puis on écrit la valeur précise dans la fourchette. La valeur chiffrée est obligatoire, pas seulement le niveau.</div></li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="ico">📐</span>Règle de calcul & échelles</div>
+    <div class="ref-meta">
+      <div class="ref-meta-item"><div class="rm-k">Formule officielle</div><div class="rm-v">Note /14 = (C1 × 0,8) + (C2 × 0,6)</div></div>
+      <div class="ref-meta-item"><div class="rm-k">C1 /10 terrain</div><div class="rm-v">→ /8 certificatif (efficacité collective)</div></div>
+      <div class="ref-meta-item"><div class="rm-k">C2 /10 terrain</div><div class="rm-v">→ /6 certificatif (efficacité individuelle)</div></div>
+      <div class="ref-meta-item"><div class="rm-k">C3 /4</div><div class="rm-v">Volet bonus — renseigné séparément</div></div>
+      <div class="ref-meta-item"><div class="rm-k">Échelle degrés C1 / C2</div><div class="rm-v">A : 0 → 3 · B : 4 → 7 · C : 8 → 10</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="ico">📚</span>Références officielles</div>
+    <div class="ref-meta">
+      <div class="ref-meta-item"><div class="rm-k">Texte cadre</div><div class="rm-v">BO spécial n°5 du 19 juillet 2012 — DNB Basket-ball Niveau 2</div></div>
+      <div class="ref-meta-item"><div class="rm-k">Planification</div><div class="rm-v">Planificateur EPS v5</div></div>
+      <div class="ref-meta-item"><div class="rm-k">Sources d'analyse</div><div class="rm-v">Ressources collèges EPS 2009 · Ressources lycée EPS 2011 · Niveaux 1·2·3</div></div>
+      <div class="ref-meta-item"><div class="rm-k">Projet</div><div class="rm-v">ADP 2026 · CRMEF Souss-Massa · COLL2_EQ_07 · Équipe 07</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════ VUE 4 — EXPORT ════════════ -->
+<section class="view" id="view-export">
+  <div class="card">
+    <div class="card-title"><span class="ico">⬇️</span>Exporter & gérer les données</div>
+    <div class="export-grid">
+      <div class="export-action">
+        <div class="ea-ico">📄</div>
+        <button class="btn btn-primary" onclick="exportCSV()">Exporter en CSV</button>
+        <div class="ea-desc">Nom · Groupe · C1 · C2 · C3 · Note /14 · Rang</div>
+      </div>
+      <div class="export-action">
+        <div class="ea-ico">🖨️</div>
+        <button class="btn btn-ghost" onclick="window.print()">Imprimer le classement</button>
+        <div class="ea-desc">Mise en page optimisée · boutons masqués</div>
+      </div>
+      <div class="export-action">
+        <div class="ea-ico">🗑️</div>
+        <button class="btn btn-danger" onclick="askReset()">Tout réinitialiser</button>
+        <div class="ea-desc">Confirmation requise avant suppression</div>
+      </div>
+    </div>
+    <div class="card-title" style="font-size:.88rem;margin-top:.4rem"><span class="ico">👁️</span>Format CSV attendu à l'export</div>
+    <div class="csv-preview" id="csv-preview-box"></div>
+  </div>
+</section>
+
+</main>
+
+<!-- ══ FOOTER ══ -->
+<div class="footer-bar">
+  <span class="fb-label">ADP 2026 · CRMEF Souss-Massa · Basketball ES-BKT · COLL2_EQ_07 · Formateur BOUFRIOUA</span>
+  <button class="btn btn-ghost btn-sm" onclick="exportCSV()">⬇ CSV</button>
+  <button class="btn btn-ghost btn-sm" onclick="window.print()">🖨 Imprimer</button>
+</div>
+
+<!-- ══ MODAL CONFIRM RESET ══ -->
+<div class="modal-overlay" id="reset-modal">
+  <div class="modal">
+    <h3><span>⚠️</span>Réinitialiser toutes les données ?</h3>
+    <p>Tous les élèves, notes et groupes saisis seront définitivement supprimés. Cette action est irréversible.</p>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="closeReset()">Annuler</button>
+      <button class="btn btn-danger" onclick="confirmReset()">Oui, tout supprimer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════════════
+   RÉFÉRENTIEL — termes exacts (BO n°5 · 19 juillet 2012)
+   ══════════════════════════════════════════════════════════════ */
+const REFERENTIEL = [
+  {
+    code:"C1", titre:"Efficacité collective dans le gain du match", pts:"/8 (note terrain /10)",
+    degres:[
+      {deg:"C", terme:"Jeu varié, en contre-attaque ou placé",
+       desc:"Attaque intentionnelle de la cible en s'adaptant constamment et rapidement au rapport de force."},
+      {deg:"B", terme:"Jeu simple, en contre-attaque ou placé",
+       desc:"Progression de la balle vers une zone favorable de marque en contre-attaque ou attaque placée. Utilise un rapport de force favorable."},
+      {deg:"A", terme:"Jeu direct",
+       desc:"Jeu simple lié à la progression du ballon vers le panier adverse, sans organisation collective."}
+    ]
+  },
+  {
+    code:"C2", titre:"Efficacité individuelle dans l'organisation collective", pts:"/6 (note terrain /10)",
+    degres:[
+      {deg:"C", terme:"Joueur assurant le jeu rapide ou placé par des actions variées",
+       desc:"Bonifie les ballons en variant les conditions d'accès à la cible. Pose le jeu ou l'accélère, tire en situation favorable."},
+      {deg:"B", terme:"Joueur permettant le jeu rapide ou placé",
+       desc:"Fait un choix entre attaque placée et contre-attaque. Conserve le ballon, assure une passe, identifie le tir en 1 contre 0."},
+      {deg:"A", terme:"Joueur intermittent et peu collectif",
+       desc:"Ne fait pas toujours les bons choix (passer, dribbler, shooter), ce qui limite son efficacité collective."}
+    ]
+  },
+  {
+    code:"C3", titre:"Efficacité dans le rôle d'arbitre et d'observateur", pts:"/4 · bonus",
+    degres:[
+      {deg:"C", terme:"Rôles assurés",
+       desc:"Recueille des données différenciées exploitables. Assure son rôle d'arbitre de façon autonome."},
+      {deg:"B", terme:"Rôles assumés",
+       desc:"Recueille des données globales, justes et fiables. Assume le rôle d'arbitre avec de l'aide."},
+      {deg:"A", terme:"Rôles insuffisamment assurés",
+       desc:"Recueille des données insuffisamment fiables. Hésite parfois sur des actions difficiles à arbitrer."}
+    ]
+  }
+];
+
+/* Échelles degrés C1 / C2 — spec : A 0→3 · B 4→7 · C 8→10 */
+const DEG_SCALE = { A:[0,3], B:[4,7], C:[8,10] };
+
+/* ══════════════════════════════════════════════════════════════
+   ÉTAT
+   ══════════════════════════════════════════════════════════════ */
+let students = [];      // {id,name,group,c1Deg,c1Note,c2Deg,c2Note,c3}
+let rowCount = 0;       // identifiant croissant — réinitialisé à 0 par confirmReset()
+let nbGroups = 4;
+
+/* ══════════════════════════════════════════════════════════════
+   THEME
+   ══════════════════════════════════════════════════════════════ */
+function applyTheme(t){
+  document.documentElement.setAttribute("data-theme", t);
+  document.getElementById("theme-ico").textContent = t==="dark" ? "☀️" : "🌙";
+  document.getElementById("theme-label").textContent = t==="dark" ? "Clair" : "Sombre";
+}
+function toggleTheme(){
+  const cur = document.documentElement.getAttribute("data-theme")==="dark" ? "dark":"light";
+  applyTheme(cur==="dark" ? "light":"dark");
+}
+// Respect prefers-color-scheme on first load
+(function initTheme(){
+  const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  applyTheme(prefersDark ? "dark":"light");
+})();
+
+/* ══════════════════════════════════════════════════════════════
+   NAVIGATION
+   ══════════════════════════════════════════════════════════════ */
+function showView(v){
+  document.querySelectorAll(".view").forEach(s=>s.classList.remove("visible"));
+  document.getElementById("view-"+v).classList.add("visible");
+  document.querySelectorAll(".tab-btn").forEach(b=>b.classList.toggle("active", b.dataset.view===v));
+  if(v==="classement") renderClassement();
+  if(v==="export") renderCSVPreview();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+/* ══════════════════════════════════════════════════════════════
+   GROUPES
+   ══════════════════════════════════════════════════════════════ */
+function groupList(){
+  const arr=[];
+  for(let i=1;i<=nbGroups;i++) arr.push("G"+i);
+  return arr;
+}
+function onNbGroupsChange(){
+  let n = parseInt(document.getElementById("nb-groups").value,10);
+  if(isNaN(n)||n<1) n=1;
+  if(n>20) n=20;
+  nbGroups=n;
+  document.getElementById("nb-groups").value=n;
+  // Reassign out-of-range groups to G1
+  students.forEach(s=>{
+    const gi = parseInt((s.group||"G1").replace("G",""),10);
+    if(isNaN(gi)||gi>nbGroups) s.group="G1";
+  });
+  refreshGroupSelectors();
+  renderStudents();
+}
+function refreshGroupSelectors(){
+  const groups=groupList();
+  // Saisie filter
+  const fg=document.getElementById("filter-group");
+  const prev=fg.value;
+  fg.innerHTML='<option value="">Tous les groupes</option>'+groups.map(g=>`<option value="${g}">${g}</option>`).join("");
+  if(groups.includes(prev)) fg.value=prev;
+  // Classement filter
+  const rf=document.getElementById("rank-filter");
+  const prevR=rf.value;
+  rf.innerHTML='<option value="">Tous les groupes</option>'+groups.map(g=>`<option value="${g}">${g}</option>`).join("");
+  if(groups.includes(prevR)) rf.value=prevR;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   CALCULS
+   ══════════════════════════════════════════════════════════════ */
+function degOf(note){
+  const n=parseFloat(note);
+  if(isNaN(n)) return "";
+  if(n<=3) return "A";
+  if(n<=7) return "B";
+  return "C";
+}
+function noteFinale(s){
+  const c1=parseFloat(s.c1Note)||0;
+  const c2=parseFloat(s.c2Note)||0;
+  return c1*0.8 + c2*0.6;   // formule officielle /14
+}
+function noteInRange(note, deg){
+  if(note===""||note===null||note===undefined) return true;
+  const n=parseFloat(note);
+  if(isNaN(n)) return false;
+  if(!deg||!DEG_SCALE[deg]) return n>=0 && n<=10;
+  const [lo,hi]=DEG_SCALE[deg];
+  return n>=lo && n<=hi;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   SAISIE — rendu du tableau élèves
+   ══════════════════════════════════════════════════════════════ */
+function addStudent(name="", group="G1", c1Deg="", c1Note="", c2Deg="", c2Note="", c3=""){
+  rowCount++;
+  // Ensure group valid
+  const gi=parseInt((group||"G1").replace("G",""),10);
+  if(isNaN(gi)||gi>nbGroups||gi<1) group="G1";
+  students.push({id:rowCount,name,group,c1Deg,c1Note,c2Deg,c2Note,c3});
+  renderStudents();
+}
+function removeStudent(id){
+  students=students.filter(s=>s.id!==id);
+  renderStudents();
+}
+function updateField(id, field, val){
+  const s=students.find(x=>x.id===id);
+  if(!s) return;
+  s[field]=val;
+  // When degree changes, keep note but re-flag range; when note changes, recompute
+  renderStudents(true);
+}
+
+function computeRanks(list){
+  // sort by note desc, assign rank with tie handling (competition ranking 1,2,2,4)
+  const sorted=[...list].sort((a,b)=>noteFinale(b)-noteFinale(a));
+  let rank=0, prevNote=null, seen=0;
+  const map={};
+  sorted.forEach(s=>{
+    seen++;
+    const nf=noteFinale(s);
+    if(prevNote===null || Math.abs(nf-prevNote)>1e-9){ rank=seen; prevNote=nf; }
+    map[s.id]=rank;
+  });
+  return map;
+}
+
+function renderStudents(preserveFocus=false){
+  refreshGroupSelectors();
+  const filter=document.getElementById("filter-group").value;
+  const tbody=document.getElementById("student-tbody");
+  const groups=groupList();
+
+  // ranks computed across ALL students with at least a name (général)
+  const ranked=students.filter(s=>s.name.trim());
+  const rankMap=computeRanks(ranked);
+
+  const visible = filter ? students.filter(s=>s.group===filter) : students;
+
+  if(students.length===0){
+    tbody.innerHTML=`<tr><td colspan="9"><div class="empty">
+      <div class="e-ico">📋</div>
+      <div class="e-title">Aucun élève</div>
+      <div class="e-sub">Ajoutez des élèves ou importez un fichier CSV pour commencer.</div></div></td></tr>`;
+    return;
+  }
+  if(visible.length===0){
+    tbody.innerHTML=`<tr><td colspan="9"><div class="empty">
+      <div class="e-ico">🔍</div>
+      <div class="e-title">Aucun élève dans ${filter}</div>
+      <div class="e-sub">Changez le filtre ou affectez des élèves à ce groupe.</div></div></td></tr>`;
+    return;
+  }
+
+  let html="";
+  visible.forEach((s,idx)=>{
+    const nf=noteFinale(s);
+    const hasNote=(s.c1Note!==""||s.c2Note!=="");
+    const rank=rankMap[s.id];
+    const c1deg=s.c1Deg||degOf(s.c1Note);
+    const c2deg=s.c2Deg||degOf(s.c2Note);
+    const c1oob=!noteInRange(s.c1Note, s.c1Deg);
+    const c2oob=!noteInRange(s.c2Note, s.c2Deg);
+    const grpOpts=groups.map(g=>`<option value="${g}"${s.group===g?" selected":""}>${g}</option>`).join("");
+
+    const degSel=(field,val)=>`<select class="sel-deg ${val?'deg-'+val.toLowerCase():''}" onchange="updateField(${s.id},'${field}',this.value)">
+        <option value=""${val===""?" selected":""}>–</option>
+        <option value="A"${val==="A"?" selected":""}>A</option>
+        <option value="B"${val==="B"?" selected":""}>B</option>
+        <option value="C"${val==="C"?" selected":""}>C</option></select>`;
+
+    const rankCell = (s.name.trim() && hasNote)
+      ? `<span class="cell-rank">${rank===1?'<span class="rank-medal">🥇</span>':rank===2?'<span class="rank-medal">🥈</span>':rank===3?'<span class="rank-medal">🥉</span>':rank}</span>`
+      : '<span style="color:var(--text-mute)">–</span>';
+
+    html+=`<tr>
+      <td class="cell-num">${idx+1}</td>
+      <td class="name-col"><input class="in-name${s.name.trim()===''&&hasNote?' error':''}" type="text" value="${escapeAttr(s.name)}" placeholder="Nom de l'élève" oninput="updateField(${s.id},'name',this.value)"></td>
+      <td><select class="sel-group" onchange="updateField(${s.id},'group',this.value)">${grpOpts}</select></td>
+      <td>
+        <div class="note-pair">
+          ${degSel('c1Deg', s.c1Deg)}
+          <input class="in-note${c1oob?' oob':''}" type="number" step="0.5" min="0" max="10" value="${s.c1Note}" placeholder="/10" oninput="updateField(${s.id},'c1Note',this.value)" title="${DEG_SCALE[s.c1Deg]?('Fourchette '+s.c1Deg+' : '+DEG_SCALE[s.c1Deg][0]+' → '+DEG_SCALE[s.c1Deg][1]):'note /10'}">
+        </div>
+        ${c1oob?`<span class="oob-msg">Hors fourchette ${s.c1Deg} (${DEG_SCALE[s.c1Deg]?DEG_SCALE[s.c1Deg].join('→'):''})</span>`:''}
+      </td>
+      <td>
+        <div class="note-pair">
+          ${degSel('c2Deg', s.c2Deg)}
+          <input class="in-note${c2oob?' oob':''}" type="number" step="0.5" min="0" max="10" value="${s.c2Note}" placeholder="/10" oninput="updateField(${s.id},'c2Note',this.value)" title="${DEG_SCALE[s.c2Deg]?('Fourchette '+s.c2Deg+' : '+DEG_SCALE[s.c2Deg][0]+' → '+DEG_SCALE[s.c2Deg][1]):'note /10'}">
+        </div>
+        ${c2oob?`<span class="oob-msg">Hors fourchette ${s.c2Deg} (${DEG_SCALE[s.c2Deg]?DEG_SCALE[s.c2Deg].join('→'):''})</span>`:''}
+      </td>
+      <td><input class="in-note c3-note" type="number" step="0.5" min="0" max="4" value="${s.c3}" placeholder="–" oninput="updateField(${s.id},'c3',this.value)" title="Bonus /4 optionnel"></td>
+      <td>${hasNote?`<span class="cell-final">${nf.toFixed(1)}</span>`:'<span style="color:var(--text-mute)">–</span>'}</td>
+      <td>${rankCell}</td>
+      <td><button class="del-btn" title="Supprimer" onclick="removeStudent(${s.id})">🗑</button></td>
+    </tr>`;
+  });
+  tbody.innerHTML=html;
+}
+
+function escapeAttr(s){return (s||"").replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+
+/* ══════════════════════════════════════════════════════════════
+   CLASSEMENT
+   ══════════════════════════════════════════════════════════════ */
+function renderClassement(){
+  const valid=students.filter(s=>s.name.trim() && (s.c1Note!==""||s.c2Note!==""));
+  // Stat cards
+  const sc=document.getElementById("stat-cards");
+  if(valid.length){
+    const notes=valid.map(noteFinale);
+    const moy=notes.reduce((a,b)=>a+b,0)/notes.length;
+    const max=Math.max(...notes), min=Math.min(...notes);
+    const withBonus=valid.filter(s=>parseFloat(s.c3)>0).length;
+    sc.innerHTML=`
+      <div class="stat-card"><div class="val">${valid.length}</div><div class="lbl">Élèves notés</div></div>
+      <div class="stat-card"><div class="val">${moy.toFixed(1)}</div><div class="lbl">Moyenne /14</div></div>
+      <div class="stat-card"><div class="val">${max.toFixed(1)}</div><div class="lbl">Note max</div></div>
+      <div class="stat-card"><div class="val">${min.toFixed(1)}</div><div class="lbl">Note min</div></div>
+      <div class="stat-card"><div class="val">${withBonus}</div><div class="lbl">Bonus C3 attribués</div></div>`;
+  } else sc.innerHTML="";
+
+  const scope=document.getElementById("rank-scope").value;
+  const filter=document.getElementById("rank-filter").value;
+  const box=document.getElementById("classement-content");
+
+  if(!valid.length){
+    box.innerHTML=`<div class="empty"><div class="e-ico">🏀</div>
+      <div class="e-title">Pas encore de classement</div>
+      <div class="e-sub">Saisissez au moins une note C1 ou C2 pour un élève nommé.</div></div>`;
+    return;
+  }
+
+  const overallRanks=computeRanks(valid);  // rang général conservé
+
+  if(scope==="overall"){
+    const pool=filter ? valid.filter(s=>s.group===filter) : valid;
+    const sorted=[...pool].sort((a,b)=>noteFinale(b)-noteFinale(a));
+    box.innerHTML=rankTable(sorted, overallRanks, true);
+    return;
+  }
+
+  // par groupe
+  const groups=groupList().filter(g=> !filter || g===filter);
+  let html="";
+  let any=false;
+  groups.forEach(g=>{
+    const pool=valid.filter(s=>s.group===g);
+    if(!pool.length) return;
+    any=true;
+    const localRanks=computeRanks(pool);
+    const sorted=[...pool].sort((a,b)=>noteFinale(b)-noteFinale(a));
+    html+=`<div style="margin-bottom:1.4rem">
+      <div class="tbl-wrap"><table class="rank">
+      <tbody><tr class="grp-header-row"><td colspan="7">${g} — ${pool.length} élève${pool.length>1?'s':''}</td></tr></tbody>
+      ${rankTableInner(sorted, localRanks, overallRanks)}
+      </table></div></div>`;
+  });
+  box.innerHTML = any ? html : `<div class="empty"><div class="e-ico">🔍</div><div class="e-title">Aucun élève noté dans ce groupe</div></div>`;
+}
+
+function rankTable(sorted, rankMap, showOverallCol){
+  return `<div class="tbl-wrap"><table class="rank">${rankTableInner(sorted, rankMap, null)}</table></div>`;
+}
+function rankTableInner(sorted, rankMap, overallRanks){
+  let head=`<thead><tr>
+    <th>Rang</th><th class="l">Nom</th><th>Groupe</th>
+    <th>C1</th><th>C2</th><th>C3</th><th>Note /14</th>
+    ${overallRanks?'<th>Rang gén.</th>':''}
+  </tr></thead>`;
+  let rows=sorted.map(s=>{
+    const r=rankMap[s.id];
+    const medal=r===1?'🥇':r===2?'🥈':r===3?'🥉':r;
+    const c3=parseFloat(s.c3);
+    const bonus=(!isNaN(c3)&&c3>0)?`<span class="bonus-chip">+${c3} ⭐</span>`:`<span class="bonus-none">–</span>`;
+    const c1d=s.c1Deg||degOf(s.c1Note), c2d=s.c2Deg||degOf(s.c2Note);
+    const og = overallRanks ? `<td><strong>${overallRanks[s.id]}</strong></td>` : '';
+    return `<tr>
+      <td class="cell-rank">${medal}</td>
+      <td class="l" style="font-weight:600">${escapeAttr(s.name)}</td>
+      <td><span class="grp-tag">${s.group}</span></td>
+      <td>${s.c1Note!==''?s.c1Note+(c1d?' ('+c1d+')':''):'–'}</td>
+      <td>${s.c2Note!==''?s.c2Note+(c2d?' ('+c2d+')':''):'–'}</td>
+      <td>${bonus}</td>
+      <td class="cell-final">${noteFinale(s).toFixed(1)}</td>
+      ${og}
+    </tr>`;
+  }).join("");
+  return head+"<tbody>"+rows+"</tbody>";
+}
+
+/* ══════════════════════════════════════════════════════════════
+   RÉFÉRENTIEL — rendu
+   ══════════════════════════════════════════════════════════════ */
+function renderReferentiel(){
+  const box=document.getElementById("ref-criteres");
+  box.innerHTML=REFERENTIEL.map(c=>`
+    <div class="ref-crit">
+      <div class="ref-crit-head">
+        <span class="rc-code">${c.code}</span>
+        <span class="rc-title">${c.titre}</span>
+        <span class="rc-pts">${c.pts}</span>
+      </div>
+      ${c.degres.map(d=>`
+        <div class="ref-deg-row">
+          <div class="rd-badge"><span class="deg-badge deg-${d.deg.toLowerCase()}">Degré ${d.deg}</span></div>
+          <div class="rd-body"><strong>${d.terme}</strong><br>${d.desc}</div>
+        </div>`).join("")}
+    </div>`).join("");
+}
+
+/* ══════════════════════════════════════════════════════════════
+   IMPORT CSV
+   Format : Nom_Eleve,Groupe,C1_Degre,C1_Note,C2_Degre,C2_Note,C3
+   Valeurs importées DIRECTEMENT (aucune conversion A→3 / B→6 / C→9)
+   ══════════════════════════════════════════════════════════════ */
+function handleCSV(text){
+  const lines=text.split(/\r?\n/).filter(l=>l.trim().length);
+  if(!lines.length){feedback("err","Fichier vide."); return;}
+
+  // detect header
+  let headerIdx=-1;
+  for(let i=0;i<lines.length;i++){
+    const low=lines[i].toLowerCase();
+    if(low.includes("nom_eleve")||low.includes("nom_élève")||low.includes("nom")&&low.includes("groupe")){headerIdx=i;break;}
+  }
+  if(headerIdx<0){feedback("err","En-tête introuvable — la colonne Nom_Eleve est requise. Vérifiez le format."); return;}
+
+  const sep=lines[headerIdx].includes(";")?";":",";
+  const headers=lines[headerIdx].split(sep).map(h=>h.trim().toLowerCase());
+
+  const iName=headers.findIndex(h=>h.includes("nom"));
+  const iGroup=headers.findIndex(h=>h.includes("groupe")||h==="group");
+  const iC1d=headers.findIndex(h=>h.includes("c1")&&h.includes("degr"));
+  const iC1n=headers.findIndex(h=>h.includes("c1")&&h.includes("note"));
+  const iC2d=headers.findIndex(h=>h.includes("c2")&&h.includes("degr"));
+  const iC2n=headers.findIndex(h=>h.includes("c2")&&h.includes("note"));
+  const iC3=headers.findIndex(h=>h==="c3"||h.includes("c3"));
+
+  // fresh import — wipe current
+  students=[]; rowCount=0;
+  let maxG=nbGroups, imported=0, ignored=0;
+  const rows=[];
+
+  for(let i=headerIdx+1;i<lines.length;i++){
+    const line=lines[i].trim();
+    if(!line||/bilan|moyenne/i.test(line)){ignored++;continue;}
+    const cols=line.split(sep);
+    const name=iName>=0?(cols[iName]||"").trim():"";
+    if(!name){ignored++;continue;}
+
+    let group=iGroup>=0?(cols[iGroup]||"").trim():"G1";
+    group=group.toUpperCase().replace(/\s+/g,"");
+    if(!/^G\d+$/.test(group)){ const m=group.match(/\d+/); group=m?("G"+m[0]):"G1"; }
+    const gi=parseInt(group.replace("G",""),10); if(!isNaN(gi)&&gi>maxG) maxG=gi;
+
+    const clean=v=>{ v=(v||"").trim().replace(",","."); return v===""?"":(isNaN(parseFloat(v))?"":parseFloat(v)); };
+    const cleanDeg=v=>{ v=(v||"").trim().toUpperCase(); return ["A","B","C"].includes(v)?v:""; };
+
+    rows.push({
+      name, group,
+      c1Deg:iC1d>=0?cleanDeg(cols[iC1d]):"",
+      c1Note:iC1n>=0?clean(cols[iC1n]):"",
+      c2Deg:iC2d>=0?cleanDeg(cols[iC2d]):"",
+      c2Note:iC2n>=0?clean(cols[iC2n]):"",
+      c3:iC3>=0?clean(cols[iC3]):""
+    });
+    imported++;
+  }
+
+  // grow group count if CSV references more groups
+  if(maxG>nbGroups){ nbGroups=Math.min(maxG,20); document.getElementById("nb-groups").value=nbGroups; }
+
+  rows.forEach(r=>{
+    // derive degree from note if missing
+    const c1Deg=r.c1Deg||(r.c1Note!==""?degOf(r.c1Note):"");
+    const c2Deg=r.c2Deg||(r.c2Note!==""?degOf(r.c2Note):"");
+    addStudent(r.name, r.group, c1Deg, r.c1Note, c2Deg, r.c2Note, r.c3);
+  });
+
+  refreshGroupSelectors();
+  renderStudents();
+  feedback("ok", `${imported} élève(s) importé(s) · ${ignored} ligne(s) ignorée(s). Valeurs reprises directement, sans conversion.`);
+}
+function feedback(type,msg){
+  const cls=type==="ok"?"alert-ok":type==="warn"?"alert-warn":"alert-err";
+  const ico=type==="ok"?"✅":type==="warn"?"⚠️":"❌";
+  document.getElementById("import-feedback").innerHTML=`<div class="alert ${cls}"><span>${ico}</span><span>${msg}</span></div>`;
+}
+
+document.getElementById("csv-input").addEventListener("change",function(e){
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader(); r.onload=ev=>handleCSV(ev.target.result); r.readAsText(f,"UTF-8");
+  e.target.value="";
+});
+const dz=document.getElementById("drop-zone");
+dz.addEventListener("dragover",e=>{e.preventDefault();dz.classList.add("drag-over");});
+dz.addEventListener("dragleave",()=>dz.classList.remove("drag-over"));
+dz.addEventListener("drop",e=>{
+  e.preventDefault();dz.classList.remove("drag-over");
+  const f=e.dataTransfer.files[0]; if(!f) return;
+  const r=new FileReader(); r.onload=ev=>handleCSV(ev.target.result); r.readAsText(f,"UTF-8");
+});
+
+/* ══════════════════════════════════════════════════════════════
+   EXPORT CSV
+   Colonnes : Nom · Groupe · C1 · C2 · C3 · Note finale /14 · Rang
+   ══════════════════════════════════════════════════════════════ */
+function buildExportRows(){
+  const valid=students.filter(s=>s.name.trim());
+  const rankMap=computeRanks(valid.filter(s=>s.c1Note!==""||s.c2Note!==""));
+  const sorted=[...valid].sort((a,b)=>noteFinale(b)-noteFinale(a));
+  return sorted.map(s=>{
+    const c1d=s.c1Deg||degOf(s.c1Note);
+    const c2d=s.c2Deg||degOf(s.c2Note);
+    const c1=s.c1Note!==""?`${c1d}:${s.c1Note}`:"";
+    const c2=s.c2Note!==""?`${c2d}:${s.c2Note}`:"";
+    const c3=s.c3!==""?s.c3:"";
+    const hasNote=(s.c1Note!==""||s.c2Note!=="");
+    const note=hasNote?noteFinale(s).toFixed(1):"";
+    const rang=hasNote?rankMap[s.id]:"";
+    return [s.name,s.group,c1,c2,c3,note,rang];
+  });
+}
+function exportCSV(){
+  const valid=students.filter(s=>s.name.trim());
+  if(!valid.length){alert("Aucun élève à exporter."); return;}
+  const header=["Nom","Groupe","C1","C2","C3","Note_finale_14","Rang"];
+  const rows=buildExportRows();
+  const esc=v=>{ v=String(v); return /[",;\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; };
+  const content="\uFEFF"+[header,...rows].map(r=>r.map(esc).join(";")).join("\n");
+  const blob=new Blob([content],{type:"text/csv;charset=utf-8"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a"); a.href=url;
+  const d=new Date();
+  a.download="ADP2026_BASKETBALL_ES-BKT_"+d.getFullYear()+String(d.getMonth()+1).padStart(2,"0")+String(d.getDate()).padStart(2,"0")+".csv";
+  document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+}
+function renderCSVPreview(){
+  const box=document.getElementById("csv-preview-box");
+  const header="Nom;Groupe;C1;C2;C3;Note_finale_14;Rang";
+  const rows=buildExportRows().slice(0,4);
+  if(!rows.length){ box.textContent=header+"\n(aucun élève — exemple)\nDupont Léa;G1;C:8;B:6;3.5;10.0;1"; return; }
+  box.textContent=header+"\n"+rows.map(r=>r.join(";")).join("\n");
+}
+
+/* ══════════════════════════════════════════════════════════════
+   RESET (avec confirmation)
+   ══════════════════════════════════════════════════════════════ */
+function askReset(){ document.getElementById("reset-modal").classList.add("open"); }
+function closeReset(){ document.getElementById("reset-modal").classList.remove("open"); }
+function confirmReset(){
+  students=[];
+  rowCount=0;                 // ← correction bug : rowCount remis à 0
+  nbGroups=4;
+  document.getElementById("nb-groups").value=4;
+  document.getElementById("filter-group").value="";
+  document.getElementById("import-feedback").innerHTML="";
+  refreshGroupSelectors();
+  renderStudents();
+  renderClassement();
+  renderCSVPreview();
+  closeReset();
+}
+document.getElementById("reset-modal").addEventListener("click",e=>{ if(e.target.id==="reset-modal") closeReset(); });
+
+/* ══════════════════════════════════════════════════════════════
+   INIT
+   ══════════════════════════════════════════════════════════════ */
+renderReferentiel();
+refreshGroupSelectors();
+addStudent(); addStudent(); addStudent();
+</script>
+</body>
+</html>
