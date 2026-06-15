@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Outil EPS — Basketball ES-BKT · v05</title>
+<title>Outil EPS — Basketball ES-BKT · v06</title>
 <style>
 /* ── RESET & BASE ───────────────────────────────────────────── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -59,10 +59,15 @@ input,select,textarea{font-family:inherit}
 .site-header{
   background:var(--court-navy);
   padding:0 1.5rem;
-  display:flex;align-items:center;justify-content:space-between;
+  display:none; /* caché sur l'écran splash */
+  align-items:center;justify-content:space-between;
   gap:1rem;height:58px;position:sticky;top:0;z-index:100;
   box-shadow:0 2px 8px rgba(0,0,0,.35);
 }
+.site-header.visible{display:flex}
+
+/* Quand splash actif: body sans scroll */
+body.splash-mode{overflow:hidden}
 .header-brand{display:flex;align-items:center;gap:.75rem}
 .header-ball{font-size:1.6rem;line-height:1}
 .header-title{color:#fff;font-size:.95rem;font-weight:700;letter-spacing:.02em;line-height:1.2}
@@ -75,10 +80,13 @@ input,select,textarea{font-family:inherit}
 
 /* ── STEPPER ────────────────────────────────────────────────── */
 .stepper{
-  display:flex;align-items:center;gap:0;
+  display:none; /* caché jusqu'à lancerOutil() */
+  align-items:center;gap:0;
   background:var(--court-blue);padding:.5rem 1.5rem;
   overflow-x:auto;scrollbar-width:none;
+  position:sticky;top:58px;z-index:90;
 }
+.stepper.visible{display:flex}
 .stepper::-webkit-scrollbar{display:none}
 .step-item{
   display:flex;align-items:center;gap:.4rem;
@@ -397,8 +405,9 @@ input[type=range]::-webkit-slider-thumb{
 .splash{
   position:relative;overflow:hidden;
   background:#0a1118;
-  min-height:100vh;display:flex;align-items:center;justify-content:center;
-  padding:2rem 1.5rem;
+  height:100vh;width:100vw;display:flex;align-items:center;justify-content:center;
+  padding:1.5rem 1.5rem;
+  box-sizing:border-box;
 }
 /* Grille terrain basketball */
 .splash-court{
@@ -647,17 +656,30 @@ input[type=range]::-webkit-slider-thumb{
 .modal-box p{font-size:.86rem;color:var(--text-soft);line-height:1.5;margin-bottom:1.1rem}
 .modal-btns{display:flex;gap:.6rem;justify-content:flex-end}
 
-/* ── TOAST — auto-disparaît ─────────────────────────────────── */
+/* ── TOAST — auto-disparaît + bouton X ─────────────────────── */
 .toast{
   position:fixed;bottom:4.5rem;left:50%;
-  transform:translateX(-50%) translateY(120%);
-  background:#0d2137;color:#fff;padding:.6rem 1.15rem;border-radius:30px;
-  font-size:.82rem;font-weight:600;box-shadow:0 6px 20px rgba(0,0,0,.35);
-  z-index:500;transition:transform .3s ease;
-  display:flex;align-items:center;gap:.45rem;
-  white-space:nowrap;pointer-events:none;max-width:90vw;
+  transform:translateX(-50%) translateY(150%);
+  background:#0d2137;color:#fff;
+  padding:.55rem .65rem .55rem 1rem;
+  border-radius:30px;
+  font-size:.82rem;font-weight:600;
+  box-shadow:0 6px 24px rgba(0,0,0,.45);
+  z-index:500;
+  transition:transform .35s cubic-bezier(.34,1.56,.64,1);
+  display:flex;align-items:center;gap:.55rem;
+  max-width:90vw;pointer-events:auto;
+  border:1px solid rgba(255,255,255,.1);
 }
 .toast.show{transform:translateX(-50%) translateY(0)}
+.toast-msg{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.toast-close{
+  background:rgba(255,255,255,.15);border:none;color:#fff;
+  width:22px;height:22px;border-radius:50%;font-size:.72rem;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;flex-shrink:0;transition:background .15s;
+}
+.toast-close:hover{background:rgba(255,255,255,.3)}
 
 /* ── ACCUEIL HERO (conservé pour fallback) ──────────────────── */
 .accueil-hero{
@@ -754,15 +776,7 @@ input[type=range]::-webkit-slider-thumb{
 .modal-box p{font-size:.86rem;color:var(--text-soft);line-height:1.5;margin-bottom:1.1rem}
 .modal-btns{display:flex;gap:.6rem;justify-content:flex-end}
 
-/* ── TOAST ──────────────────────────────────────────────────── */
-.toast{
-  position:fixed;bottom:4.5rem;left:50%;transform:translateX(-50%) translateY(120%);
-  background:var(--court-navy);color:#fff;padding:.6rem 1.1rem;border-radius:30px;
-  font-size:.82rem;font-weight:600;box-shadow:0 6px 20px rgba(0,0,0,.3);z-index:300;
-  transition:transform .3s;display:flex;align-items:center;gap:.45rem;
-  white-space:nowrap;pointer-events:none;
-}
-.toast.show{transform:translateX(-50%) translateY(0)}
+/* toast v06 — voir ci-dessus */
 
 /* ── DEGREE SELECT ──────────────────────────────────────────── */
 .deg-select-wrap{display:flex;flex-direction:column;gap:.2rem}
@@ -903,9 +917,163 @@ input[type=range]::-webkit-slider-thumb{
   body{background:#fff}
   .card{box-shadow:none;border:1px solid #e2e8f0}
 }
+
+/* ══════════════════════════════════════════════════════════════
+   DARK MODE — FIXES COMPLETS v06
+   Tout texte doit être lisible en mode sombre
+══════════════════════════════════════════════════════════════ */
+
+/* Inputs/selects de base */
+:root[data-theme="dark"] input,
+:root[data-theme="dark"] input[type=text],
+:root[data-theme="dark"] input[type=number],
+:root[data-theme="dark"] select,
+:root[data-theme="dark"] textarea {
+  background:var(--surface) !important;
+  color:var(--text) !important;
+  border-color:var(--border) !important;
+}
+
+/* Inputs colorés par degré en dark */
+:root[data-theme="dark"] .deg-select.sa,
+:root[data-theme="dark"] .val-input.deg-a-input {
+  background:var(--deg-a-bg) !important;
+  border-color:var(--deg-a-border) !important;
+  color:var(--deg-a-text) !important;
+}
+:root[data-theme="dark"] .deg-select.sb,
+:root[data-theme="dark"] .val-input.deg-b-input {
+  background:var(--deg-b-bg) !important;
+  border-color:var(--deg-b-border) !important;
+  color:var(--deg-b-text) !important;
+}
+:root[data-theme="dark"] .deg-select.sc,
+:root[data-theme="dark"] .val-input.deg-c-input {
+  background:var(--deg-c-bg) !important;
+  border-color:var(--deg-c-border) !important;
+  color:var(--deg-c-text) !important;
+}
+/* Options des selects */
+:root[data-theme="dark"] select option {
+  background:#172234 !important;
+  color:#e6edf5 !important;
+}
+
+/* Cards et surfaces */
+:root[data-theme="dark"] .card { background:var(--surface); color:var(--text); }
+:root[data-theme="dark"] .modal-box { background:var(--surface); color:var(--text); }
+:root[data-theme="dark"] .modal-box h3 { color:var(--text); }
+:root[data-theme="dark"] .modal-box p { color:var(--text-soft); }
+:root[data-theme="dark"] .card-title { color:var(--text); }
+
+/* Note /14 cell */
+:root[data-theme="dark"] .note14-cell { background:#1e2c40; border-color:#3a4a60; color:#a9cce6; }
+:root[data-theme="dark"] .note14-cell.n-low  { background:var(--deg-a-bg); border-color:var(--deg-a-border); color:var(--deg-a-text); }
+:root[data-theme="dark"] .note14-cell.n-mid  { background:var(--deg-b-bg); border-color:var(--deg-b-border); color:var(--deg-b-text); }
+:root[data-theme="dark"] .note14-cell.n-high { background:var(--deg-c-bg); border-color:var(--deg-c-border); color:var(--deg-c-text); }
+
+/* Alerts */
+:root[data-theme="dark"] .alert-info  { background:#1a2f50; border-color:#2a5080; color:#a9cce6; }
+:root[data-theme="dark"] .alert-warn  { background:#3a2c12; border-color:var(--deg-b-border); color:var(--deg-b-text); }
+:root[data-theme="dark"] .alert-ok    { background:#1c3320; border-color:var(--deg-c-border); color:var(--deg-c-text); }
+:root[data-theme="dark"] .alert-err   { background:var(--deg-a-bg); border-color:var(--deg-a-border); color:var(--deg-a-text); }
+
+/* Import zone */
+:root[data-theme="dark"] .import-zone { background:#1e2c40; border-color:var(--border); }
+:root[data-theme="dark"] .import-zone .iz-text { color:#9fb2c8; }
+:root[data-theme="dark"] .import-zone:hover { background:#243448; border-color:var(--court-blue); }
+
+/* Axes */
+:root[data-theme="dark"] .axe-card { border-color:var(--border); background:var(--surface); }
+:root[data-theme="dark"] .axe-card.selected { background:#1a2f50; }
+:root[data-theme="dark"] .axe-title { color:var(--text); }
+:root[data-theme="dark"] .axe-desc  { color:var(--text-soft); }
+:root[data-theme="dark"] .axe-pill  { background:#1e2c40; color:var(--text-soft); border-color:var(--border); }
+:root[data-theme="dark"] .axe-check { background:var(--surface); border-color:var(--border); color:var(--text); }
+:root[data-theme="dark"] .axe-card.selected .axe-check { background:var(--court-blue); border-color:var(--court-blue); color:#fff; }
+
+/* Tables */
+:root[data-theme="dark"] .diag-table td { color:var(--text); border-bottom-color:var(--border-soft); }
+:root[data-theme="dark"] .diag-table tr:hover td { background:#1e2c40; }
+:root[data-theme="dark"] .name-cell { color:var(--text) !important; }
+:root[data-theme="dark"] .note-20 { color:var(--text) !important; }
+:root[data-theme="dark"] .obs-tag  { color:var(--text-soft); }
+
+/* Stat cards */
+:root[data-theme="dark"] .stat-card { background:var(--surface); }
+:root[data-theme="dark"] .stat-card .val { color:var(--text); }
+:root[data-theme="dark"] .stat-card .lbl { color:var(--text-soft); }
+
+/* Distrib preview */
+:root[data-theme="dark"] .distrib-preview { background:#1e2c40; border-color:var(--border); color:var(--text); }
+:root[data-theme="dark"] .seq-info { color:var(--text-soft); }
+
+/* Seance table */
+:root[data-theme="dark"] .seance-table td { border-bottom-color:var(--border-soft); border-right-color:var(--border-soft); color:var(--text-soft); }
+:root[data-theme="dark"] .seance-num { color:var(--court-blue); }
+:root[data-theme="dark"] .gc-sa { color:var(--text); }
+:root[data-theme="dark"] .group-cell-a { background:rgba(58,28,28,.3); }
+:root[data-theme="dark"] .group-cell-b { background:rgba(58,44,18,.3); }
+:root[data-theme="dark"] .group-cell-c { background:rgba(28,51,32,.3); }
+
+/* Lacune tag */
+:root[data-theme="dark"] .lacune-tag { background:var(--deg-a-bg); color:var(--deg-a-text); border-color:var(--deg-a-border); }
+
+/* Cycle summary */
+:root[data-theme="dark"] .cycle-reco { color:#9fb2c8; }
+
+/* Export bar */
+:root[data-theme="dark"] .export-bar { background:#0a1828; }
+
+/* Add row btn */
+:root[data-theme="dark"] .add-row-btn { border-color:var(--border); color:var(--text-soft); }
+:root[data-theme="dark"] .add-row-btn:hover { border-color:var(--court-blue); color:var(--court-blue); }
+
+/* Row num */
+:root[data-theme="dark"] .row-num { color:var(--text-soft); }
+
+/* Name input */
+:root[data-theme="dark"] .name-input-v4 { background:var(--surface); color:var(--text); border-color:var(--border); }
+
+/* Val input disabled */
+:root[data-theme="dark"] .val-input:disabled { background:var(--step-locked); color:var(--step-locked-text); }
+
+/* Row labels */
+:root[data-theme="dark"] .row-labels-v4 span { color:var(--text-soft); }
+
+/* Fiche terrain card en dark */
+:root[data-theme="dark"] .fiche-card { background:#0a1828; border-color:#e8580a; }
+:root[data-theme="dark"] .fiche-desc { color:#7fb3d9; }
+:root[data-theme="dark"] .prompt-box { background:#070e18; border-color:#1a3a5c; }
+:root[data-theme="dark"] .prompt-text { color:#7fb3d9; }
+
+/* Stepper */
+:root[data-theme="dark"] .step-sep { color:#3a6a9a; }
+
+/* Deg badges */
+:root[data-theme="dark"] .deg-badge.deg-a { background:var(--deg-a-bg); border-color:var(--deg-a-border); color:var(--deg-a-text); }
+:root[data-theme="dark"] .deg-badge.deg-b { background:var(--deg-b-bg); border-color:var(--deg-b-border); color:var(--deg-b-text); }
+:root[data-theme="dark"] .deg-badge.deg-c { background:var(--deg-c-bg); border-color:var(--deg-c-border); color:var(--deg-c-text); }
+
+/* Profile bar labels */
+:root[data-theme="dark"] .profile-bar .seg-a { background:var(--deg-a-border); }
+:root[data-theme="dark"] .profile-bar .seg-b { background:var(--deg-b-border); }
+:root[data-theme="dark"] .profile-bar .seg-c { background:var(--deg-c-border); }
+
+
+/* ── SPLASH FULL SCREEN — override du .main ────────────────── */
+body.splash-mode{overflow:hidden;height:100vh;width:100vw}
+body.splash-mode .main{padding:0;max-width:100%;margin:0}
+#panel-0{margin:0;padding:0}
+#panel-0 .splash{
+  position:fixed;inset:0;z-index:50;
+  height:100vh;width:100vw;
+  overflow:hidden;
+}
+
 </style>
 </head>
-<body>
+<body class="splash-mode">
 
 <!-- HEADER -->
 <header class="site-header">
@@ -916,8 +1084,11 @@ input[type=range]::-webkit-slider-thumb{
       <div class="header-sub">Basketball · ES-BKT · COLL2_EQ_07 · DNB Niveau 2</div>
     </div>
   </div>
-  <div style="display:flex;align-items:center;gap:.65rem">
-    <span class="header-badge">ADP 2026 · v05</span>
+  <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;justify-content:flex-end">
+    <button class="btn btn-ghost btn-sm" onclick="exportSession()" title="Sauvegarde complète de la session (fichier .json)">💾 Sauver</button>
+    <button class="btn btn-ghost btn-sm" onclick="document.getElementById('session-input').click()" title="Recharger une session sauvegardée">📂 Charger</button>
+    <input type="file" id="session-input" accept=".json" style="display:none">
+    <span class="header-badge">ADP 2026 · v06</span>
     <button class="theme-toggle" id="themeBtn" onclick="toggleTheme()" title="Mode sombre / clair">🌙</button>
   </div>
 </header>
@@ -971,6 +1142,16 @@ input[type=range]::-webkit-slider-thumb{
     <!-- Tag -->
     <div class="splash-tag">🇲🇦 CRMEF Souss-Massa · ADP 2026</div>
 
+    <!-- Bannière de reprise de session (Condition 3) -->
+    <div id="resume-banner" style="display:none;margin:0 auto 1rem;max-width:520px;background:var(--hoop-light);border:1.5px solid var(--hoop-orange);border-radius:var(--radius);padding:.8rem 1rem;text-align:left">
+      <div style="font-weight:700;color:var(--hoop-orange);font-size:.9rem;margin-bottom:.2rem">↩️ Session en cours retrouvée</div>
+      <div id="resume-info" style="font-size:.78rem;color:var(--text-soft);margin-bottom:.6rem"></div>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+        <button class="btn btn-orange btn-sm" onclick="resumeSession()">Reprendre</button>
+        <button class="btn btn-ghost btn-sm" onclick="askResetGlobal()">Effacer et recommencer</button>
+      </div>
+    </div>
+
     <!-- Titre -->
     <div class="splash-title">
       ÉVALUATEUR
@@ -1021,7 +1202,8 @@ input[type=range]::-webkit-slider-thumb{
   </div>
 
   <div class="splash-footer">
-    Outil d'évaluation EPS · CRMEF Souss-Massa · ADP 2026 · COLL2_EQ_07
+    Outil d'évaluation EPS · CRMEF Souss-Massa · ADP 2026 · COLL2_EQ_07<br>
+    🔒 Vos données restent confidentielles, enregistrées uniquement sur cet appareil. Aucun compte, aucune connexion, aucun envoi extérieur.
   </div>
 </div>
 </section>
@@ -1130,6 +1312,8 @@ input[type=range]::-webkit-slider-thumb{
   <div id="diag-content"></div>
   <div class="btn-row">
     <button class="btn btn-ghost" onclick="goToStep(1)">← Retour saisie</button>
+    <button class="btn btn-primary btn-sm" onclick="printResults()">📄 Exporter résultats (PDF)</button>
+    <button class="btn btn-teal btn-sm" onclick="exportCSV()">⬇ CSV</button>
     <button class="btn btn-orange" onclick="goToStep(3)">Sélectionner les axes → Étape 3</button>
   </div>
 </section>
@@ -1159,7 +1343,7 @@ input[type=range]::-webkit-slider-thumb{
     <div class="slider-wrap">
       <div class="slider-display" id="slider-val">12 <span>séances</span></div>
       <div class="slider-sub" id="slider-sub">Choisir le nombre de séances du cycle</div>
-      <input type="range" id="cycle-slider" min="6" max="12" value="12" oninput="updateSlider(this.value)">
+      <input type="range" id="cycle-slider" min="6" max="12" value="12" oninput="updateSlider(this.value);saveSession()">
       <div class="slider-ticks">
         <span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span>
       </div>
@@ -1217,7 +1401,10 @@ input[type=range]::-webkit-slider-thumb{
   </div>
 </div>
 
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast">
+  <span class="toast-msg" id="toast-msg"></span>
+  <button class="toast-close" onclick="hideToast()" title="Fermer">✕</button>
+</div>
 
 <script>
 // ══════════════════════════════════════════════════════════════
@@ -1387,6 +1574,130 @@ let selectedAxes = [];
 let cycleSeances = 12;
 let currentStep = 0;
 let pendingDelRowId = null;
+let currentProf = '';   // déclaré tôt pour la persistance
+let currentGrp  = '';   // déclaré tôt pour la persistance
+
+// ══════════════════════════════════════════════════════════════
+// PERSISTANCE LOCALE (localStorage) — CONDITION 2 & 3
+// Toutes les données restent sur l'appareil de l'enseignant.
+// Aucune donnée n'est envoyée à l'extérieur.
+// ══════════════════════════════════════════════════════════════
+const STORAGE_KEY = "adp2026_es_bkt_session_v06";
+
+// Collecte l'état complet de la session dans un objet sérialisable.
+function collectSession() {
+  return {
+    version: "v06",
+    savedAt: new Date().toISOString(),
+    prof: currentProf || "",
+    groupe: currentGrp || "",
+    step: currentStep,
+    cycleSeances: cycleSeances,
+    selectedAxes: selectedAxes.slice(),
+    students: students.map(s => ({
+      name: s.name || "",
+      group: s.group || "",
+      c1deg: s.c1deg || "", c1: s.c1 ?? "",
+      c2deg: s.c2deg || "", c2: s.c2 ?? "",
+      c3deg: s.c3deg || "", c3: s.c3 ?? ""
+    }))
+  };
+}
+
+// Sauvegarde automatique — appelée après chaque modification.
+let _saveTimer = null;
+function saveSession() {
+  if (_saveTimer) clearTimeout(_saveTimer);
+  _saveTimer = setTimeout(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(collectSession()));
+    } catch (e) {
+      // Quota dépassé ou stockage désactivé — on n'interrompt pas l'utilisateur.
+      console.warn("Sauvegarde locale impossible :", e);
+    }
+  }, 250);
+}
+
+// Reconstruit les lignes élèves à partir d'un tableau de données.
+function rebuildStudentsFrom(arr) {
+  students = []; rowCount = 0;
+  const grid = document.getElementById("student-grid");
+  if (grid) grid.innerHTML = "";
+  (arr || []).forEach(o => {
+    if (!o) return;
+    addStudentRow(o.name || "", o.c1deg || "", o.c1 ?? "",
+      o.c2deg || "", o.c2 ?? "", o.c3deg || "", o.c3 ?? "");
+    if (students.length) students[students.length - 1].group = o.group || "";
+  });
+}
+
+// Restaure la session depuis localStorage au chargement de la page.
+function restoreSession() {
+  let raw;
+  try { raw = localStorage.getItem(STORAGE_KEY); } catch (e) { return false; }
+  if (!raw) return false;
+  let data;
+  try { data = JSON.parse(raw); } catch (e) { return false; }
+  if (!data || !data.students || !data.students.length) return false;
+
+  currentProf  = data.prof || "";
+  currentGrp   = data.groupe || "";
+  cycleSeances = data.cycleSeances || 12;
+  selectedAxes = Array.isArray(data.selectedAxes) ? data.selectedAxes.slice() : [];
+  if (typeof data.step === "number") currentStep = data.step;
+  rebuildStudentsFrom(data.students);
+
+  // Refléter le professeur et le groupe sur l'écran d'accueil.
+  if (currentProf) {
+    const ps = document.getElementById("profSelect");
+    if (ps) {
+      const match = Array.from(ps.options).some(o => o.value === currentProf);
+      if (match) { ps.value = currentProf; }
+      else {
+        ps.value = "__autre__";
+        const pc = document.getElementById("profCustom");
+        if (pc) { pc.value = currentProf; pc.classList.add("visible"); }
+      }
+    }
+  }
+  if (currentGrp) {
+    document.querySelectorAll(".grp-btn").forEach(b => {
+      if (b.textContent.trim() === currentGrp) b.classList.add("selected");
+    });
+  }
+  const lb = document.getElementById("launchBtn");
+  if (lb) lb.disabled = !(currentProf && currentGrp);
+
+  // Bannière de reprise sur l'écran d'accueil.
+  const banner = document.getElementById("resume-banner");
+  if (banner) {
+    const when = data.savedAt ? new Date(data.savedAt).toLocaleString("fr-FR") : "";
+    const info = document.getElementById("resume-info");
+    if (info) info.textContent =
+      `${data.students.length} élève(s) · ${currentProf || "—"} · ${currentGrp || "—"}` +
+      (when ? ` · enregistré le ${when}` : "");
+    banner.style.display = "block";
+  }
+  return true;
+}
+
+// Reprend la session sauvegardée (depuis la bannière d'accueil).
+function resumeSession() {
+  if (!currentProf || !currentGrp) {
+    // Données présentes mais identité incomplète : rester sur l'accueil.
+    showToast("Sélectionnez le professeur et le groupe pour reprendre");
+    return;
+  }
+  document.querySelector('.site-header')?.classList.add('visible');
+  document.getElementById('stepper')?.classList.add('visible');
+  document.body.classList.remove('splash-mode');
+  const sub = document.querySelector('.header-sub');
+  if (sub) sub.textContent = `Basketball · ES-BKT · ${currentGrp} · ${currentProf}`;
+  const eb = document.getElementById('eb-prof-label');
+  if (eb) eb.textContent = `ADP 2026 · ${currentProf} · ${currentGrp} · Basketball ES-BKT`;
+  goToStep(currentStep && currentStep > 0 ? currentStep : 1);
+  showToast(`↩️ Session reprise — ${students.length} élève(s)`);
+}
 
 // ══════════════════════════════════════════════════════════════
 // STEP NAVIGATION
@@ -1396,6 +1707,18 @@ function goToStep(n) {
   currentStep = n;
   document.querySelectorAll(".step-panel").forEach(p => p.classList.remove("visible"));
   document.getElementById("panel-" + n).classList.add("visible");
+  // Header & stepper : visibles seulement après le splash (step > 0)
+  const hdr     = document.querySelector('.site-header');
+  const stepper = document.getElementById('stepper');
+  if (n === 0) {
+    if (hdr)     hdr.classList.remove('visible');
+    if (stepper) stepper.classList.remove('visible');
+    document.body.classList.add('splash-mode');
+  } else {
+    if (hdr)     hdr.classList.add('visible');
+    if (stepper) stepper.classList.add('visible');
+    document.body.classList.remove('splash-mode');
+  }
   // Update stepper buttons (0..5)
   for (let i = 0; i <= 5; i++) {
     const btn = document.getElementById("step-btn-" + i);
@@ -1408,6 +1731,7 @@ function goToStep(n) {
   if (n === 2) renderDiagnostic();
   if (n === 3) renderAxes();
   if (n === 4) updateSlider(cycleSeances);
+  saveSession();
   window.scrollTo({top:0,behavior:"smooth"});
 }
 
@@ -1456,12 +1780,24 @@ function toggleTheme(){
 })();
 
 // ══════════════════════════════════════════════════════════════
-// TOAST
+// TOAST — auto-disparaît après 3s + bouton X
 // ══════════════════════════════════════════════════════════════
-function showToast(msg){
-  const t=document.getElementById('toast');
-  t.textContent=msg;t.classList.add('show');
-  clearTimeout(t._tm);t._tm=setTimeout(()=>t.classList.remove('show'),2500);
+let _toastTimer = null;
+
+function showToast(msg) {
+  const t  = document.getElementById('toast');
+  const tm = document.getElementById('toast-msg');
+  if (!t || !tm) return;
+  tm.textContent = msg;
+  t.classList.add('show');
+  if (_toastTimer) clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(hideToast, 3000);
+}
+
+function hideToast() {
+  const t = document.getElementById('toast');
+  if (t) t.classList.remove('show');
+  if (_toastTimer) { clearTimeout(_toastTimer); _toastTimer = null; }
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -1601,6 +1937,7 @@ function onDegChange(rowId, comp, sel) {
   // Update select color class
   sel.className = 'deg-select ' + (deg?degToCls(deg):'');
   rebuildRow(rowId);
+  saveSession();
 }
 
 function onValChange(rowId, comp, inp) {
@@ -1624,16 +1961,19 @@ function onValChange(rowId, comp, inp) {
   inp.className = 'val-input ' + getDegClassForInput(comp, raw);
   // Mise à jour note /14
   updateNote14Cell(rowId);
+  saveSession();
 }
 
 function updateStudentField(rowId, field, val) {
   const s = students.find(x=>x.rowId===rowId);
   if (s) s[field] = val;
+  saveSession();
 }
 
 function updateStudentCount() {
   const lbl = document.getElementById('student-count-lbl');
   if (lbl) lbl.textContent = students.length + (students.length>1?' élèves':' élève');
+  saveSession();
 }
 
 function escHtml(s){ return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
@@ -1664,17 +2004,29 @@ function confirmDelStudent() {
 
 // ── RESET GLOBAL ──────────────────────────────────────────────
 function askResetGlobal() {
-  if (students.length===0){ showToast('Aucune donnée à réinitialiser'); return; }
+  let hasSaved = false;
+  try { hasSaved = !!localStorage.getItem(STORAGE_KEY); } catch (e) {}
+  if (students.length===0 && !currentProf && !hasSaved){ showToast('Aucune donnée à réinitialiser'); return; }
   openModal('modal-reset');
 }
 function confirmResetGlobal() {
   students = []; rowCount = 0; selectedAxes = [];
+  cycleSeances = 12;
+  currentProf = ''; currentGrp = '';
   document.getElementById('student-grid').innerHTML = '';
   document.getElementById('import-feedback').innerHTML = '';
+  // Effacer la sauvegarde locale (Condition 5).
+  try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+  // Réinitialiser l'écran d'accueil.
+  const ps = document.getElementById('profSelect'); if (ps) ps.value = '';
+  const pc = document.getElementById('profCustom'); if (pc) { pc.value = ''; pc.classList.remove('visible'); }
+  document.querySelectorAll('.grp-btn').forEach(b => b.classList.remove('selected'));
+  const lb = document.getElementById('launchBtn'); if (lb) lb.disabled = true;
+  const banner = document.getElementById('resume-banner'); if (banner) banner.style.display = 'none';
   updateStudentCount();
   closeModal('modal-reset');
   goToStep(0);
-  showToast('✅ Réinitialisé — retour à l\'accueil');
+  showToast('✅ Réinitialisé — données effacées de l\'appareil');
 }
 
 // ── CLEARALL (legacy, kept for compatibility) ──────────────────
@@ -1974,6 +2326,7 @@ function toggleAxe(id) {
   const chk = document.querySelector("#axe-" + id + " .axe-check");
   if (chk) chk.textContent = selectedAxes.includes(id) ? "✓" : "";
   updateAxeCounter();
+  saveSession();
 }
 
 function updateAxeCounter() {
@@ -2226,6 +2579,7 @@ function loadDemo() {
   });
   goToStep(1);
   showToast("🎲 Démo chargée — 9 élèves");
+  saveSession();
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -2295,6 +2649,7 @@ function handleCSV(text) {
   document.getElementById("import-feedback").innerHTML=
     "<div class='alert alert-ok'><span>✅</span><span>"+imported+" élève(s) importé(s) · "+ignored+" ligne(s) ignorée(s)</span></div>";
   showToast("📥 "+imported+" élève(s) importé(s)");
+  saveSession();
 }
 
 function handleJSON(text){
@@ -2322,12 +2677,19 @@ function handleJSON(text){
       students[students.length-1].group=String(o.Groupe||o.group||'').trim();
     });
     showToast("📥 "+students.length+" élève(s) importé(s) depuis JSON");
+    saveSession();
   }catch(e){showToast("❌ JSON invalide : "+e.message);}
 }
 
 document.getElementById("csv-input").addEventListener("change", function(e) {
   const file = e.target.files[0]; if(!file)return;
   handleImport(file); this.value='';
+});
+
+// Import de session complète (Condition 6)
+document.getElementById("session-input").addEventListener("change", function(e) {
+  const file = e.target.files[0]; if(!file)return;
+  importSessionFile(file); this.value='';
 });
 
 const dz = document.getElementById("drop-zone");
@@ -2388,10 +2750,58 @@ function dlFile(content,type,name){
 }
 
 // ══════════════════════════════════════════════════════════════
-// v05 — SPLASH / ACCUEIL CINÉMATIQUE
+// EXPORT / IMPORT DE SESSION COMPLÈTE — CONDITION 6
+// Sauvegarde de secours et transfert vers un autre appareil.
+// Contient TOUT l'état (prof, groupe, élèves, axes, cycle, étape).
 // ══════════════════════════════════════════════════════════════
-let currentProf = '';
-let currentGrp  = '';
+function exportSession() {
+  const session = collectSession();
+  session.type = "ADP2026_SESSION";   // marqueur de reconnaissance à l'import
+  const d = new Date();
+  const stamp = d.getFullYear()+(d.getMonth()+1).toString().padStart(2,"0")+d.getDate().toString().padStart(2,"0")
+    +"_"+d.getHours().toString().padStart(2,"0")+d.getMinutes().toString().padStart(2,"0");
+  const safeGrp = (currentGrp||"session").replace(/[^\w-]/g,"");
+  dlFile(JSON.stringify(session,null,2),"application/json",
+    "SESSION_BASKETBALL_ES-BKT_"+safeGrp+"_"+stamp+".json");
+  showToast("💾 Session exportée (sauvegarde complète)");
+}
+
+function importSessionFile(file) {
+  const reader = new FileReader();
+  reader.onload = ev => {
+    let data;
+    try { data = JSON.parse(ev.target.result); }
+    catch (e) { showToast("❌ Fichier de session illisible"); return; }
+    if (!data || !Array.isArray(data.students)) {
+      showToast("❌ Ce fichier n'est pas une session valide");
+      return;
+    }
+    // Restaurer l'intégralité de l'état.
+    currentProf  = data.prof || "";
+    currentGrp   = data.groupe || "";
+    cycleSeances = data.cycleSeances || 12;
+    selectedAxes = Array.isArray(data.selectedAxes) ? data.selectedAxes.slice() : [];
+    rebuildStudentsFrom(data.students);
+    saveSession();
+
+    // Mettre à jour l'en-tête et naviguer.
+    document.querySelector('.site-header')?.classList.add('visible');
+    document.getElementById('stepper')?.classList.add('visible');
+    document.body.classList.remove('splash-mode');
+    const sub = document.querySelector('.header-sub');
+    if (sub) sub.textContent = `Basketball · ES-BKT · ${currentGrp||"—"} · ${currentProf||"—"}`;
+    const eb = document.getElementById('eb-prof-label');
+    if (eb) eb.textContent = `ADP 2026 · ${currentProf||"—"} · ${currentGrp||"—"} · Basketball ES-BKT`;
+    goToStep(1);
+    showToast(`📂 Session importée — ${students.length} élève(s) restauré(s)`);
+  };
+  reader.readAsText(file, "UTF-8");
+}
+
+// ══════════════════════════════════════════════════════════════
+// v05 — SPLASH / ACCUEIL CINÉMATIQUE
+// (currentProf / currentGrp sont déclarés en tête de script)
+// ══════════════════════════════════════════════════════════════
 
 function onProfChange(sel) {
   const val = sel.value;
@@ -2426,13 +2836,18 @@ function checkLaunchReady() {
 
 function lancerOutil() {
   if (!currentProf || !currentGrp) return;
-  // Mettre à jour header et export-bar
+  // Afficher header et stepper
+  document.querySelector('.site-header').classList.add('visible');
+  document.getElementById('stepper').classList.add('visible');
+  document.body.classList.remove('splash-mode');
+  // Mettre à jour les infos
   const sub = document.querySelector('.header-sub');
   if (sub) sub.textContent = `Basketball · ES-BKT · ${currentGrp} · ${currentProf}`;
   const eb = document.getElementById('eb-prof-label');
   if (eb) eb.textContent = `ADP 2026 · ${currentProf} · ${currentGrp} · Basketball ES-BKT`;
   goToStep(1);
   showToast(`🏀 Bienvenue, ${currentProf} — Groupe ${currentGrp}`);
+  saveSession();
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -2501,6 +2916,99 @@ function printFiche() {
 }
 
 // ══════════════════════════════════════════════════════════════
+// CONDITION 7 — EXPORT DES RÉSULTATS EXPLOITABLES (PDF propre)
+// Profils, lacunes, SA et décisions produites par l'outil.
+// ══════════════════════════════════════════════════════════════
+function printResults() {
+  const valid = students.filter(s => s.name.trim() && s.c1 !== "" && s.c2 !== "");
+  if (!valid.length) { showToast("Aucun résultat à exporter"); return; }
+
+  const prof = currentProf || 'Prof.';
+  const grp  = currentGrp  || '—';
+  const date = new Date().toLocaleDateString('fr-FR');
+
+  const profLabel = { A:"Profil A — à consolider", B:"Profil B — en construction", C:"Profil C — confirmé" };
+  const esc = s => String(s==null?'':s).replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]));
+
+  let nA=0,nB=0,nC=0;
+  const rows = valid.map((s,i) => {
+    const prof14 = getProfile(s) || '—';
+    if (prof14==='A') nA++; else if (prof14==='B') nB++; else if (prof14==='C') nC++;
+    const n14 = calcNote14(s);
+    const lac = getLacune(s);
+    const lacTxt = lac.length ? lac.map(l=>l.label+" ("+l.val+")").join(", ") : "Aucune lacune majeure";
+    const sa = getSA(s);
+    const saTxt = SA_DATA[sa] ? sa : "—";
+    const axe = getAxePrioritaire(s);
+    return `<tr>
+      <td>${i+1}</td>
+      <td class="l">${esc(s.name)}</td>
+      <td>${esc(s.group||'')}</td>
+      <td>${n14==null?'—':n14}</td>
+      <td><span class="prof prof-${prof14}">${prof14}</span></td>
+      <td class="l">${esc(lacTxt)}</td>
+      <td>${esc(saTxt)}</td>
+      <td class="l">${esc(axe)}</td>
+    </tr>`;
+  }).join('');
+
+  const saLegend = Object.keys(SA_DATA).map(k =>
+    `<li><strong>${k}</strong> — ${esc(SA_DATA[k])}</li>`).join('');
+
+  const html = `<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8">
+  <title>Résultats — Décisions Basketball ES-BKT</title>
+  <style>
+    body{font-family:Arial,sans-serif;margin:1.4cm;font-size:9.5pt;color:#000}
+    h1{font-size:14pt;margin:0 0 .2rem;color:#0d2137}
+    h2{font-size:10.5pt;margin:1rem 0 .4rem;color:#1a4f82}
+    .meta{font-size:9pt;color:#475569;margin-bottom:.6rem}
+    .summary{display:flex;gap:.6rem;margin:.6rem 0 .9rem;flex-wrap:wrap}
+    .scard{flex:1;min-width:120px;border:1px solid #cbd5e1;border-radius:6px;padding:.5rem .7rem;text-align:center}
+    .scard .v{font-size:1.3rem;font-weight:700;color:#0d2137}
+    .scard .k{font-size:7.5pt;color:#64748b;text-transform:uppercase;letter-spacing:.04em}
+    table{width:100%;border-collapse:collapse;font-size:8pt;margin-top:.3rem}
+    th{background:#0d2137;color:#fff;padding:.35rem .4rem;text-align:center;vertical-align:middle}
+    td{border:1px solid #ccc;padding:.3rem .4rem;text-align:center;vertical-align:top}
+    td.l{text-align:left}
+    tr:nth-child(even) td{background:#f8fafc}
+    .prof{display:inline-block;min-width:1.3rem;font-weight:700;border-radius:4px;padding:.05rem .35rem;color:#fff}
+    .prof-A{background:#c00000}.prof-B{background:#c07000}.prof-C{background:#375623}
+    .legend{font-size:7.8pt;color:#334155;margin-top:.8rem;line-height:1.5}
+    .legend ul{margin:.3rem 0 0 1rem;padding:0}
+    .bareme{font-size:8pt;color:#475569;margin-top:.5rem;padding:.5rem .7rem;background:#f8fafc;border:1px solid #e2e8f0;border-radius:4px}
+    .footer{margin-top:.9rem;font-size:7.5pt;color:#94a3b8;text-align:center}
+    @media print{button{display:none}}
+  </style></head><body>
+  <h1>🏀 Résultats &amp; décisions — Évaluation sommative Basketball</h1>
+  <div class="meta">Professeur : <strong>${esc(prof)}</strong> &nbsp;·&nbsp; Groupe : <strong>${esc(grp)}</strong> &nbsp;·&nbsp; Date : <strong>${date}</strong> &nbsp;·&nbsp; ${valid.length} élève(s)</div>
+
+  <div class="summary">
+    <div class="scard"><div class="v">${nA}</div><div class="k">Profil A — à consolider</div></div>
+    <div class="scard"><div class="v">${nB}</div><div class="k">Profil B — en construction</div></div>
+    <div class="scard"><div class="v">${nC}</div><div class="k">Profil C — confirmé</div></div>
+  </div>
+
+  <h2>Décisions individuelles produites</h2>
+  <table><thead><tr>
+    <th>#</th><th class="l">Nom / Prénom</th><th>Groupe</th><th>Note /14</th>
+    <th>Profil</th><th class="l">Lacunes</th><th>SA</th><th class="l">Axe(s) prioritaire(s)</th>
+  </tr></thead><tbody>${rows}</tbody></table>
+
+  <div class="bareme"><strong>Barème certificatif :</strong> Note /14 = C1 (/8) + C2 (/6) · C3 = volet bonus /4 séparé · Source : BO spécial n°5 du 19 juillet 2012.</div>
+
+  <div class="legend"><strong>Situations d'apprentissage (SA) recommandées :</strong>
+    <ul>${saLegend}</ul>
+  </div>
+
+  <div class="footer">ADP 2026 · CRMEF Souss-Massa · Basketball ES-BKT · COLL2_EQ_07 — Document généré localement, données confidentielles</div>
+  </body></html>`;
+
+  const w = window.open('', '_blank');
+  if (w) { w.document.write(html); w.document.close(); w.print(); }
+  else showToast('⚠️ Autoriser les popups pour exporter les résultats');
+}
+
+// ══════════════════════════════════════════════════════════════
 // v05 — NOTE /14 AUTO dans les lignes
 // ══════════════════════════════════════════════════════════════
 function calcNote14(s) {
@@ -2526,11 +3034,14 @@ function updateNote14Cell(rowId) {
 }
 
 // ══════════════════════════════════════════════════════════════
+// INIT — Restaurer la session locale puis afficher l'accueil
+// ══════════════════════════════════════════════════════════════
+updateSlider(cycleSeances);
+// Restauration automatique de la session sauvegardée (Condition 3).
+try { restoreSession(); } catch (e) { console.warn("Restauration impossible :", e); }
+// Sécurité : sauvegarde avant fermeture/rechargement de la page.
+window.addEventListener("beforeunload", () => { try { if (students.length) saveSession(); } catch(e){} });
 
-// ══════════════════════════════════════════════════════════════
-// INIT — Afficher l'Accueil (step 0) au démarrage
-// ══════════════════════════════════════════════════════════════
-updateSlider(12);
 </script>
 </body>
 </html>
