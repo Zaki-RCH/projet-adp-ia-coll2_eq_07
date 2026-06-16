@@ -1,0 +1,116 @@
+================================================================
+PROMPT — PRÉPARATION AU DÉPLOIEMENT DE L'OUTIL — ADP 2026
+================================================================
+
+Tu es un développeur web. Tu vas finaliser mon outil EPS d'aide à la
+décision pour qu'il soit DÉPLOYABLE SUR GITHUB PAGES et RÉELLEMENT
+UTILISABLE PAR N'IMPORTE QUEL ENSEIGNANT. Respecte impérativement
+TOUTES les conditions ci-dessous.
+
+----------------------------------------------------------------
+1. ARCHITECTURE : 100 % AUTONOME, SANS SERVEUR
+----------------------------------------------------------------
+L'outil doit être entièrement en HTML/CSS/JavaScript dans des fichiers
+statiques, sans aucune dépendance à un serveur, une base de données
+externe ou une API payante. Il doit fonctionner sur GitHub Pages.
+Une fois la page chargée, il doit aussi fonctionner HORS CONNEXION
+(utile sur un terrain de sport sans wifi).
+
+----------------------------------------------------------------
+2. USAGE INDÉPENDANT PAR CHAQUE ENSEIGNANT — DONNÉES PRIVÉES ET LOCALES
+----------------------------------------------------------------
+Chaque enseignant utilise l'outil de façon indépendante. Aucune donnée
+n'est envoyée à l'extérieur ni partagée : tout reste STOCKÉ LOCALEMENT
+dans le navigateur de l'enseignant (localStorage). Aucun compte, aucune
+connexion requise. Indique clairement à l'utilisateur que ses données
+restent confidentielles sur son appareil.
+
+----------------------------------------------------------------
+3. PERSISTANCE AUTOMATIQUE
+----------------------------------------------------------------
+Les données saisies (élèves, observations, profils, décisions) doivent
+être SAUVEGARDÉES AUTOMATIQUEMENT et survivre à la fermeture ou au
+rechargement de la page. L'enseignant ne doit jamais perdre son travail
+par accident.
+
+----------------------------------------------------------------
+4. ADAPTÉ AU TRAVAIL MOBILE (RESPONSIVE)
+----------------------------------------------------------------
+L'interface doit être pleinement utilisable sur SMARTPHONE et TABLETTE :
+mise en page qui s'adapte à la largeur de l'écran, boutons et champs
+assez grands pour la saisie tactile, aucun tableau qui déborde
+horizontalement. Vérifier l'affichage sur un écran d'environ 380 px
+de large.
+
+----------------------------------------------------------------
+5. RÉINITIALISATION POUR UNE NOUVELLE SESSION
+----------------------------------------------------------------
+Prévoir un bouton « NOUVELLE SESSION / RÉINITIALISER » qui efface les
+données en cours pour repartir à zéro, AVEC UNE CONFIRMATION OBLIGATOIRE
+avant l'effacement (pour éviter toute suppression accidentelle).
+
+----------------------------------------------------------------
+6. EXPORT ET IMPORT DE SESSION
+----------------------------------------------------------------
+- EXPORT : un bouton qui télécharge l'intégralité de la session dans un
+  fichier (format JSON) — sauvegarde de secours et transfert vers un
+  autre appareil.
+- IMPORT : un bouton qui recharge une session à partir d'un fichier
+  précédemment exporté, en restaurant toutes les données.
+
+----------------------------------------------------------------
+7. EXPORT DES RÉSULTATS EXPLOITABLES
+----------------------------------------------------------------
+En plus de la sauvegarde technique, permettre d'exporter les RÉSULTATS
+UTILES À L'ENSEIGNANT (profils, lacunes, recommandations / décisions
+produites) dans un format lisible : CSV (ouvrable dans Excel, encodage
+UTF-8 compatible avec l'arabe) et/ou impression PDF propre.
+
+----------------------------------------------------------------
+8. DONNÉES DE DÉMONSTRATION
+----------------------------------------------------------------
+Inclure un jeu de DONNÉES D'EXEMPLE ou un pré-remplissage permettant de
+tester l'outil immédiatement sans tout ressaisir, et documenter comment
+charger les DONNÉES RÉELLES DU TERRAIN.
+
+----------------------------------------------------------------
+9. CONTRAINTE TECHNIQUE DE DÉPLOIEMENT — CHEMINS RELATIFS
+----------------------------------------------------------------
+Tous les liens internes (CSS, JavaScript, images) doivent utiliser des
+CHEMINS RELATIFS ( ./style.css , ./script.js ), jamais de chemins
+absolus commençant par « / ». Sinon le déploiement GitHub Pages casse
+sous le sous-chemin du dépôt.
+
+----------------------------------------------------------------
+10. ORGANISATION POUR LE DÉPÔT
+----------------------------------------------------------------
+Le fichier d'accueil de l'application doit s'appeler « index.html ».
+Indique-moi où le placer pour que GitHub Pages le déploie correctement :
+soit à la RACINE du dépôt, soit en gardant l'app dans le dossier
+« outil/ » et en ajoutant à la racine un fichier de redirection :
+
+    <!DOCTYPE html>
+    <meta charset="utf-8">
+    <meta http-equiv="refresh" content="0; url=./outil/">
+
+Puis activer GitHub Pages sur la branche « main » (dossier racine).
+
+================================================================
+POINT DE DÉPART ET MÉTHODE
+================================================================
+Mon application est DÉJÀ FONCTIONNELLE : je vais te fournir son code
+existant. Ne la reconstruis pas et ne change pas son fonctionnement
+métier (observables, seuils, décisions). Ton rôle est UNIQUEMENT de
+l'ADAPTER pour qu'elle respecte les 10 conditions ci-dessus en vue du
+déploiement.
+
+Marche à suivre :
+1. Analyse le code que je te donne.
+2. Indique-moi précisément quelles conditions ne sont pas encore
+   respectées et ce que tu vas modifier.
+3. Livre le code complet et corrigé, commenté, prêt à déposer sur
+   GitHub, sans altérer la logique métier existante.
+
+================================================================
+ADP 2026 — CRMEF Souss-Massa
+================================================================
