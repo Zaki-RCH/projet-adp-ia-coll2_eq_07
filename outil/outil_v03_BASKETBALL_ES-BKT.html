@@ -1,0 +1,1460 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Outil EPS — Basketball ES-BKT</title>
+<style>
+/* ── RESET & BASE ───────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;scroll-behavior:smooth}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f4f8;color:#1a2332;min-height:100vh}
+button{font-family:inherit;cursor:pointer}
+input,select,textarea{font-family:inherit}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* ── DESIGN TOKENS ──────────────────────────────────────────── */
+:root{
+  --court-navy:#0d2137;
+  --court-blue:#1a4f82;
+  --hoop-orange:#e8580a;
+  --hoop-light:#fde8d8;
+  --line-white:#f8fafc;
+  --deg-a-bg:#FCEBEB;--deg-a-border:#c00000;--deg-a-text:#7b1010;
+  --deg-b-bg:#FAEEDA;--deg-b-border:#c07000;--deg-b-text:#7a4500;
+  --deg-c-bg:#EAF3DE;--deg-c-border:#375623;--deg-c-text:#1e3d0f;
+  --step-locked:#e2e8f0;--step-locked-text:#94a3b8;
+  --shadow-card:0 2px 12px rgba(13,33,55,.12);
+  --radius:10px;--radius-sm:6px;
+}
+
+/* ── HEADER ─────────────────────────────────────────────────── */
+.site-header{
+  background:var(--court-navy);
+  padding:0 1.5rem;
+  display:flex;align-items:center;justify-content:space-between;
+  gap:1rem;height:58px;position:sticky;top:0;z-index:100;
+  box-shadow:0 2px 8px rgba(0,0,0,.35);
+}
+.header-brand{display:flex;align-items:center;gap:.75rem}
+.header-ball{font-size:1.6rem;line-height:1}
+.header-title{color:#fff;font-size:.95rem;font-weight:700;letter-spacing:.02em;line-height:1.2}
+.header-sub{color:#7fb3d9;font-size:.72rem;font-weight:400;letter-spacing:.03em}
+.header-badge{
+  background:var(--hoop-orange);color:#fff;
+  font-size:.7rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+  padding:.25rem .6rem;border-radius:4px;white-space:nowrap;
+}
+
+/* ── STEPPER ────────────────────────────────────────────────── */
+.stepper{
+  display:flex;align-items:center;gap:0;
+  background:var(--court-blue);padding:.5rem 1.5rem;
+  overflow-x:auto;scrollbar-width:none;
+}
+.stepper::-webkit-scrollbar{display:none}
+.step-item{
+  display:flex;align-items:center;gap:.4rem;
+  padding:.35rem .7rem;border-radius:20px;
+  font-size:.75rem;font-weight:600;letter-spacing:.03em;
+  color:#7fb3d9;cursor:default;white-space:nowrap;
+  transition:all .2s;
+}
+.step-item.active{background:var(--hoop-orange);color:#fff;cursor:pointer}
+.step-item.done{background:rgba(255,255,255,.12);color:#d0e8f8;cursor:pointer}
+.step-item.done:hover{background:rgba(255,255,255,.2)}
+.step-sep{color:#3a6a9a;font-size:.9rem;padding:0 .1rem}
+
+/* ── MAIN LAYOUT ────────────────────────────────────────────── */
+.main{max-width:980px;margin:0 auto;padding:1.5rem 1rem 4rem}
+.step-panel{display:none}
+.step-panel.visible{display:block}
+
+/* ── CARDS ──────────────────────────────────────────────────── */
+.card{
+  background:#fff;border-radius:var(--radius);
+  box-shadow:var(--shadow-card);padding:1.5rem;margin-bottom:1.25rem;
+}
+.card-title{
+  font-size:1rem;font-weight:700;color:var(--court-navy);
+  margin-bottom:1rem;display:flex;align-items:center;gap:.5rem;
+}
+.card-title .ico{font-size:1.1rem}
+
+/* ── DEGREE BADGES ──────────────────────────────────────────── */
+.deg-badge{
+  display:inline-block;padding:.2rem .55rem;border-radius:4px;
+  font-size:.78rem;font-weight:700;letter-spacing:.04em;border-width:1px;border-style:solid;
+}
+.deg-a{background:var(--deg-a-bg);border-color:var(--deg-a-border);color:var(--deg-a-text)}
+.deg-b{background:var(--deg-b-bg);border-color:var(--deg-b-border);color:var(--deg-b-text)}
+.deg-c{background:var(--deg-c-bg);border-color:var(--deg-c-border);color:var(--deg-c-text)}
+
+/* ── STEP 1 — SAISIE ────────────────────────────────────────── */
+.student-grid{display:flex;flex-direction:column;gap:.5rem}
+.student-row{
+  display:grid;
+  grid-template-columns:2rem 1fr 9rem 9rem 9rem;
+  gap:.4rem;align-items:start;
+  padding-top:1.4rem;
+}
+.student-row .row-num{
+  font-size:.8rem;color:#94a3b8;text-align:center;font-weight:600;
+}
+.student-row input[type=text]{
+  border:1.5px solid #cbd5e1;border-radius:var(--radius-sm);
+  padding:.45rem .65rem;font-size:.88rem;
+  transition:border-color .15s;
+}
+.student-row input[type=text]:focus{border-color:var(--court-blue);outline:none}
+.student-row input[type=text].error{border-color:var(--deg-a-border)!important}
+
+.score-field{position:relative;padding-bottom:.1rem}
+.score-field input{
+  width:100%;border:1.5px solid #cbd5e1;border-radius:var(--radius-sm);
+  padding:.45rem .65rem;font-size:.92rem;font-weight:600;text-align:center;
+  transition:border-color .15s,background .15s;
+}
+.score-field input:focus{border-color:var(--court-blue);outline:none}
+.score-field input.deg-a-input{background:var(--deg-a-bg);border-color:var(--deg-a-border);color:var(--deg-a-text)}
+.score-field input.deg-b-input{background:var(--deg-b-bg);border-color:var(--deg-b-border);color:var(--deg-b-text)}
+.score-field input.deg-c-input{background:var(--deg-c-bg);border-color:var(--deg-c-border);color:var(--deg-c-text)}
+.score-field .field-label{
+  position:absolute;top:-1.35rem;left:0;right:0;
+  font-size:.65rem;font-weight:600;color:#64748b;text-align:center;letter-spacing:.04em;
+  white-space:nowrap;
+}
+.score-field .range-hint{
+  font-size:.6rem;color:#94a3b8;text-align:center;margin-top:.15rem;
+  white-space:nowrap;
+}
+.row-labels-header{
+  display:grid;
+  grid-template-columns:2rem 1fr 9rem 9rem 9rem;
+  gap:.4rem;margin-bottom:.35rem;
+}
+.row-labels-header span{
+  font-size:.65rem;font-weight:700;color:#64748b;text-align:center;letter-spacing:.05em;text-transform:uppercase;
+}
+.row-labels-header span:nth-child(2){text-align:left;padding-left:.65rem}
+
+.add-row-btn{
+  background:none;border:1.5px dashed #cbd5e1;border-radius:var(--radius-sm);
+  color:#64748b;font-size:.82rem;padding:.5rem;width:100%;
+  margin-top:.35rem;transition:all .15s;
+}
+.add-row-btn:hover{border-color:var(--court-blue);color:var(--court-blue)}
+
+/* ── IMPORT CSV ─────────────────────────────────────────────── */
+.import-zone{
+  border:2px dashed #cbd5e1;border-radius:var(--radius);padding:1.2rem;
+  text-align:center;cursor:pointer;transition:all .2s;
+  background:#f8fafc;
+}
+.import-zone:hover,.import-zone.drag-over{border-color:var(--court-blue);background:#eff6ff}
+.import-zone input{display:none}
+.import-zone .iz-icon{font-size:1.8rem;margin-bottom:.4rem}
+.import-zone .iz-text{font-size:.85rem;color:#64748b}
+.import-zone .iz-text strong{color:var(--court-blue)}
+
+/* ── BUTTONS ────────────────────────────────────────────────── */
+.btn{
+  display:inline-flex;align-items:center;gap:.45rem;
+  padding:.6rem 1.25rem;border-radius:var(--radius-sm);
+  font-size:.9rem;font-weight:600;border:none;
+  transition:all .18s;letter-spacing:.01em;
+}
+.btn-primary{background:var(--court-blue);color:#fff}
+.btn-primary:hover{background:#1a4070}
+.btn-primary:disabled{background:#cbd5e1;color:#94a3b8;cursor:not-allowed}
+.btn-orange{background:var(--hoop-orange);color:#fff}
+.btn-orange:hover{background:#c44a06}
+.btn-orange:disabled{background:#f7c5aa;color:#fff;cursor:not-allowed}
+.btn-ghost{background:none;border:1.5px solid #cbd5e1;color:#475569}
+.btn-ghost:hover{border-color:var(--court-blue);color:var(--court-blue)}
+.btn-sm{padding:.4rem .85rem;font-size:.8rem}
+.btn-danger{background:#fee2e2;border:1.5px solid #fca5a5;color:#991b1b}
+.btn-danger:hover{background:#fca5a5}
+.btn-row{display:flex;gap:.75rem;flex-wrap:wrap;align-items:center;margin-top:1rem}
+
+/* ── STEP 2 — DIAGNOSTIC ────────────────────────────────────── */
+.stat-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.75rem;margin-bottom:1.25rem}
+.stat-card{
+  background:#fff;border-radius:var(--radius);padding:1rem;
+  box-shadow:var(--shadow-card);text-align:center;
+}
+.stat-card .val{font-size:2rem;font-weight:800;color:var(--court-navy);line-height:1}
+.stat-card .lbl{font-size:.72rem;color:#64748b;margin-top:.3rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+
+.profile-bar{display:flex;border-radius:6px;overflow:hidden;height:22px;margin-bottom:.5rem}
+.profile-bar .seg{height:100%;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;transition:width .4s}
+.profile-bar .seg-a{background:var(--deg-a-border);color:#fff}
+.profile-bar .seg-b{background:var(--deg-b-border);color:#fff}
+.profile-bar .seg-c{background:var(--deg-c-border);color:#fff}
+
+.diag-table{width:100%;border-collapse:collapse;font-size:.82rem}
+.diag-table th{
+  background:var(--court-navy);color:#fff;padding:.5rem .7rem;
+  font-weight:700;font-size:.72rem;letter-spacing:.04em;text-align:center;
+}
+.diag-table td{padding:.45rem .7rem;border-bottom:1px solid #e2e8f0;text-align:center}
+.diag-table tr:hover td{background:#f8fafc}
+.diag-table .name-cell{text-align:left;font-weight:600}
+.diag-table .note-20{font-weight:800;font-size:1rem;color:var(--court-navy)}
+
+.lacune-tag{
+  display:inline-block;padding:.1rem .4rem;border-radius:3px;
+  font-size:.7rem;font-weight:700;background:#fee2e2;color:#7b1010;border:1px solid #fca5a5;
+}
+.obs-tag{
+  font-size:.7rem;color:#64748b;font-style:italic;
+}
+
+/* ── STEP 3 — AXES ──────────────────────────────────────────── */
+.axes-grid{display:flex;flex-direction:column;gap:.75rem;margin-bottom:1rem}
+.axe-card{
+  border:1.5px solid #e2e8f0;border-radius:var(--radius);padding:1rem;
+  cursor:pointer;transition:all .2s;position:relative;
+  display:flex;gap:.85rem;align-items:flex-start;
+}
+.axe-card:hover{border-color:var(--court-blue);box-shadow:0 0 0 3px rgba(26,79,130,.1)}
+.axe-card.selected{border-color:var(--court-blue);background:#eff6ff;box-shadow:0 0 0 3px rgba(26,79,130,.15)}
+.axe-card.selected .axe-check{background:var(--court-blue);border-color:var(--court-blue);color:#fff}
+.axe-check{
+  width:22px;height:22px;min-width:22px;border-radius:50%;
+  border:2px solid #cbd5e1;display:flex;align-items:center;justify-content:center;
+  font-size:.75rem;transition:all .2s;background:#fff;margin-top:.1rem;
+}
+.axe-body{flex:1}
+.axe-title{font-size:.92rem;font-weight:700;color:var(--court-navy);margin-bottom:.3rem}
+.axe-desc{font-size:.8rem;color:#475569;line-height:1.5;margin-bottom:.4rem}
+.axe-meta{display:flex;flex-wrap:wrap;gap:.4rem}
+.axe-pill{
+  font-size:.68rem;font-weight:600;padding:.15rem .45rem;border-radius:3px;
+  background:#f1f5f9;color:#475569;border:1px solid #e2e8f0;
+}
+.axe-pill.hot{background:var(--hoop-light);border-color:var(--hoop-orange);color:#92340a}
+.axe-counter{
+  font-size:.82rem;font-weight:600;color:#64748b;
+  margin-bottom:.75rem;
+}
+.axe-counter .hl{color:var(--court-blue);font-weight:800}
+.axe-counter .warn{color:var(--hoop-orange)}
+
+/* ── STEP 4 — PARAM ─────────────────────────────────────────── */
+.slider-wrap{margin:1.25rem 0}
+.slider-display{
+  font-size:2.4rem;font-weight:800;color:var(--court-navy);
+  text-align:center;line-height:1;margin-bottom:.2rem;
+}
+.slider-display span{font-size:1rem;font-weight:500;color:#64748b}
+.slider-sub{text-align:center;font-size:.8rem;color:#64748b;margin-bottom:1rem}
+input[type=range]{
+  -webkit-appearance:none;width:100%;height:6px;
+  background:linear-gradient(to right,var(--court-blue) 0%,var(--court-blue) 50%,#e2e8f0 50%,#e2e8f0 100%);
+  border-radius:3px;outline:none;margin:.5rem 0;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:22px;height:22px;border-radius:50%;
+  background:var(--court-blue);border:3px solid #fff;
+  box-shadow:0 1px 5px rgba(0,0,0,.25);cursor:pointer;
+}
+.slider-ticks{display:flex;justify-content:space-between;padding:0 .1rem;font-size:.7rem;color:#94a3b8;font-weight:600}
+
+.distrib-preview{
+  background:#f8fafc;border:1px solid #e2e8f0;border-radius:var(--radius);
+  padding:1rem;margin-top:1rem;
+}
+.distrib-preview .dp-title{font-size:.8rem;font-weight:700;color:#64748b;margin-bottom:.65rem;text-transform:uppercase;letter-spacing:.05em}
+.seq-row{
+  display:flex;align-items:center;gap:.65rem;margin-bottom:.5rem;
+  font-size:.82rem;
+}
+.seq-num{
+  min-width:24px;height:24px;border-radius:50%;background:var(--court-blue);
+  color:#fff;font-weight:700;font-size:.72rem;display:flex;align-items:center;justify-content:center;
+}
+.seq-info{color:#475569;line-height:1.4}
+.seq-info strong{color:var(--court-navy)}
+
+/* ── STEP 5 — PLANIF ────────────────────────────────────────── */
+.sequence-block{
+  border:1px solid #e2e8f0;border-radius:var(--radius);overflow:hidden;margin-bottom:1rem;
+}
+.sequence-header{
+  background:var(--court-navy);color:#fff;padding:.75rem 1rem;
+  display:flex;align-items:center;gap:.75rem;
+}
+.sequence-header .seq-badge{
+  background:var(--hoop-orange);color:#fff;font-size:.75rem;font-weight:800;
+  padding:.2rem .55rem;border-radius:4px;letter-spacing:.04em;white-space:nowrap;
+}
+.sequence-header .seq-title{font-size:.92rem;font-weight:700}
+.sequence-header .seq-obj{font-size:.75rem;color:#7fb3d9;margin-top:.15rem}
+
+.seance-table{width:100%;border-collapse:collapse}
+.seance-table th{
+  background:#1a3a5c;color:#7fb3d9;padding:.45rem .7rem;
+  font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;text-align:left;
+  border-right:1px solid rgba(255,255,255,.06);
+}
+.seance-table td{
+  padding:.65rem .7rem;border-bottom:1px solid #f1f5f9;
+  border-right:1px solid #f1f5f9;font-size:.8rem;vertical-align:top;
+}
+.seance-table tr:last-child td{border-bottom:none}
+.seance-num{font-weight:800;color:var(--court-blue);font-size:.88rem;text-align:center;min-width:3rem}
+.group-cell .gc-sa{font-weight:700;color:var(--court-navy);font-size:.78rem;margin-bottom:.2rem}
+.group-cell .gc-consigne{font-size:.74rem;color:#475569;line-height:1.45;margin-bottom:.2rem}
+.group-cell .gc-critere{font-size:.68rem;color:#64748b;font-style:italic}
+.group-cell-a{background:rgba(252,235,235,.4)}
+.group-cell-b{background:rgba(250,238,218,.4)}
+.group-cell-c{background:rgba(234,243,222,.4)}
+
+.passage-indicator{
+  margin:0;padding:.4rem .7rem;
+  background:linear-gradient(135deg,#eff6ff,#f0fdf4);
+  border-left:3px solid var(--court-blue);
+  font-size:.72rem;color:#475569;line-height:1.45;
+}
+.passage-indicator strong{color:var(--court-navy)}
+.passage-indicator .pi-label{font-size:.65rem;color:#94a3b8;display:block;margin-top:.15rem;font-style:italic}
+
+/* ── CYCLE SUMMARY ──────────────────────────────────────────── */
+.cycle-summary{
+  background:linear-gradient(135deg,var(--court-navy),var(--court-blue));
+  color:#fff;border-radius:var(--radius);padding:1.25rem;margin-top:1rem;
+}
+.cycle-summary h3{font-size:1rem;font-weight:700;margin-bottom:.85rem;color:var(--hoop-light)}
+.cs-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.65rem}
+.cs-item{background:rgba(255,255,255,.1);border-radius:var(--radius-sm);padding:.65rem;text-align:center}
+.cs-item .csi-val{font-size:1.5rem;font-weight:800;line-height:1}
+.cs-item .csi-lbl{font-size:.68rem;color:#7fb3d9;margin-top:.2rem;text-transform:uppercase;letter-spacing:.04em}
+.cycle-reco{margin-top:.85rem;background:rgba(255,255,255,.08);border-radius:var(--radius-sm);padding:.75rem;font-size:.82rem;line-height:1.55}
+.cycle-reco strong{color:var(--hoop-light)}
+
+/* ── EXPORT BAR ─────────────────────────────────────────────── */
+.export-bar{
+  position:fixed;bottom:0;left:0;right:0;
+  background:var(--court-navy);border-top:2px solid var(--hoop-orange);
+  display:flex;align-items:center;justify-content:flex-end;gap:.65rem;
+  padding:.5rem 1.5rem;z-index:99;flex-wrap:wrap;
+}
+.export-bar .eb-label{color:#7fb3d9;font-size:.78rem;margin-right:auto;font-weight:600}
+
+/* ── ALERTE BANNERS ─────────────────────────────────────────── */
+.alert{border-radius:var(--radius-sm);padding:.65rem .9rem;font-size:.82rem;margin-bottom:.75rem;display:flex;gap:.5rem;align-items:flex-start}
+.alert-warn{background:#fffbeb;border:1px solid #fbbf24;color:#92400e}
+.alert-info{background:#eff6ff;border:1px solid #93c5fd;color:#1e40af}
+.alert-ok{background:#f0fdf4;border:1px solid #86efac;color:#14532d}
+.alert-err{background:#fff1f2;border:1px solid #fda4af;color:#9f1239}
+
+/* ── PROGRESS INDICATOR ─────────────────────────────────────── */
+.progress-dots{display:flex;gap:.3rem;align-items:center;margin-left:auto}
+.pdot{width:7px;height:7px;border-radius:50%;background:#94a3b8;transition:all .2s}
+.pdot.done{background:var(--hoop-orange)}
+.pdot.active{background:var(--court-blue);width:20px;border-radius:3px}
+
+/* ── RESPONSIVE ─────────────────────────────────────────────── */
+@media(max-width:600px){
+  .student-row{grid-template-columns:1.5rem 1fr 6rem 6rem 6rem;gap:.3rem}
+  .row-labels-header{grid-template-columns:1.5rem 1fr 6rem 6rem 6rem;gap:.3rem}
+  .seance-table{font-size:.72rem}
+  .stat-cards{grid-template-columns:repeat(2,1fr)}
+  .export-bar{padding:.5rem .75rem}
+  .main{padding:1rem .65rem 4rem}
+}
+@media print{
+  .stepper,.export-bar,.site-header,.btn,.add-row-btn,.import-zone{display:none!important}
+  .main{max-width:100%;padding:0}
+  .step-panel{display:block!important}
+  body{background:#fff}
+  .card{box-shadow:none;border:1px solid #e2e8f0}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="site-header">
+  <div class="header-brand">
+    <span class="header-ball">🏀</span>
+    <div>
+      <div class="header-title">Outil d'aide à la décision EPS</div>
+      <div class="header-sub">Basketball · ES-BKT · COLL2_EQ_07 · DNB Niveau 2</div>
+    </div>
+  </div>
+  <span class="header-badge">ADP 2026</span>
+</header>
+
+<!-- STEPPER -->
+<nav class="stepper" id="stepper">
+  <div class="step-item active" id="step-btn-1" onclick="goToStep(1)">① Saisie</div>
+  <span class="step-sep">›</span>
+  <div class="step-item" id="step-btn-2">② Diagnostic</div>
+  <span class="step-sep">›</span>
+  <div class="step-item" id="step-btn-3">③ Axes</div>
+  <span class="step-sep">›</span>
+  <div class="step-item" id="step-btn-4">④ Cycle</div>
+  <span class="step-sep">›</span>
+  <div class="step-item" id="step-btn-5">⑤ Planification</div>
+</nav>
+
+<!-- MAIN -->
+<main class="main">
+
+<!-- ══════════ ÉTAPE 1 — SAISIE TERRAIN ══════════ -->
+<section class="step-panel visible" id="panel-1">
+
+  <div class="card">
+    <div class="card-title"><span class="ico">📋</span>Importer un fichier CSV terrain</div>
+    <div class="import-zone" id="drop-zone" onclick="document.getElementById('csv-input').click()">
+      <input type="file" id="csv-input" accept=".csv,.txt">
+      <div class="iz-icon">📂</div>
+      <div class="iz-text">Cliquez ou déposez un fichier CSV<br><strong>Colonnes reconnues : Nom_Eleve · OBS01_C1 · OBS02_C2 · OBS03_C3</strong></div>
+    </div>
+    <div id="import-feedback" style="margin-top:.5rem"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="ico">✏️</span>Saisie manuelle — élèves</div>
+    <div class="alert alert-info">
+      <span>ℹ️</span>
+      <div>Saisir les notes <strong>C1 /10</strong> · <strong>C2 /10</strong> · <strong>C3 /4</strong> (bonus).<br>
+      Fourchettes : <span class="deg-badge deg-a">A = 0–4</span> &nbsp;<span class="deg-badge deg-b">B = 5–7</span>&nbsp; <span class="deg-badge deg-c">C = 8–10</span> pour C1/C2 &nbsp;|&nbsp; <span class="deg-badge deg-a">A = 0–1,5</span> <span class="deg-badge deg-b">B = 2–3</span> <span class="deg-badge deg-c">C = 3,5–4</span> pour C3</div>
+    </div>
+    <div class="row-labels-header">
+      <span>#</span>
+      <span>Nom / Prénom</span>
+      <span>C1 /10</span>
+      <span>C2 /10</span>
+      <span>C3 /4</span>
+    </div>
+    <div class="student-grid" id="student-grid"></div>
+    <button class="add-row-btn" onclick="addStudentRow()">＋ Ajouter un élève</button>
+    <div class="btn-row">
+      <button class="btn btn-orange" onclick="analyzeData()">🔍 Analyser — Étape 2</button>
+      <button class="btn btn-ghost btn-sm" onclick="clearAll()">🗑 Vider la liste</button>
+    </div>
+    <div id="step1-error" style="margin-top:.5rem"></div>
+  </div>
+
+  <div class="card" style="border-left:4px solid var(--hoop-orange)">
+    <div class="card-title"><span class="ico">⚠️</span>Rappel référentiel — Basketball DNB Niveau 2</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:.85rem;font-size:.8rem">
+      <div>
+        <strong>C1 — Efficacité collective</strong><br>
+        <span class="deg-badge deg-c">C1+ (8–10)</span> Jeu varié, en contre-attaque ou placé<br>
+        <span class="deg-badge deg-b">C1~ (5–7)</span> Jeu simple, en contre-attaque ou placé<br>
+        <span class="deg-badge deg-a">C1− (0–4)</span> Jeu direct
+      </div>
+      <div>
+        <strong>C2 — Efficacité individuelle</strong><br>
+        <span class="deg-badge deg-c">C2+ (8–10)</span> Joueur assurant le jeu rapide par actions variées<br>
+        <span class="deg-badge deg-b">C2~ (5–7)</span> Joueur permettant le jeu rapide ou placé<br>
+        <span class="deg-badge deg-a">C2− (0–4)</span> Joueur intermittent et peu collectif
+      </div>
+      <div>
+        <strong>C3 — Rôles arbitre/observateur (bonus /4)</strong><br>
+        <span class="deg-badge deg-c">C3+ (3,5–4)</span> Rôles assurés<br>
+        <span class="deg-badge deg-b">C3~ (2–3)</span> Rôles assumés<br>
+        <span class="deg-badge deg-a">C3− (0–1,5)</span> Rôles insuffisamment assurés<br>
+        <em style="color:#c07000;font-size:.72rem">⚠ « assurés » ≠ « assumés » — termes EXACTS du référentiel</em>
+      </div>
+    </div>
+    <div style="margin-top:.75rem;font-size:.78rem;color:#64748b">
+      <strong>Note /14 = C1×8/10 + C2×6/10</strong> · C1 /10 terrain → /8 certificatif · C2 /10 terrain → /6 certificatif · C3 = volet bonus renseigné séparément · Source : BO spécial n°5 du 19 juillet 2012
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ ÉTAPE 2 — DIAGNOSTIC ══════════ -->
+<section class="step-panel" id="panel-2">
+  <div id="diag-content"></div>
+  <div class="btn-row">
+    <button class="btn btn-ghost" onclick="goToStep(1)">← Retour saisie</button>
+    <button class="btn btn-orange" onclick="goToStep(3)">Sélectionner les axes → Étape 3</button>
+  </div>
+</section>
+
+<!-- ══════════ ÉTAPE 3 — AXES ══════════ -->
+<section class="step-panel" id="panel-3">
+  <div class="card">
+    <div class="card-title"><span class="ico">🎯</span>Sélectionner les axes prioritaires</div>
+    <div class="alert alert-info">
+      <span>ℹ️</span>
+      <span>Sélectionnez <strong>3 ou 4 axes</strong> parmi les 6 proposés. L'ordre de pertinence est calculé depuis les lacunes réelles de la classe. La planification ne portera que sur les axes validés.</span>
+    </div>
+    <div class="axe-counter" id="axe-counter">0 axe sélectionné — <span class="warn">minimum 3</span></div>
+    <div class="axes-grid" id="axes-grid"></div>
+    <div id="axe-error" style="margin-top:.5rem"></div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="goToStep(2)">← Retour diagnostic</button>
+      <button class="btn btn-orange" id="btn-to-step4" onclick="goToStep(4)" disabled>Paramétrer le cycle → Étape 4</button>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ ÉTAPE 4 — PARAMÉTRAGE ══════════ -->
+<section class="step-panel" id="panel-4">
+  <div class="card">
+    <div class="card-title"><span class="ico">⚙️</span>Paramétrer le cycle</div>
+    <div class="slider-wrap">
+      <div class="slider-display" id="slider-val">12 <span>séances</span></div>
+      <div class="slider-sub" id="slider-sub">Choisir le nombre de séances du cycle</div>
+      <input type="range" id="cycle-slider" min="6" max="12" value="12" oninput="updateSlider(this.value)">
+      <div class="slider-ticks">
+        <span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span>
+      </div>
+    </div>
+    <div class="distrib-preview" id="distrib-preview"></div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="goToStep(3)">← Retour axes</button>
+      <button class="btn btn-orange" onclick="generatePlanif()">Générer la planification → Étape 5</button>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ ÉTAPE 5 — PLANIFICATION ══════════ -->
+<section class="step-panel" id="panel-5">
+  <div id="planif-content"></div>
+  <div class="btn-row" style="margin-top:1rem">
+    <button class="btn btn-ghost" onclick="goToStep(4)">← Retour paramétrage</button>
+    <button class="btn btn-ghost" onclick="window.print()">🖨 Imprimer</button>
+    <button class="btn btn-primary" onclick="exportCSV()">⬇ Export CSV</button>
+  </div>
+</section>
+
+</main>
+
+<!-- EXPORT BAR -->
+<div class="export-bar">
+  <span class="eb-label">ADP 2026 · CRMEF Souss-Massa · Basketball ES-BKT · COLL2_EQ_07</span>
+  <button class="btn btn-ghost btn-sm" onclick="exportCSV()">⬇ CSV</button>
+  <button class="btn btn-ghost btn-sm" onclick="window.print()">🖨 Imprimer</button>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+// DATA EXTRACTED FROM REFERENTIEL FILES (not invented)
+// ══════════════════════════════════════════════════════════════
+
+const REFERENTIEL = {
+  aps: "Basketball",
+  code: "ES-BKT",
+  famille: "Sports collectifs",
+  niveau: "DNB Niveau 2",
+  source: "BO sp\u00e9cial n\u00b05 du 19 juillet 2012",
+  criteres: [
+    {
+      id: "C1",
+      label: "Efficacit\u00e9 collective dans le gain du match",
+      max: 10,
+      type: "TYPE 1",
+      obs_key: "c1",
+      degres: [
+        { deg: "C", code: "C1+", range: [8,10], terme: "Jeu vari\u00e9, en contre-attaque ou plac\u00e9",
+          conduite: "Varie CA et attaque plac\u00e9e \u00b7 s\u2019adapte en temps r\u00e9el au rapport de force adverse" },
+        { deg: "B", code: "C1~", range: [5,7], terme: "Jeu simple, en contre-attaque ou plac\u00e9",
+          conduite: "Progresse vers zone favorable \u00b7 ne varie ni n\u2019adapte constamment ses choix collectifs" },
+        { deg: "A", code: "C1\u2212", range: [0,4], terme: "Jeu direct",
+          conduite: "Progression d\u00e9sordonn\u00e9e \u00b7 pas de lecture d\u00e9fense \u00b7 pas d\u2019organisation collective" }
+      ]
+    },
+    {
+      id: "C2",
+      label: "Efficacit\u00e9 individuelle dans l\u2019organisation collective",
+      max: 10,
+      type: "TYPE 1",
+      obs_key: "c2",
+      degres: [
+        { deg: "C", code: "C2+", range: [8,10], terme: "Joueur assurant le jeu rapide ou plac\u00e9 par des actions vari\u00e9es",
+          conduite: "Bonifie les ballons \u00b7 varie les conditions d\u2019acc\u00e8s \u00e0 la cible \u00b7 pose le jeu ou l\u2019acc\u00e9l\u00e8re" },
+        { deg: "B", code: "C2~", range: [5,7], terme: "Joueur permettant le jeu rapide ou plac\u00e9",
+          conduite: "Fait un choix entre CA et attaque plac\u00e9e \u00b7 conserve le ballon \u00b7 identifie tir en 1c0" },
+        { deg: "A", code: "C2\u2212", range: [0,4], terme: "Joueur intermittent et peu collectif",
+          conduite: "Ne fait pas toujours les bons choix (passer, dribbler, shooter) \u00b7 efficacit\u00e9 collective r\u00e9duite" }
+      ]
+    },
+    {
+      id: "C3",
+      label: "Efficacit\u00e9 dans le r\u00f4le d\u2019arbitre et d\u2019observateur",
+      max: 4,
+      type: "TYPE 1",
+      obs_key: "c3",
+      bonus: true,
+      degres: [
+        { deg: "C", code: "C3+", range: [3.5,4], terme: "R\u00f4les assur\u00e9s",
+          conduite: "Donn\u00e9es diff\u00e9renci\u00e9es exploitables \u00b7 arbitrage autonome et ferme" },
+        { deg: "B", code: "C3~", range: [2,3], terme: "R\u00f4les assum\u00e9s",
+          conduite: "Donn\u00e9es globales et fiables \u00b7 arbitrage assur\u00e9 avec de l\u2019aide" },
+        { deg: "A", code: "C3\u2212", range: [0,1.5], terme: "R\u00f4les insuffisamment assur\u00e9s",
+          conduite: "Donn\u00e9es peu fiables \u00b7 h\u00e9sitation sur actions difficiles \u00e0 arbitrer" }
+      ]
+    }
+  ]
+};
+
+// SA extracted from referentiel
+const SA_DATA = {
+  "SA-A1": "Situation de lecture avant action (N1-13) \u2014 Situations \u00e0 choix forc\u00e9 : d\u00e9fenseur d\u00e9j\u00e0 positionn\u00e9, l\u2019\u00e9l\u00e8ve choisit passe ou dribble",
+  "SA-B1": "Situations techniques de base (N1-3/N1-4/N1-7) \u2014 Arriv\u00e9e d\u00e9cisive, pivot protecteur, d\u00e9marquage en soutien",
+  "SA-C1": "Organisations collectives N2 (N2-7/N2-9) \u2014 Choix collectif CA ou jeu plac\u00e9 selon d\u00e9fense \u00b7 passe-et-va \u00b7 traverser la raquette"
+};
+
+// AXES extracted from referentiel_Basketball_ES-BKT.txt Partie B
+const AXES_SOURCE = [
+  {
+    id: "AX1",
+    titre: "Axe 1 \u2014 Lecture du jeu avant action (N1-13)",
+    priorite: "haute",
+    obs_lie: "c1",
+    contenu: "D\u00e9velopper la lecture du jeu avant action chez le porteur de balle \u2014 construire la capacit\u00e9 \u00e0 s\u2019informer, reconna\u00eetre son statut et choisir entre progresser, passer ou tirer selon la position du d\u00e9fenseur.",
+    cible: "Progression des \u00e9l\u00e8ves C1\u2212/C2\u2212 (degr\u00e9 A) vers C1~/C2~ (degr\u00e9 B)",
+    impact: "D\u00e9bloque 11 sur 13 capacit\u00e9s N2 \u00b7 condition minimale pour le reste du cycle",
+    prereqs: "N1-13 \u00b7 N1-1 \u00b7 N1-14",
+    sa: "SA-A1",
+    sa_label: "SA-A1 \u2014 Lecture avant action"
+  },
+  {
+    id: "AX2",
+    titre: "Axe 2 \u2014 Bases techniques PB et NPB",
+    priorite: "moyenne",
+    obs_lie: "c2",
+    contenu: "Consolider les bases techniques du porteur de balle (arr\u00eats, pied de pivot, dribble de progression, tir \u00e0 l\u2019arr\u00eat) et le placement du non-porteur \u00e0 distance de passe \u2014 d\u00e9marquage par rupture de l\u2019alignement.",
+    cible: "Consolidation degr\u00e9 B (C2~) et progression vers les premi\u00e8res actions degr\u00e9 C",
+    impact: "D\u00e9bloque N2-2 \u00b7 N2-5 \u00b7 N2-9 \u00b7 N2-4 \u00b7 N2-3",
+    prereqs: "N1-3 \u00b7 N1-4 \u00b7 N1-5 \u00b7 N1-7 \u00b7 N1-8 \u00b7 N1-9",
+    sa: "SA-B1",
+    sa_label: "SA-B1 \u2014 Automatismes techniques"
+  },
+  {
+    id: "AX3",
+    titre: "Axe 3 \u2014 Premi\u00e8res organisations collectives N2",
+    priorite: "consolidation",
+    obs_lie: "c1",
+    contenu: "Acc\u00e9der aux premi\u00e8res organisations collectives N2 : choix collectif CA ou jeu plac\u00e9 selon la d\u00e9fense, cha\u00eenement passe-et-va, organisation NPB avec travers\u00e9e de raquette.",
+    cible: "Acc\u00e8s des \u00e9l\u00e8ves de degr\u00e9 B aux premi\u00e8res conduites degr\u00e9 C (C1+/C2+)",
+    impact: "N2-7 (cible centrale) \u00b7 N2-9 \u00b7 N2-6 \u00b7 N2-10",
+    prereqs: "N1-13 en cours (Axe 1) \u00b7 N1-7 amorc\u00e9 (Axe 2)",
+    sa: "SA-C1",
+    sa_label: "SA-C1 \u2014 Organisations N2"
+  },
+  {
+    id: "AX4",
+    titre: "Axe 4 \u2014 D\u00e9fense intelligente et replacement",
+    priorite: "compl\u00e9mentaire",
+    obs_lie: "c1",
+    contenu: "Choisir entre se replacer ou g\u00eaner le PB \u2014 encha\u00eener rebond d\u00e9fensif et d\u00e9clenchement de contre-attaque \u2014 N2-12 et N2-13 comme premiers automatismes d\u00e9fensifs.",
+    cible: "Am\u00e9lioration du C1 collectif par l\u2019organisation d\u00e9fensive",
+    impact: "D\u00e9bloque N2-12 (d\u00e9fense intelligente) \u00b7 N2-13 (transition rebond/CA)",
+    prereqs: "N1-10 \u00b7 N1-11 \u00b7 N1-14",
+    sa: "SA-A1",
+    sa_label: "SA-A1 \u2014 Lecture d\u00e9fensive"
+  },
+  {
+    id: "AX5",
+    titre: "Axe 5 \u2014 R\u00f4les sociaux (arbitre et observateur)",
+    priorite: "compl\u00e9mentaire",
+    obs_lie: "c3",
+    contenu: "Structurer les r\u00f4les rotatifs (joueur \u00b7 observateur \u00b7 co-arbitre) : recueil de donn\u00e9es diff\u00e9renci\u00e9es, gestes officiels, connaissance du score \u00e0 tout moment.",
+    cible: "Progression des C3\u2212 (r\u00f4les insuffisants) vers C3~ puis C3+",
+    impact: "C3 bonus \u00b7 d\u00e9veloppement comp\u00e9tences transversales Socle",
+    prereqs: "Organisation des rotations pr\u00e9vue avant s\u00e9ance",
+    sa: "SA-B1",
+    sa_label: "SA-B1 \u2014 Protocole rôles"
+  },
+  {
+    id: "AX6",
+    titre: "Axe 6 \u2014 Finition et tir en situation favorable",
+    priorite: "avanc\u00e9",
+    obs_lie: "c2",
+    contenu: "Se construire une zone de tir favorable (N2-1) \u2014 tir \u00e0 l\u2019arr\u00eat \u00e0 2,50 m ou en suspension apr\u00e8s dribble sous pression temporelle (N2-2) \u2014 pour \u00e9l\u00e8ves en transition degr\u00e9 B vers C.",
+    cible: "Acc\u00e8s C2+ pour \u00e9l\u00e8ves en degr\u00e9 B consolid\u00e9",
+    impact: "D\u00e9bloque N2-1 et N2-2 \u00b7 am\u00e9liore C2 individuel",
+    prereqs: "N1-4 partiellement acquis \u00b7 Axe 2 amorc\u00e9",
+    sa: "SA-C1",
+    sa_label: "SA-C1 \u2014 Zone de tir favorable"
+  }
+];
+
+// Distribution table: axes count × séances count
+const DISTRIBUTION = {
+  3: {6:[2,2,2],7:[2,2,3],8:[3,2,3],9:[3,3,3],10:[3,4,3],11:[4,3,4],12:[4,4,4]},
+  4: {6:[1,2,2,1],7:[2,2,2,1],8:[2,2,2,2],9:[2,3,2,2],10:[3,2,3,2],11:[3,3,2,3],12:[3,3,3,3]}
+};
+
+// CONDUITES MOTRICES for indicators — from Niveaux_1_2_3.md
+const PASSAGE_INDICATORS = {
+  "AX1": "l\u2019\u00e9l\u00e8ve observe la position du d\u00e9fenseur avant d\u2019agir et choisit spontan\u00e9ment pass ou dribble dans au moins 2 actions sur 3",
+  "AX2": "l\u2019\u00e9l\u00e8ve contr\u00f4le ses arr\u00eats et utilise le pied de pivot pour prot\u00e9ger le ballon sans perte avant de d\u00e9cider",
+  "AX3": "l\u2019\u00e9quipe d\u00e9cide collectivement de monter vite (CA) ou de ralentir (jeu plac\u00e9) selon le placement d\u00e9fensif adverse",
+  "AX4": "le d\u00e9fenseur choisit de se replacer entre le PB et le panier plut\u00f4t que de foncer sur le porteur de balle",
+  "AX5": "l\u2019\u00e9l\u00e8ve en r\u00f4le d\u2019observateur recueille des donn\u00e9es chiffr\u00e9es fiables et les restitue en moins de 2 minutes",
+  "AX6": "le joueur se positionne dans la zone de tir favorable avant de recevoir le ballon et tire en suspension apr\u00e8s r\u00e9ception"
+};
+
+// ══════════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════════
+let students = [];
+let selectedAxes = [];
+let cycleSeances = 12;
+let currentStep = 1;
+
+// ══════════════════════════════════════════════════════════════
+// STEP NAVIGATION
+// ══════════════════════════════════════════════════════════════
+function goToStep(n) {
+  if (n > currentStep && !validateCurrentStep(n)) return;
+  currentStep = n;
+  document.querySelectorAll(".step-panel").forEach(p => p.classList.remove("visible"));
+  document.getElementById("panel-" + n).classList.add("visible");
+  document.querySelectorAll(".step-item").forEach((el, i) => {
+    el.classList.remove("active","done");
+    if (i+1 === n) el.classList.add("active");
+    else if (i+1 < n) el.classList.add("done");
+  });
+  window.scrollTo({top:0,behavior:"smooth"});
+  if (n === 2) renderDiagnostic();
+  if (n === 3) renderAxes();
+  if (n === 4) updateSlider(cycleSeances);
+}
+
+function validateCurrentStep(target) {
+  if (currentStep === 1 && target >= 2) {
+    const valid = students.filter(s => s.name.trim() && s.c1 !== "" && s.c2 !== "");
+    if (valid.length === 0) {
+      showErr("step1-error","Saisir au moins un \u00e9l\u00e8ve avec C1 et C2 pour continuer.");
+      return false;
+    }
+    students = valid;
+  }
+  if (currentStep === 3 && target >= 4) {
+    if (selectedAxes.length < 3) {
+      showErr("axe-error","S\u00e9lectionner au moins 3 axes pour continuer.");
+      return false;
+    }
+  }
+  return true;
+}
+
+function showErr(id, msg) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.innerHTML = "<div class='alert alert-err'><span>❌</span><span>" + msg + "</span></div>";
+  setTimeout(() => { if(el) el.innerHTML=""; }, 4000);
+}
+
+// ══════════════════════════════════════════════════════════════
+// STUDENT ROWS
+// ══════════════════════════════════════════════════════════════
+let rowCount = 0;
+
+function addStudentRow(name, c1, c2, c3) {
+  rowCount++;
+  const id = "row-" + rowCount;
+  const grid = document.getElementById("student-grid");
+  const div = document.createElement("div");
+  div.className = "student-row";
+  div.id = id;
+  div.innerHTML =
+    "<span class='row-num'>" + rowCount + "</span>" +
+    "<input type='text' placeholder='Pr\u00e9nom Nom' value='" + (name||"") + "' " +
+      "oninput='updateStudent(" + rowCount + ",\"name\",this.value)'>" +
+    "<div class='score-field'>" +
+      "<span class='field-label'>C1 /10</span>" +
+      "<input type='number' min='0' max='10' step='0.5' placeholder='0–10' " +
+        "value='" + (c1!==undefined?c1:"") + "' " +
+        "oninput='updateStudent(" + rowCount + ",\"c1\",this.value);colorScore(this,10)'>" +
+      "<div class='range-hint'>A:0–4 · B:5–7 · C:8–10</div>" +
+    "</div>" +
+    "<div class='score-field'>" +
+      "<span class='field-label'>C2 /10</span>" +
+      "<input type='number' min='0' max='10' step='0.5' placeholder='0–10' " +
+        "value='" + (c2!==undefined?c2:"") + "' " +
+        "oninput='updateStudent(" + rowCount + ",\"c2\",this.value);colorScore(this,10)'>" +
+      "<div class='range-hint'>A:0–4 · B:5–7 · C:8–10</div>" +
+    "</div>" +
+    "<div class='score-field'>" +
+      "<span class='field-label'>C3 /4 bonus</span>" +
+      "<input type='number' min='0' max='4' step='0.5' placeholder='0–4' " +
+        "value='" + (c3!==undefined?c3:"") + "' " +
+        "oninput='updateStudent(" + rowCount + ",\"c3\",this.value);colorScore(this,4)'>" +
+      "<div class='range-hint'>A:0–1,5 · B:2–3 · C:3,5–4</div>" +
+    "</div>";
+  grid.appendChild(div);
+  students.push({ rowId: rowCount, name: name||"", c1: c1!==undefined?c1:"", c2: c2!==undefined?c2:"", c3: c3!==undefined?c3:"" });
+
+  // Color existing values
+  const inputs = div.querySelectorAll("input[type=number]");
+  if(c1!=="") colorScore(inputs[0],10);
+  if(c2!=="") colorScore(inputs[1],10);
+  if(c3!=="") colorScore(inputs[2],4);
+}
+
+function updateStudent(id, field, val) {
+  const s = students.find(s => s.rowId === id);
+  if (s) s[field] = val;
+}
+
+function colorScore(input, max) {
+  const v = parseFloat(input.value);
+  input.classList.remove("deg-a-input","deg-b-input","deg-c-input");
+  if (isNaN(v)) return;
+  if (max === 10) {
+    if (v <= 4) input.classList.add("deg-a-input");
+    else if (v <= 7) input.classList.add("deg-b-input");
+    else input.classList.add("deg-c-input");
+  } else {
+    if (v <= 1.5) input.classList.add("deg-a-input");
+    else if (v <= 3) input.classList.add("deg-b-input");
+    else input.classList.add("deg-c-input");
+  }
+}
+
+function clearAll() {
+  if (!confirm("Vider la liste des \u00e9l\u00e8ves ?")) return;
+  students = [];
+  rowCount = 0;
+  document.getElementById("student-grid").innerHTML = "";
+}
+
+function analyzeData() {
+  document.getElementById("step1-error").innerHTML = "";
+  const valid = students.filter(s => s.name.trim() && s.c1 !== "" && s.c2 !== "");
+  if (valid.length === 0) {
+    showErr("step1-error","Saisir au moins un \u00e9l\u00e8ve avec un pr\u00e9nom, C1 et C2 pour analyser.");
+    return;
+  }
+  goToStep(2);
+}
+
+// ══════════════════════════════════════════════════════════════
+// DIAGNOSTIC
+// ══════════════════════════════════════════════════════════════
+function getDegree(val, max) {
+  const v = parseFloat(val);
+  if (isNaN(v)) return null;
+  if (max === 10) {
+    if (v <= 4) return "A";
+    if (v <= 7) return "B";
+    return "C";
+  } else {
+    if (v <= 1.5) return "A";
+    if (v <= 3) return "B";
+    return "C";
+  }
+}
+
+function getLacune(s) {
+  const c1v = parseFloat(s.c1), c2v = parseFloat(s.c2);
+  const lacunes = [];
+  if (!isNaN(c1v) && c1v < 5) lacunes.push({label:"C1", val:c1v});
+  if (!isNaN(c2v) && c2v < 5) lacunes.push({label:"C2", val:c2v});
+  lacunes.sort((a,b) => a.val - b.val);
+  return lacunes;
+}
+
+function getAxePrioritaire(s) {
+  const lacunes = getLacune(s);
+  if (!lacunes.length) return "Aucune lacune d\u00e9tect\u00e9e \u2014 approfondissement C";
+  const first = lacunes[0].label;
+  if (first === "C1") return "Axe 1 \u2014 Lecture du jeu (N1-13) + Axe 3 \u2014 Organisation collective";
+  return "Axe 1 \u2014 Lecture du jeu (N1-13) + Axe 2 \u2014 Bases techniques PB/NPB";
+}
+
+function getProfile(s) {
+  const c1d = getDegree(s.c1, 10);
+  const c2d = getDegree(s.c2, 10);
+  if (!c1d || !c2d) return null;
+  const scores = [c1d, c2d];
+  const countA = scores.filter(x=>x==="A").length;
+  const countC = scores.filter(x=>x==="C").length;
+  if (countA >= 1) return "A";
+  if (countC >= 2) return "C";
+  return "B";
+}
+
+function getSA(s) {
+  const prof = getProfile(s);
+  if (prof === "A") return "SA-A1";
+  if (prof === "C") return "SA-C1";
+  return "SA-B1";
+}
+
+function renderDiagnostic() {
+  const valid = students.filter(s => s.name.trim() && s.c1 !== "" && s.c2 !== "");
+  const el = document.getElementById("diag-content");
+
+  // compute stats
+  const c1vals = valid.map(s=>parseFloat(s.c1)).filter(v=>!isNaN(v));
+  const c2vals = valid.map(s=>parseFloat(s.c2)).filter(v=>!isNaN(v));
+  const note14 = valid.map(s=>{
+    const c1 = parseFloat(s.c1), c2 = parseFloat(s.c2);
+    return (!isNaN(c1)&&!isNaN(c2)) ? (c1*8/10)+(c2*6/10) : null;
+  }).filter(v=>v!==null);
+
+  const avg = arr => arr.length ? (arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(1) : "--";
+  const avgC1 = avg(c1vals), avgC2 = avg(c2vals), avg14 = avg(note14);
+
+  const countA = valid.filter(s=>getProfile(s)==="A").length;
+  const countB = valid.filter(s=>getProfile(s)==="B").length;
+  const countC = valid.filter(s=>getProfile(s)==="C").length;
+  const total = valid.length;
+  const pA = total ? Math.round(countA/total*100) : 0;
+  const pB = total ? Math.round(countB/total*100) : 0;
+  const pC = total ? Math.round(countC/total*100) : 0;
+
+  // dominant decision
+  let decision = "";
+  if (countA >= countB && countA >= countC)
+    decision = "Classe majoritairement d\u00e9butante (profil A) \u2014 Priorit\u00e9 aux fondamentaux N1 et \u00e0 l\u2019Axe 1 (lecture du jeu).";
+  else if (countC >= countA && countC >= countB)
+    decision = "Classe majoritairement avanc\u00e9e (profil C) \u2014 Approfondissement N2 \u00b7 tutorat par les \u00e9l\u00e8ves de niveau C.";
+  else
+    decision = "Classe interm\u00e9diaire (profil B dominant) \u2014 Diff\u00e9renciation A/B active \u00b7 Axes 1+2 en parall\u00e8le.";
+
+  // C1 collective diagnosis
+  let c1Note = "", c1Note2 = "";
+  const avgC1f = parseFloat(avgC1);
+  if (!isNaN(avgC1f)) {
+    if (avgC1f < 5) { c1Note = "alert-err"; c1Note2 = "Lacune collective C1 \u2014 Sa priorit\u00e9 axe 1 (lecture du jeu)"; }
+    else if (avgC1f < 8) { c1Note = "alert-warn"; c1Note2 = "C1 en cours d\u2019acquisition \u2014 consolider"; }
+    else { c1Note = "alert-ok"; c1Note2 = "C1 bon niveau \u2014 approfondir N2"; }
+  }
+  const avgC2f = parseFloat(avgC2);
+  let c2Note = "", c2Note2 = "";
+  if (!isNaN(avgC2f)) {
+    if (avgC2f < 5) { c2Note = "alert-err"; c2Note2 = "Lacune collective C2 \u2014 priorit\u00e9 axe 2 (techniques PB/NPB)"; }
+    else if (avgC2f < 8) { c2Note = "alert-warn"; c2Note2 = "C2 en cours d\u2019acquisition \u2014 consolider"; }
+    else { c2Note = "alert-ok"; c2Note2 = "C2 bon niveau \u2014 approfondissement"; }
+  }
+
+  // Build ranked student table
+  const ranked = [...valid].map(s => ({
+    ...s,
+    n14: ((parseFloat(s.c1)||0)*8/10)+((parseFloat(s.c2)||0)*6/10),
+    prof: getProfile(s),
+    lacunes: getLacune(s),
+    axe: getAxePrioritaire(s),
+    sa: getSA(s),
+    c1d: getDegree(s.c1,10),
+    c2d: getDegree(s.c2,10),
+    c3d: getDegree(s.c3,4)
+  })).sort((a,b)=>b.n14 - a.n14).map((s,i)=>({...s, rang:i+1}));
+
+  let tableRows = "";
+  for (const s of ranked) {
+    const profCls = s.prof === "A" ? "deg-a" : s.prof === "B" ? "deg-b" : "deg-c";
+    const lacStr = s.lacunes.length
+      ? s.lacunes.map(l=>"<span class='lacune-tag'>L1 \u2014 "+l.label+" : "+l.val.toFixed(1)+"/10</span>").join(" ")
+      : "<span style='color:#375623;font-size:.72rem'>Aucune lacune</span>";
+    const c3str = s.c3 !== "" ? parseFloat(s.c3).toFixed(1)+"/4" : "<span style='color:#94a3b8'>—</span>";
+    tableRows +=
+      "<tr>" +
+      "<td>" + s.rang + "</td>" +
+      "<td class='name-cell'>" + s.name + "</td>" +
+      "<td><span class='deg-badge " + (s.c1d==="A"?"deg-a":s.c1d==="B"?"deg-b":"deg-c") + "'>" + (parseFloat(s.c1)||0).toFixed(1) + "</span></td>" +
+      "<td><span class='deg-badge " + (s.c2d==="A"?"deg-a":s.c2d==="B"?"deg-b":"deg-c") + "'>" + (parseFloat(s.c2)||0).toFixed(1) + "</span></td>" +
+      "<td>" + c3str + "</td>" +
+      "<td class='note-20'>" + s.n14.toFixed(1) + "</td>" +
+      "<td><span class='deg-badge " + profCls + "'>" + s.prof + "</span></td>" +
+      "<td>" + lacStr + "</td>" +
+      "<td><span style='font-size:.7rem;color:#475569'>" + s.sa + "</span></td>" +
+      "</tr>";
+  }
+
+  // Groups
+  const groupA = ranked.filter(s=>s.prof==="A");
+  const groupB = ranked.filter(s=>s.prof==="B");
+  const groupC = ranked.filter(s=>s.prof==="C");
+
+  el.innerHTML =
+    "<div class='card'>" +
+      "<div class='card-title'><span class='ico'>📊</span>Bilan de classe \u2014 " + total + " \u00e9l\u00e8ves</div>" +
+      "<div class='stat-cards'>" +
+        "<div class='stat-card'><div class='val'>" + total + "</div><div class='lbl'>\u00c9l\u00e8ves</div></div>" +
+        "<div class='stat-card'><div class='val'>" + avg14 + "</div><div class='lbl'>Moy. /14</div></div>" +
+        "<div class='stat-card'><div class='val'>" + avgC1 + "</div><div class='lbl'>Moy. C1 /10</div></div>" +
+        "<div class='stat-card'><div class='val'>" + avgC2 + "</div><div class='lbl'>Moy. C2 /10</div></div>" +
+      "</div>" +
+      "<div style='margin-bottom:.5rem;font-size:.78rem;color:#64748b;font-weight:600'>R\u00e9partition des profils</div>" +
+      "<div class='profile-bar'>" +
+        "<div class='seg seg-a' style='width:" + pA + "%'>" + (pA>6?pA+"%":"") + "</div>" +
+        "<div class='seg seg-b' style='width:" + pB + "%'>" + (pB>6?pB+"%":"") + "</div>" +
+        "<div class='seg seg-c' style='width:" + pC + "%'>" + (pC>6?pC+"%":"") + "</div>" +
+      "</div>" +
+      "<div style='display:flex;gap:.5rem;font-size:.75rem;margin-bottom:1rem'>" +
+        "<span class='deg-badge deg-a'>A : "+countA+" ("+pA+"%)</span>" +
+        "<span class='deg-badge deg-b'>B : "+countB+" ("+pB+"%)</span>" +
+        "<span class='deg-badge deg-c'>C : "+countC+" ("+pC+"%)</span>" +
+      "</div>" +
+      (c1Note ? "<div class='alert " + c1Note + "'><span>📌</span><strong>C1 \u2014 </strong><span>" + c1Note2 + "</span></div>" : "") +
+      (c2Note ? "<div class='alert " + c2Note + "'><span>📌</span><strong>C2 \u2014 </strong><span>" + c2Note2 + "</span></div>" : "") +
+      "<div class='alert alert-info'><span>🎯</span><span><strong>D\u00e9cision dominante : </strong>" + decision + "</span></div>" +
+    "</div>" +
+
+    "<div class='card'>" +
+      "<div class='card-title'><span class='ico'>👥</span>Groupes de besoin</div>" +
+      "<div style='display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.75rem'>" +
+        renderGroup("A", groupA, "SA-A1 \u2014 Lecture avant action") +
+        renderGroup("B", groupB, "SA-B1 \u2014 Automatismes techniques") +
+        renderGroup("C", groupC, "SA-C1 \u2014 Organisations N2") +
+      "</div>" +
+    "</div>" +
+
+    "<div class='card'>" +
+      "<div class='card-title'><span class='ico'>📋</span>Tableau individuel</div>" +
+      "<div style='overflow-x:auto'>" +
+      "<table class='diag-table'>" +
+        "<thead><tr>" +
+          "<th>Rang</th><th>Nom / Pr\u00e9nom</th><th>C1 /10</th><th>C2 /10</th><th>C3 /4</th>" +
+          "<th>Note /14</th><th>Profil</th><th>Lacune(s)</th><th>SA</th>" +
+        "</tr></thead>" +
+        "<tbody>" + tableRows + "</tbody>" +
+      "</table></div>" +
+    "</div>";
+}
+
+function renderGroup(deg, students, saLabel) {
+  const cls = deg==="A"?"deg-a":deg==="B"?"deg-b":"deg-c";
+  const names = students.map(s=>s.name).join(", ") || "<em style='color:#94a3b8'>Aucun</em>";
+  return "<div style='padding:.75rem;background:var(--" + (deg==="A"?"deg-a":deg==="B"?"deg-b":"deg-c") + "-bg);border:1px solid var(--" + (deg==="A"?"deg-a":deg==="B"?"deg-b":"deg-c") + "-border);border-radius:8px'>" +
+    "<div style='font-weight:700;margin-bottom:.3rem'><span class='deg-badge " + cls + "'>Profil " + deg + "</span> \u2014 " + students.length + " \u00e9l\u00e8ve(s)</div>" +
+    "<div style='font-size:.78rem;margin-bottom:.4rem;color:#475569'>" + names + "</div>" +
+    "<div style='font-size:.7rem;color:#64748b;font-weight:600'>" + saLabel + "</div>" +
+    "</div>";
+}
+
+// ══════════════════════════════════════════════════════════════
+// AXES
+// ══════════════════════════════════════════════════════════════
+function computeAxesPertinence() {
+  const valid = students.filter(s=>s.name.trim()&&s.c1!=="");
+  const c1lacune = valid.filter(s=>parseFloat(s.c1)<5).length;
+  const c2lacune = valid.filter(s=>parseFloat(s.c2)<5).length;
+  const c3lacune = valid.filter(s=>s.c3!==""&&parseFloat(s.c3)<2).length;
+  const total = valid.length || 1;
+  return {
+    c1: Math.round(c1lacune/total*100),
+    c2: Math.round(c2lacune/total*100),
+    c3: Math.round(c3lacune/total*100)
+  };
+}
+
+function renderAxes() {
+  const perc = computeAxesPertinence();
+  const grid = document.getElementById("axes-grid");
+  grid.innerHTML = "";
+
+  // Sort axes by pertinence
+  const sorted = [...AXES_SOURCE].sort((a,b) => {
+    const pa = a.obs_lie === "c1" ? perc.c1 : a.obs_lie === "c2" ? perc.c2 : perc.c3;
+    const pb = b.obs_lie === "c1" ? perc.c1 : b.obs_lie === "c2" ? perc.c2 : perc.c3;
+    return pb - pa;
+  });
+
+  for (const axe of sorted) {
+    const pct = axe.obs_lie === "c1" ? perc.c1 : axe.obs_lie === "c2" ? perc.c2 : perc.c3;
+    const isSelected = selectedAxes.includes(axe.id);
+    const div = document.createElement("div");
+    div.className = "axe-card" + (isSelected?" selected":"");
+    div.id = "axe-" + axe.id;
+    div.onclick = () => toggleAxe(axe.id);
+    div.innerHTML =
+      "<div class='axe-check'>" + (isSelected ? "✓" : "") + "</div>" +
+      "<div class='axe-body'>" +
+        "<div class='axe-title'>" + axe.titre + "</div>" +
+        "<div class='axe-desc'>" + axe.contenu + "</div>" +
+        "<div style='font-size:.75rem;color:#475569;margin-bottom:.4rem'><strong>Cible :</strong> " + axe.cible + "</div>" +
+        "<div class='axe-meta'>" +
+          "<span class='axe-pill hot'>Pertinence : " + pct + "% \u00e9l\u00e8ves concern\u00e9s</span>" +
+          "<span class='axe-pill'>Observable : " + axe.obs_lie.toUpperCase() + "</span>" +
+          "<span class='axe-pill'>" + axe.sa_label + "</span>" +
+          "<span class='axe-pill'>Pr\u00e9requis : " + axe.prereqs + "</span>" +
+        "</div>" +
+      "</div>";
+    grid.appendChild(div);
+  }
+  updateAxeCounter();
+}
+
+function toggleAxe(id) {
+  const idx = selectedAxes.indexOf(id);
+  if (idx >= 0) {
+    selectedAxes.splice(idx, 1);
+  } else {
+    if (selectedAxes.length >= 4) {
+      showErr("axe-error","Maximum 4 axes atteint \u2014 d\u00e9s\u00e9lectionner un axe avant d\u2019en ajouter un autre.");
+      return;
+    }
+    selectedAxes.push(id);
+  }
+  document.getElementById("axe-" + id).classList.toggle("selected", selectedAxes.includes(id));
+  const chk = document.querySelector("#axe-" + id + " .axe-check");
+  if (chk) chk.textContent = selectedAxes.includes(id) ? "✓" : "";
+  updateAxeCounter();
+}
+
+function updateAxeCounter() {
+  const n = selectedAxes.length;
+  const el = document.getElementById("axe-counter");
+  if (!el) return;
+  let txt = "<span class='hl'>" + n + " axe" + (n>1?"s":"") + " s\u00e9lectionn\u00e9" + (n>1?"s":"") + "</span>";
+  if (n < 3) txt += " \u2014 <span class='warn'>minimum 3</span>";
+  else if (n === 4) txt += " \u2014 <em style='color:#375623'>maximum atteint</em>";
+  else txt += " \u2014 <span style='color:#375623'>✓ s\u00e9lection valide</span>";
+  el.innerHTML = txt;
+  const btn = document.getElementById("btn-to-step4");
+  if (btn) btn.disabled = n < 3;
+}
+
+// ══════════════════════════════════════════════════════════════
+// SLIDER / DISTRIBUTION
+// ══════════════════════════════════════════════════════════════
+function updateSlider(val) {
+  val = parseInt(val);
+  cycleSeances = val;
+  const slider = document.getElementById("cycle-slider");
+  if (slider) {
+    slider.value = val;
+    const pct = (val-6)/(12-6)*100;
+    slider.style.background = "linear-gradient(to right,var(--court-blue) 0%,var(--court-blue) " + pct + "%,#e2e8f0 " + pct + "%,#e2e8f0 100%)";
+  }
+  const dispEl = document.getElementById("slider-val");
+  if (dispEl) dispEl.innerHTML = val + " <span>s\u00e9ances</span>";
+
+  const nAxes = selectedAxes.length || 3;
+  const key = nAxes <= 3 ? 3 : 4;
+  const dist = (DISTRIBUTION[key] || DISTRIBUTION[3])[val] || DISTRIBUTION[3][8];
+  const seqs = dist.length;
+
+  const subEl = document.getElementById("slider-sub");
+  if (subEl) subEl.textContent = seqs + " s\u00e9quences \u00b7 distribution : " + dist.join("+") + " s\u00e9ances";
+
+  const prev = document.getElementById("distrib-preview");
+  if (!prev) return;
+  const activeAxes = selectedAxes.length > 0 ? selectedAxes.map(id => AXES_SOURCE.find(a=>a.id===id)) : AXES_SOURCE.slice(0,key);
+
+  let html = "<div class='dp-title'>Aper\u00e7u de la r\u00e9partition</div>";
+  dist.forEach((nb, i) => {
+    const axe = activeAxes[i] || activeAxes[activeAxes.length-1];
+    html += "<div class='seq-row'>" +
+      "<div class='seq-num'>" + (i+1) + "</div>" +
+      "<div class='seq-info'><strong>S\u00e9quence " + (i+1) + "</strong> \u2014 " + nb + " s\u00e9ance" + (nb>1?"s":"") + " \u2014 " +
+        (axe ? axe.titre : "Axe " + (i+1)) + "</div>" +
+      "</div>";
+  });
+  prev.innerHTML = html;
+}
+
+// ══════════════════════════════════════════════════════════════
+// PLANIFICATION
+// ══════════════════════════════════════════════════════════════
+function generatePlanif() {
+  currentStep = 5;
+  document.querySelectorAll(".step-panel").forEach(p=>p.classList.remove("visible"));
+  document.getElementById("panel-5").classList.add("visible");
+  document.querySelectorAll(".step-item").forEach((el,i)=>{
+    el.classList.remove("active","done");
+    if (i+1===5) el.classList.add("active");
+    else if (i+1<5) el.classList.add("done");
+  });
+  renderPlanif();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+const SEANCE_DATA = {
+  "AX1": {
+    obj: "Construire la lecture du jeu avant action \u2014 s\u2019informer et choisir selon le d\u00e9fenseur",
+    groups: {
+      A: { sa:"SA-A1", consigne:"Avant de bouger, regarder le d\u00e9fenseur : est-il entre toi et le panier ?", critere:"L\u2019\u00e9l\u00e8ve marque une pause visible avant chaque d\u00e9cision" },
+      B: { sa:"SA-A1", consigne:"Choisir passe ou dribble AVANT de recevoir la balle : d\u00e9cider sans attendre la pression d\u00e9fensive", critere:"L\u2019\u00e9l\u00e8ve engage la bonne action dans au moins 2 possessions sur 3" },
+      C: { sa:"SA-A1", consigne:"Guider l\u2019\u00e9quipe avant chaque engagement offensif : nommer le type d\u2019attaque \u00e0 voix haute", critere:"L\u2019\u00e9quipe respecte le choix collectif dans au moins 3 actions cons\u00e9cutives" }
+    }
+  },
+  "AX2": {
+    obj: "Automatiser arr\u00eat-pivot-dribble et le d\u00e9marquage du non-porteur",
+    groups: {
+      A: { sa:"SA-B1", consigne:"Enchaîner r\u00e9ception \u2014 arr\u00eat d\u00e9cisif \u2014 pivot pour prot\u00e9ger sans pression d\u00e9fensive", critere:"Z\u00e9ro perte de balle par marcher sur 5 tentatives cons\u00e9cutives" },
+      B: { sa:"SA-B1", consigne:"Sous l\u00e9g\u00e8re pression : arr\u00eat, pivot, chercher partenaire dans l\u2019espace avant", critere:"Transmission de balle vers l\u2019avant dans au moins 3 actions sur 4" },
+      C: { sa:"SA-C1", consigne:"Non-porteur : traverser la raquette pour cr\u00e9er une ligne de passe vers l\u2019avant", critere:"Au moins 2 passes vers la raquette exploit\u00e9es en tir en 1c0 par match" }
+    }
+  },
+  "AX3": {
+    obj: "D\u00e9cider collectivement entre contre-attaque et jeu plac\u00e9 selon la d\u00e9fense",
+    groups: {
+      A: { sa:"SA-A1", consigne:"Observer le placement d\u00e9fensif : si 3 d\u00e9fenseurs replacés → ralentir · sinon → monter vite", critere:"L\u2019\u00e9quipe monte en moins de 5 secondes quand la d\u00e9fense n\u2019est pas replacée" },
+      B: { sa:"SA-B1", consigne:"Mettre en place une premi\u00e8re circulation balle + joueurs en attaque plac\u00e9e \u2014 2 passes minimum avant tir", critere:"Au moins 1 tir en situation favorable par possession plac\u00e9e" },
+      C: { sa:"SA-C1", consigne:"Varier syst\u00e9matiquement CA et jeu plac\u00e9 selon le rapport de force \u2014 nommer le choix collectif", critere:"L\u2019\u00e9quipe varie les modes d\u2019attaque sur au moins 4 possessions cons\u00e9cutives" }
+    }
+  },
+  "AX4": {
+    obj: "Organiser le repli d\u00e9fensif et d\u00e9clencher la transition rebond/contre-attaque",
+    groups: {
+      A: { sa:"SA-A1", consigne:"D\u00e9s la perte de balle : se replacer entre son adversaire direct et le panier \u2014 avant toute autre action", critere:"Chaque joueur identifie son adversaire direct \u00e0 couvrir en moins de 2 secondes" },
+      B: { sa:"SA-B1", consigne:"Apr\u00e8s rebond d\u00e9fensif : courir vers l\u2019avant en regardant le porteur \u2014 ne pas attendre au sol", critere:"Transition rebond \u2192 contre-attaque amorc\u00e9e en moins de 3 secondes" },
+      C: { sa:"SA-C1", consigne:"Choisir : gêner le PB adverse OU se replacer selon la position de l\u2019\u00e9quipe \u2014 pas de choix automatique", critere:"Aucune faute de contact inutile sur 1 mi-temps compl\u00e8te" }
+    }
+  },
+  "AX5": {
+    obj: "Structurer les r\u00f4les rotatifs : observateur, co-arbitre, joueur",
+    groups: {
+      A: { sa:"SA-B1", consigne:"En r\u00f4le d\u2019observateur : noter uniquement pertes de balle et paniers · cocher sur fiche sans interpr\u00e9ter", critere:"Donn\u00e9es chiffr\u00e9es remises \u00e0 l\u2019\u00e9quipe en moins de 2 minutes apr\u00e8s le match" },
+      B: { sa:"SA-B1", consigne:"Co-arbitre : siffler uniquement sur contact clair · annoncer la faute et organiser la r\u00e9paration", critere:"Score connu avec pr\u00e9cision \u00e0 tout moment de la rencontre" },
+      C: { sa:"SA-C1", consigne:"Observateur avanc\u00e9 : distinguer tirs en situation favorable et tirs sous pression · calculer le % de r\u00e9ussite", critere:"Donn\u00e9es diff\u00e9renci\u00e9es exploit\u00e9es par l\u2019\u00e9quipe pour ajuster le projet de jeu" }
+    }
+  },
+  "AX6": {
+    obj: "Se construire une zone de tir favorable et finir en suspension",
+    groups: {
+      A: { sa:"SA-A1", consigne:"Identifier la zone de tir favorable \u2014 se positionner avant de recevoir la balle", critere:"Au moins 1 tir tent\u00e9 depuis la zone favorable par possession" },
+      B: { sa:"SA-B1", consigne:"Apr\u00e8s r\u00e9ception en zone favorable : enchaîner 1 dribble max + tir en suspension", critere:"Tir r\u00e9ussi depuis zone favorable dans au moins 2 actions sur 5" },
+      C: { sa:"SA-C1", consigne:"Cr\u00e9er sa propre zone de tir par un d\u00e9marquage actif + r\u00e9ception \u00e9loign\u00e9e du d\u00e9fenseur", critere:"Aucun tir tent\u00e9 avec d\u00e9fenseur entre le PB et le panier" }
+    }
+  }
+};
+
+function renderPlanif() {
+  const nAxes = selectedAxes.length;
+  const key = nAxes <= 3 ? 3 : 4;
+  const dist = (DISTRIBUTION[key]||DISTRIBUTION[3])[cycleSeances] || DISTRIBUTION[3][8];
+  const activeAxes = selectedAxes.map(id => AXES_SOURCE.find(a=>a.id===id)).filter(Boolean);
+
+  const totalA = students.filter(s=>getProfile(s)==="A").length;
+  const totalB = students.filter(s=>getProfile(s)==="B").length;
+  const totalC = students.filter(s=>getProfile(s)==="C").length;
+  const total = students.filter(s=>s.name.trim()).length;
+
+  let seanceGlobal = 0;
+  let html = "";
+
+  const SEQ_TITLES = [
+    "Ancrage des pr\u00e9requis N1",
+    "Consolidation et diff\u00e9renciation",
+    "Acc\u00e8s aux conduites N2",
+    "Approfondissement et tournoi"
+  ];
+  const SEQ_OBJS = [
+    "Travailler les lacunes dominantes \u2014 fondamentaux N1 pour tous les profils",
+    "Diff\u00e9renciation active A/B/C \u2014 consolider les acqu\u00e9rants, acc\u00e9l\u00e9rer les avanc\u00e9s",
+    "Ouvrir les premi\u00e8res capacit\u00e9s N2 pour les \u00e9l\u00e8ves ayant progress\u00e9",
+    "Consolidation finale et \u00e9valuation formative"
+  ];
+
+  dist.forEach((nbSeances, seqIdx) => {
+    const axe = activeAxes[seqIdx] || activeAxes[activeAxes.length-1];
+    const axeData = SEANCE_DATA[axe.id] || SEANCE_DATA["AX1"];
+    const seqTitle = SEQ_TITLES[seqIdx] || ("S\u00e9quence " + (seqIdx+1));
+    const seqObj = SEQ_OBJS[seqIdx] || axeData.obj;
+
+    html +=
+      "<div class='sequence-block'>" +
+      "<div class='sequence-header'>" +
+        "<span class='seq-badge'>S\u00e9q. " + (seqIdx+1) + "</span>" +
+        "<div><div class='seq-title'>" + seqTitle + "</div>" +
+        "<div class='seq-obj'>" + seqObj + " \u2014 Axe : " + axe.titre + "</div></div>" +
+      "</div>" +
+      "<table class='seance-table'>" +
+      "<thead><tr>" +
+        "<th style='width:3.5rem'>S\u00e9ance</th>" +
+        "<th style='width:22%'>Objectif de s\u00e9ance</th>" +
+        "<th>Groupe A <span style='font-weight:400;color:#fca5a5'>(d\u00e9butants)</span></th>" +
+        "<th>Groupe B <span style='font-weight:400;color:#fcd34d'>(interm\u00e9diaires)</span></th>" +
+        "<th>Groupe C <span style='font-weight:400;color:#86efac'>(avanc\u00e9s)</span></th>" +
+      "</tr></thead><tbody>";
+
+    for (let s = 1; s <= nbSeances; s++) {
+      seanceGlobal++;
+      const isLast = seqIdx === dist.length-1 && s === nbSeances;
+      const seanceObj = isLast ? "\u00c9valuation formative et tournoi \u2014 application du projet de jeu" : axeData.obj;
+      const gA = axeData.groups.A, gB = axeData.groups.B, gC = axeData.groups.C;
+      html +=
+        "<tr>" +
+        "<td class='seance-num'>" + seanceGlobal + "</td>" +
+        "<td style='font-size:.78rem;color:#475569'>" + seanceObj + "</td>" +
+        "<td class='group-cell group-cell-a'>" +
+          "<div class='gc-sa'>" + gA.sa + "</div>" +
+          "<div class='gc-consigne'>" + gA.consigne + "</div>" +
+          "<div class='gc-critere'>\u2713 " + gA.critere + "</div>" +
+        "</td>" +
+        "<td class='group-cell group-cell-b'>" +
+          "<div class='gc-sa'>" + gB.sa + "</div>" +
+          "<div class='gc-consigne'>" + gB.consigne + "</div>" +
+          "<div class='gc-critere'>\u2713 " + gB.critere + "</div>" +
+        "</td>" +
+        "<td class='group-cell group-cell-c'>" +
+          "<div class='gc-sa'>" + gC.sa + "</div>" +
+          "<div class='gc-consigne'>" + gC.consigne + "</div>" +
+          "<div class='gc-critere'>\u2713 " + gC.critere + "</div>" +
+        "</td>" +
+        "</tr>";
+
+      // Passage indicator (not last séance of sequence)
+      if (s < nbSeances) {
+        const indic = PASSAGE_INDICATORS[axe.id] || "l\u2019\u00e9l\u00e8ve manifeste un progr\u00e8s observable sur l\u2019axe travaill\u00e9 lors de la s\u00e9ance";
+        html +=
+          "<tr><td colspan='5' class='passage-indicator'>" +
+          "<strong>📋 \u00c0 observer avant la s\u00e9ance suivante \u2014 </strong>" + indic +
+          "<span class='pi-label'>(Indicatif \u2014 d\u00e9cision de progression : vous)</span>" +
+          "</td></tr>";
+      }
+    }
+
+    html += "</tbody></table></div>";
+  });
+
+  // Cycle summary
+  const domProfil = totalA >= totalB && totalA >= totalC ? "A" : totalC >= totalA && totalC >= totalB ? "C" : "B";
+  const domCount = domProfil === "A" ? totalA : domProfil === "C" ? totalC : totalB;
+  const domPct = total ? Math.round(domCount/total*100) : 0;
+  const reevalSeq = dist.length >= 3 ? 2 : 1;
+
+  html +=
+    "<div class='cycle-summary'>" +
+      "<h3>R\u00e9sum\u00e9 du cycle</h3>" +
+      "<div class='cs-grid'>" +
+        "<div class='cs-item'><div class='csi-val'>" + cycleSeances + "</div><div class='csi-lbl'>S\u00e9ances</div></div>" +
+        "<div class='cs-item'><div class='csi-val'>" + dist.length + "</div><div class='csi-lbl'>S\u00e9quences</div></div>" +
+        "<div class='cs-item'><div class='csi-val'>" + selectedAxes.length + "</div><div class='csi-lbl'>Axes travaill\u00e9s</div></div>" +
+        "<div class='cs-item'><div class='csi-val'>" + total + "</div><div class='csi-lbl'>\u00c9l\u00e8ves</div></div>" +
+      "</div>" +
+      "<div class='cycle-reco'>" +
+        "Ce cycle de <strong>" + cycleSeances + " s\u00e9ances</strong> cible <strong>" + selectedAxes.length + " axes prioritaires</strong>. " +
+        "Profil le plus concern\u00e9 : <strong>Profil " + domProfil + " (" + domCount + " \u00e9l\u00e8ves \u00b7 " + domPct + "%)</strong>. " +
+        "Ré\u00e9valuer apr\u00e8s la s\u00e9quence <strong>" + reevalSeq + "</strong> avec une nouvelle collecte terrain. " +
+        "La d\u00e9cision finale reste \u00e0 l\u2019enseignant." +
+      "</div>" +
+    "</div>";
+
+  document.getElementById("planif-content").innerHTML = html;
+}
+
+// ══════════════════════════════════════════════════════════════
+// CSV IMPORT
+// ══════════════════════════════════════════════════════════════
+function handleCSV(text) {
+  //edit//
+  students = [];
+  rowCount = 0;
+  document.getElementById("student-grid").innerHTML = "";
+  // edit//
+  const lines = text.split(/\r?\n/);
+  let headerIdx = -1;
+  for (let i = 0; i < lines.length; i++) {
+    if (lines[i].includes("Nom_Eleve") || lines[i].includes("Nom_élève") || lines[i].includes("Prenom")) {
+      headerIdx = i; break;
+    }
+  }
+  if (headerIdx < 0) {
+    document.getElementById("import-feedback").innerHTML =
+      "<div class='alert alert-err'><span>❌</span><span>En-t\u00eate CSV non trouv\u00e9 \u2014 la colonne Nom_Eleve est introuvable. V\u00e9rifier le format du fichier.</span></div>";
+    return;
+  }
+
+  const sep = lines[headerIdx].includes(";") ? ";" : ",";
+  const headers = lines[headerIdx].split(sep).map(h=>h.trim().toLowerCase());
+
+  const iName = headers.findIndex(h=>h.includes("nom") || h.includes("prenom") || h.includes("élève") || h.includes("eleve"));
+  // Priority 1: code names
+  let iC1 = headers.findIndex(h=>h.includes("obs01") || h.includes("c1"));
+  let iC2 = headers.findIndex(h=>h.includes("obs02") || h.includes("c2"));
+  let iC3 = headers.findIndex(h=>h.includes("obs03") || h.includes("c3"));
+  // Fallback to numeric
+  if (iC1<0) iC1 = headers.findIndex(h=>h==="obs1");
+  if (iC2<0) iC2 = headers.findIndex(h=>h==="obs2");
+  if (iC3<0) iC3 = headers.findIndex(h=>h==="obs3");
+
+  // Code mapping
+  const codeToScore = {"A":3,"B":6,"C":9,"a":3,"b":6,"c":9};
+
+  let imported = 0, ignored = 0;
+  for (let i = headerIdx+1; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (!line || line.toLowerCase().includes("bilan") || line.toLowerCase().includes("moyenne")) { ignored++; continue; }
+    const cols = line.split(sep);
+    const name = iName >= 0 ? (cols[iName]||"").trim() : "";
+    if (!name) { ignored++; continue; }
+
+    let c1Raw = iC1 >= 0 ? (cols[iC1]||"").trim() : "";
+    let c2Raw = iC2 >= 0 ? (cols[iC2]||"").trim() : "";
+    let c3Raw = iC3 >= 0 ? (cols[iC3]||"").trim() : "";
+
+    // map letter codes
+    const mapVal = (v) => {
+      if (codeToScore[v] !== undefined) return codeToScore[v];
+      const n = parseFloat(v.replace(",","."));
+      return isNaN(n) ? "" : n;
+    };
+
+    addStudentRow(name, mapVal(c1Raw), mapVal(c2Raw), mapVal(c3Raw));
+    imported++;
+  }
+
+  document.getElementById("import-feedback").innerHTML =
+    "<div class='alert alert-ok'><span>✅</span><span>" + imported + " \u00e9l\u00e8ve(s) import\u00e9(s) \u00b7 " + ignored + " ligne(s) ignor\u00e9e(s)</span></div>";
+}
+
+document.getElementById("csv-input").addEventListener("change", function(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => handleCSV(ev.target.result);
+  reader.readAsText(file, "UTF-8");
+});
+
+const dz = document.getElementById("drop-zone");
+dz.addEventListener("dragover", e => { e.preventDefault(); dz.classList.add("drag-over"); });
+dz.addEventListener("dragleave", () => dz.classList.remove("drag-over"));
+dz.addEventListener("drop", e => {
+  e.preventDefault(); dz.classList.remove("drag-over");
+  const file = e.dataTransfer.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => handleCSV(ev.target.result);
+  reader.readAsText(file,"UTF-8");
+});
+
+// ══════════════════════════════════════════════════════════════
+// EXPORT CSV
+// ══════════════════════════════════════════════════════════════
+function exportCSV() {
+  const valid = students.filter(s=>s.name.trim());
+  if (!valid.length) { alert("Aucun \u00e9l\u00e8ve \u00e0 exporter."); return; }
+
+  const header = "Pr\u00e9nom;C1_Note;C1_Degr\u00e9;C2_Note;C2_Degr\u00e9;C3_Note;C3_Degr\u00e9;Note_14;Profil;Lacune_Dominante;SA";
+  const rows = valid.map(s => {
+    const c1d = getDegree(s.c1,10)||"";
+    const c2d = getDegree(s.c2,10)||"";
+    const c3d = getDegree(s.c3,4)||"";
+    const n14 = ((parseFloat(s.c1)||0)*8/10)+((parseFloat(s.c2)||0)*6/10);
+    const prof = getProfile(s)||"";
+    const lacunes = getLacune(s).map(l=>"L1-"+l.label+":"+l.val).join("|")||"Aucune";
+    const sa = getSA(s);
+    return [s.name,s.c1,c1d,s.c2,c2d,s.c3||"",c3d,n14.toFixed(1),prof,lacunes,sa].join(";");
+  });
+
+  const content = "\uFEFF" + header + "\n" + rows.join("\n");
+  const blob = new Blob([content],{type:"text/csv;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  const d = new Date();
+  a.download = "outil_v0_BASKETBALL_ES-BKT_" + d.getFullYear() + (d.getMonth()+1).toString().padStart(2,"0") + d.getDate().toString().padStart(2,"0") + ".csv";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// ══════════════════════════════════════════════════════════════
+// INIT — 3 default rows
+// ══════════════════════════════════════════════════════════════
+addStudentRow();
+addStudentRow();
+addStudentRow();
+updateSlider(12);
+</script>
+</body>
+</html>
