@@ -1,0 +1,381 @@
+═══════════════════════════════════════════════════════════════
+RÉFÉRENTIEL — Basketball — ES-BKT — SECTION AXES PRIORITAIRES
+ADP 2026 — CRMEF Inezgane — Section EPS — BOUARGANE
+APS                              : Basketball
+Niveau scolaire (arrière-plan)   : Collège — cycle DNB (4ème / 3ème)
+Conduites observées              : Majorité C1− (jeu direct · sans lecture
+                                   défensive) et C2− (joueur intermittent ·
+                                   choix inadaptés). Fraction en C1~ et C2~.
+                                   Majorité C3− (rôles observateur/arbitre
+                                   insuffisamment assurés).
+Niveau de contenu identifié      : Niveau 2
+                                   Référentiel : BO spécial n°5 du 19 juillet 2012 (DNB)
+Écart stade/conduites            : OUI
+Volume cycle                     : 8 séances
+Mode d'entrée                    : A — fichiers joints
+Source primaire                  : ressources_Basketball_ES-BKT.txt
+Source TD1                       : mémoire de conversation
+                                   (P1 · P2 · P3 · P4 · Synthèse TD1)
+═══════════════════════════════════════════════════════════════
+
+
+SIGNAL DIDACTIQUE
+──────────────────
+Le niveau scolaire d'arrière-plan est 4ème/3ème : le stade attendu
+correspond à des conduites de niveau N2 en cours de consolidation.
+Or les conduites observées sont majoritairement de niveau N1 bas
+(degrés C et B de la grille). Les élèves n'ont pas encore acquis
+les capacités N1 de base qui conditionnent l'accès aux capacités N2.
+
+Impact sur les axes proposés :
+→ Les axes ne peuvent pas cibler directement les capacités N2
+  sans avoir ancré les prérequis N1 manquants.
+→ L'axe 1 travaille les lacunes N1 dominantes qui bloquent l'accès au N2.
+→ L'axe 2 consolide les capacités N1 partiellement acquises (degrés B).
+→ L'axe 3 ouvre les premières capacités N2 pour les élèves ayant
+  progressé sur axes 1 et 2 — en horizon de fin de cycle.
+→ L'outil ES devra rendre visible la position de chaque élève
+  sur l'axe N1 bas → N1 haut → N2 et non uniquement sur la grille DNB.
+Source : ressources_Basketball_ES-BKT.txt — Section 1
+
+
+CORRESPONDANCE EDUSCOL — GRILLE
+──────────────────────────────────
+[MODE 1 — Lue depuis ressources_Basketball_ES-BKT.txt Section 2]
+
+Degré A ←→ Eduscol N1 (bas) : 15 capacités · N1-1 / N1-3 / N1-5 / N1-7
+           N1-8 / N1-9 / N1-10 / N1-11 / N1-12 / N1-13 absentes (majorité)
+Degré B ←→ Eduscol N1 (haut) : N1-1 / N1-4 / N1-7 partiellement acquis
+           (fraction de la classe)
+Degré C ←→ Eduscol N2 : 13 capacités cibles du cycle —
+           non accessibles tant que les prérequis N1 dominants restent absents
+
+Lacune dominante retenue (depuis ressources S4) :
+N1-13 · « S'informer avant d'agir — lecture du jeu avant action »
+Degrés concernés : C et B (les deux)
+Codes dominants  : C1− · C2− · C3−
+Capacités cibles bloquées : 11 sur 13 capacités N2 conditionnées
+directement ou indirectement par N1-13
+
+
+PARTIE A — GRAPHE DE DÉPENDANCES
+──────────────────────────────────
+[MODE 1 — Construit à partir de ressources S2 · S3 · S4]
+
+
+Capacité N2-7 — Choisir entre jeu de progression ou jeu placé
+selon la position de la défense
+  <- Prérequis nécessaires : N1-13 (lire le jeu avant action)
+                              N1-1  (choisir selon défenseur)
+                              N1-14 (reconnaître statut attaque/défense)
+  <- Degrés concernés      : A (N1-13 absent) · B (N1-1 partiel)
+  <- Codes grille associés : C1− (jeu direct · lecture absente)
+                              C2− (choix inadaptés · décision absente)
+  <- Conditionne           : entrée dans le degré C (cible C1+ et C2+)
+                              — capacité centrale du cycle
+
+
+Capacité N2-1 — Se construire une zone de tir favorable
+  <- Prérequis nécessaires : N1-13 (lire le jeu) · N1-4 (tir fiable)
+                              N1-6 (rebond offensif)
+  <- Degrés concernés      : A (N1-13 et N1-4 absents) · B (N1-4 partiel)
+  <- Codes grille associés : C2− (joueur intermittent · pas de finition)
+  <- Conditionne           : 1 capacité (N2-2 tir sous pression)
+
+
+Capacité N2-2 — Tir à l'arrêt à 2,50 m ou en suspension sous pression
+  <- Prérequis nécessaires : N1-4 (tir fiable à l'arrêt)
+                              N1-3 (maîtrise des arrêts et pied de pivot)
+  <- Degrés concernés      : A (N1-3 absent · N1-4 en construction)
+  <- Codes grille associés : C2− (perte de balle avant finition)
+  <- Conditionne           : degrés C (C2+) · finition variée
+
+
+Capacité N2-4 — Réduire le temps d'enchaînement dribble-passe
+sous pression temporelle
+  <- Prérequis nécessaires : N1-1 (choix PB selon défenseur)
+                              N1-2 (enchaîner dribble-passe sans pression)
+  <- Degrés concernés      : A (N1-1 et N1-2 absents)
+  <- Codes grille associés : C2− (choix inadaptés · jeu lent)
+  <- Conditionne           : 1 capacité (N2-7 rapidité d'exécution)
+
+
+Capacité N2-5 — Utiliser le pied de pivot pour protéger le ballon
+et calmer le jeu
+  <- Prérequis nécessaires : N1-3 (maîtrise des arrêts)
+                              N1-5 (balle tenue à 2 mains armée haut)
+  <- Degrés concernés      : A (N1-3 et N1-5 absents chez majorité)
+  <- Codes grille associés : C2− (pertes de balle sur pression)
+  <- Conditionne           : N2-2 · N2-7 (poser le jeu pour choisir)
+
+
+Capacité N2-9 — S'organiser collectivement pour offrir relais ou
+soutien au PB
+  <- Prérequis nécessaires : N1-7 (se mettre à distance de passe)
+                              N1-8 (rompre alignement PB-D-NPB)
+  <- Degrés concernés      : A (N1-7 et N1-8 absents chez majorité)
+  <- Codes grille associés : C2− · C1− (pas d'organisation collective)
+  <- Conditionne           : N2-10 (traverser la raquette) · N2-11 (écarter le jeu)
+
+
+Capacité N2-6 — Enchaîner des déplacements vers l'avant après un
+échange réussi (passe et va / passe et suit)
+  <- Prérequis nécessaires : N1-9 (déplacement vers l'avant après échange)
+  <- Degrés concernés      : A (N1-9 absent chez majorité)
+  <- Codes grille associés : C1− · C2− (jeu statique · pas de continuité)
+  <- Conditionne           : N2-13 (transition défense → contre-attaque)
+
+
+Capacité N2-12 — Choisir entre se replacer ou gêner le PB
+(défense intelligente)
+  <- Prérequis nécessaires : N1-10 (contrôler l'engagement défensif)
+                              N1-11 (se replacer entre PB et panier)
+                              N1-14 (transition statut)
+  <- Degrés concernés      : A (N1-10 / N1-11 absents chez majorité)
+  <- Codes grille associés : C1− (défense passive ou fautes)
+  <- Conditionne           : accès au degré C (C1+)
+
+
+Capacité N2-13 — Enchaîner rebond → contre-attaque (relais court /
+courir vers l'avant en regardant le PB)
+  <- Prérequis nécessaires : N1-12 (rebond défensif)
+                              N1-14 (transition statut)
+                              N1-9  (déplacement vers l'avant)
+  <- Degrés concernés      : A (N1-12 et N1-14 absents chez majorité)
+  <- Codes grille associés : C1− (pas de transition organisée)
+  <- Conditionne           : N2-7 (choix CA ou jeu placé dans l'action)
+
+
+PRÉREQUIS CLÉ IDENTIFIÉ
+────────────────────────
+Prérequis           : N1-13 · « S'informer avant d'agir »
+                      (lecture du jeu avant action)
+Degré concerné      : A et B
+Code grille associé : C1− (jeu aveugle · progression sans lecture)
+                      C2− (choix inadaptés · joueur intermittent)
+                      C3− (observateur défaillant · lecture du jeu inexistante)
+Conditionne         : 11 capacités sur 13 capacités N2 — directement
+                      ou par chaîne de dépendances
+Conclusion          : N1-13 est l'objet d'ancrage prioritaire du cycle.
+                      Son absence explique simultanément les trois codes
+                      dominants (C1− / C2− / C3−). Tout progrès sur N1-13
+                      débloque en cascade l'accès aux décisions N1-1, N1-7,
+                      et — progressivement — aux capacités cibles N2.
+                      L'outil ES devra mesurer ce prérequis explicitement.
+Source : ressources_Basketball_ES-BKT.txt — Section 4
+
+
+[ENRICHISSEMENT — source externe]
+Données complémentaires sur ce prérequis en Basketball :
+Source  : Bouthier D. & Durey A. · « Technologie des Activités Physiques
+          et Sportives » · Cahiers de l'INSEP n°11 · INSEP Paris · 1994
+URL     : URL non vérifiable en accès direct — à chercher via INSEP Paris
+          ou catalogue BnF
+Apport  : Bouthier identifie la « prise d'informations pertinentes
+          avant action » comme la compétence pivot du joueur débutant
+          en sports collectifs. Son absence explique le caractère
+          intermittent et peu collectif des conduites de niveau 1 bas.
+          Cette source légitime le choix de N1-13 comme lacune principale
+          et comme point d'ancrage de l'axe 1.
+Statut  : à valider par l'équipe avant intégration
+[FIN ENRICHISSEMENT]
+
+
+PARTIE B — AXES DE CONTENU PROPOSÉS
+──────────────────────────────────────
+[MODE 1 — Déduits du graphe · classés par impact sur la progression
+ Ancrés sur les lacunes identifiées dans ressources S4]
+
+
+AXE 1 — Priorité haute
+───────────────────────
+Contenu        : Développer la lecture du jeu avant action chez le porteur
+                 de balle — construire la capacité à s'informer, reconnaître
+                 son statut et choisir entre progresser, passer ou tirer
+                 selon la position du défenseur.
+Cible          : Progression des élèves des degrés A (C1− / C2−) vers les
+                 conduites de degré B (C1~ / C2~) — ancrage sur N1-13
+                 et mobilisation simultanée de N1-1 et N1-14.
+Justification  : La lacune principale identifiée en Section 4 est N1-13
+                 (lecture du jeu avant action — absente chez majorité).
+                 Les codes dominants C1− et C2− traduisent tous les deux
+                 l'absence de cette capacité. Elle bloque 11 sur 13 capacités N2.
+                 Son traitement est la condition minimale pour que le reste
+                 du cycle soit efficace.
+Prérequis      : Aucun prérequis supplémentaire — cet axe traite
+                 le prérequis lui-même (N1-13 · N1-1 · N1-14)
+Impact         : Débloque N2-7 (choix CA / jeu placé) en aval ·
+                 débloque partiellement N2-1, N2-9, N2-12 et N2-13
+Signal stade   : Les conduites observées sont de niveau N1 bas alors que
+                 le stade attendu en 4ème/3ème est N2. L'axe 1 ne cible pas
+                 encore le N2 — il ancre les prérequis N1 qui en sont le
+                 passage obligé. Cette tension est à nommer explicitement
+                 dans l'outil ES pour que l'enseignant puisse situer
+                 chaque élève sur l'axe réel de progression.
+Source         : ressources_Basketball_ES-BKT.txt — Section 4
+                 Synthèse TD1 — BLOC D (mémoire de conversation)
+
+
+[ENRICHISSEMENT — source externe]
+Complément sur cet axe en Basketball :
+Source  : Gréhaigne J.-F. · « L'organisation du jeu en football »
+          · ACTIO · Joinville-le-Pont · 1992
+          — transférable aux sports collectifs au sens large
+URL     : URL non vérifiable en accès direct — référence connue
+          via catalogues BnF et Google Scholar
+Apport  : Gréhaigne théorise le « rapport de force momentané »
+          comme objet central de la décision en sports collectifs.
+          La lecture de ce rapport avant action (N1-13) conditionne
+          tous les choix qui suivent. Cette source renforce la
+          légitimité didactique de l'axe 1 comme priorité absolue.
+Statut  : à valider par l'équipe avant intégration
+[FIN ENRICHISSEMENT]
+
+
+AXE 2 — Priorité moyenne
+──────────────────────────
+Contenu        : Consolider les bases techniques individuelles du porteur
+                 de balle (arrêts, pied de pivot, dribble de progression,
+                 tir à l'arrêt) et le placement du non-porteur à distance
+                 de passe — démarquage par rupture de l'alignement.
+Cible          : Consolidation des conduites de degré B (C2~) et progression
+                 vers les premières actions de degré C — ancrage sur N1-3,
+                 N1-4, N1-5, N1-7, N1-8 et N1-9.
+Justification  : Les lacunes secondaire (N1-1) et tertiaire (N1-7)
+                 identifiées en Section 4 bloquent directement N2-2, N2-4,
+                 N2-5, N2-9 et N2-10. Ces capacités techniques sont
+                 indépendables de la lecture du jeu : un joueur qui lit le
+                 jeu mais ne maîtrise pas les arrêts ou le pivot reste
+                 bloqué en degré A. L'axe 2 travaille les automatismes
+                 qui permettent au joueur de libérer de l'attention
+                 pour la lecture (axe 1).
+Prérequis      : N1-13 en cours de construction (axe 1) — les deux axes
+                 sont menés en parallèle et se renforcent mutuellement.
+Impact         : Débloque N2-2 (tir sous pression) · N2-5 (pivot protecteur)
+                 N2-9 (organisation NPB) · N2-4 (rapidité dribble-passe)
+                 N2-3 (passes longues)
+Signal stade   : L'écart stade/conduites impose de traiter des contenus N1
+                 que le stade 4ème/3ème suppose acquis. Nommer cet axe
+                 dans l'outil ES permet à l'enseignant de légitimer auprès
+                 des élèves le travail sur des bases apparemment élémentaires.
+Source         : ressources_Basketball_ES-BKT.txt — Section 3 · Section 4
+                 Synthèse TD1 — BLOC C (mémoire de conversation)
+
+
+[ENRICHISSEMENT — source externe]
+Complément sur cet axe en Basketball :
+Source  : Pradet M. · « La préparation physique » · INSEP Publications ·
+          Paris · 1996 — applicable à la structuration technique en EPS
+URL     : URL non vérifiable en accès direct
+Apport  : La structuration des automatismes techniques (arrêt / pivot /
+          dribble-passe) suit une logique de charge progressive :
+          d'abord sans pression, puis sous contrainte temporelle,
+          puis en situation de match. Cette gradation est cohérente
+          avec le passage N1-3/N1-5 → N1-2 → N2-4 proposé dans l'axe 2.
+Statut  : à valider par l'équipe avant intégration
+[FIN ENRICHISSEMENT]
+
+
+AXE 3 — Consolidation (volume = 8 séances — axe retenu)
+──────────────────────────────────────────────────────────
+Contenu        : Accéder aux premières organisations collectives N2 —
+                 choix collectif CA ou jeu placé selon la défense,
+                 enchaînement passe-et-va, organisation NPB avec
+                 traversée de raquette — pour les élèves ayant progressé
+                 sur axes 1 et 2.
+Cible          : Accès des élèves de degré B aux premières conduites de
+                 degré C (C1+ / C2+) — mobilisation de N2-7, N2-6, N2-9,
+                 N2-10 comme horizon de fin de cycle.
+Justification  : La cible du référentiel DNB est le degré C. L'axe 3 ne
+                 peut pas être traité sans que les axes 1 et 2 aient
+                 amorcé la progression sur N1-13, N1-1 et N1-7. Mais
+                 pour les élèves qui progressent, cet horizon doit être
+                 rendu visible et travaillé dès les séances 5-6 du cycle.
+                 Les capacités N2-7 et N2-9 sont directement issues du
+                 graphe de dépendances — elles sont les plus accessibles
+                 dès que les prérequis N1 sont partiellement consolidés.
+Prérequis      : N1-13 en construction (axe 1) · N1-7 et N1-8 amorcés
+                 (axe 2) · N1-1 partiellement acquis
+Impact         : N2-7 (cible centrale du cycle) · N2-9 (organisation collective)
+                 N2-6 (continuité offensive) · N2-10 (démarquage actif)
+Signal stade   : Pour un groupe 4ème/3ème, les capacités N2 de cet axe
+                 sont celles que l'on attendrait en début de cycle — elles
+                 constituent ici la cible de fin de cycle. L'outil ES
+                 devra distinguer les élèves qui atteignent réellement
+                 ce niveau (degré C) et ceux qui restent en transition.
+Source         : ressources_Basketball_ES-BKT.txt — Section 3 · Section 4
+                 Niveaux_1_2_3.md — pages 37-38 — Eduscol N2 collège
+Note volume    : Volume = 8 séances — axe 3 retenu et recommandé.
+
+
+[ENRICHISSEMENT — source externe]
+Complément sur cet axe en Basketball :
+Source  : DGESCO / MEN France · « Ressources pour la classe Basketball
+          Niveau 2 » · Eduscol · 2009 · pages 37-38
+URL     : https://eduscol.education.fr/ressources-eps
+          (portail général accessible — URL directe fiche Basketball
+          non vérifiable à cette date)
+Apport  : Les fiches Eduscol N2 précisent les indicateurs observables
+          pour les capacités N2-7, N2-9 et N2-6 dans le contexte des
+          matchs à effectif réduit du DNB. Elles fournissent les critères
+          d'observation utilisables directement dans l'outil ES
+          (situations favorables de tir · % de tirs en situation favorable
+          · conservation balle · accès zone de marque).
+Statut  : à valider par l'équipe avant intégration
+[FIN ENRICHISSEMENT]
+
+
+PARTIE C — BILAN D'ENRICHISSEMENT
+────────────────────────────────────
+Enrichissements repris depuis ressources_Basketball_ES-BKT.txt : 3 proposés
+  Bouthier 1994 (Section 4)     : repris dans Prérequis clé — à valider
+  STAPS/IUFM (Section 3)        : non repris — URL non vérifiable — écarté
+  Eduscol Basketball (Section 2): repris en Axe 3 — à valider (URL partielle)
+
+Nouveaux compléments proposés ici              : 2
+  Gréhaigne 1992 (Axe 1)        : à valider — URL non vérifiable
+  Pradet 1996 (Axe 2)           : à valider — URL non vérifiable
+
+Compléments à valider                          : 3
+  (Bouthier · Gréhaigne · Pradet — URL non vérifiables en accès direct)
+
+Compléments intégrés directement               : 1
+  (Eduscol Ressources collèges N2 — portail général accessible)
+
+Sources non vérifiables détectées              : 3
+  Bouthier 1994 — INSEP Cahiers n°11
+  Gréhaigne 1992 — ACTIO Joinville-le-Pont
+  Pradet 1996 — INSEP Publications
+
+Recommandation                                 : Vérifier en priorité la fiche
+  Eduscol Basketball N2 (portail https://eduscol.education.fr/ressources-eps).
+  Pour Bouthier et Gréhaigne : chercher via catalogue BnF ou bibliothèque
+  CRMEF avant intégration officielle. Pradet peut être écarté sans perte —
+  la logique de gradation technique est déjà dans les sources Mode 1.
+
+
+⚑ POINT DE DÉCISION ENSEIGNANT
+─────────────────────────────────
+Les axes ci-dessus sont des propositions fondées sur
+ressources_Basketball_ES-BKT.txt et les données TD1 disponibles.
+Avant de passer à la planification du cycle :
+
+Validez, ajustez ou complétez ces axes.
+
+Format de confirmation attendu par le formateur :
+"Axes retenus — Basketball — ES-BKT — [date] :
+ Axe 1 : [intitulé confirmé ou modifié]
+ Axe 2 : [intitulé confirmé ou modifié]
+ Axe 3 : [retenu · supprimé · modifié]
+ Mode d'entrée utilisé : A — fichiers joints
+ Enrichissements intégrés : [N intégrés · N rejetés]"
+
+
+═══════════════════════════════════════════════════════════════
+FIN — SECTION AXES PRIORITAIRES
+referentiel_Basketball_ES-BKT.txt
+À soumettre au formateur BOUARGANE avant prompt 1bis-B
+Source primaire : ressources_Basketball_ES-BKT.txt
+Produit le 10 juin 2026 · ADP 2026 · CRMEF Souss-Massa · Équipe 07
+Code projet : COLL2_EQ_07 · APS : Basketball · Formateur : BOUFRIOUA
+═══════════════════════════════════════════════════════════════
