@@ -1,0 +1,243 @@
+══════════════════════════════════════════════════════════════
+GRILLE SOMMATIVE FINALE — Basketball — ES-BKT
+ADP 2026 — CRMEF Souss-Massa — BOUFRIOUA
+Type : ES — Évaluation Sommative · Note /20 = C1 + C2
+Niveau scolaire : Collège (cycle DNB)
+Niveau de contenu : Niveau 2 — DNB · BO spécial n°5 du 19 juillet 2012
+══════════════════════════════════════════════════════════════
+
+
+────────────────────────────────────────────────────
+SECTION 1 — TABLEAU DES CODES ET FOURCHETTES
+────────────────────────────────────────────────────
+
+Convention couleurs (impression / Excel) :
+  Degré A → fond #FCEBEB · Arial Bold ≥ 14pt
+  Degré B → fond #FAEEDA · Arial Bold ≥ 14pt
+  Degré C → fond #EAF3DE · Arial Bold ≥ 14pt
+
+
+CRITÈRE C1 — Efficacité collective dans le gain du match — /10
+Type : TYPE 1 (niveau + fourchette)
+⚠ Conversion : référentiel DNB = /6 pts (collectif) + /2 pts (gains matchs)
+   → ramenés à /10 par proportionnalité · validé formateur BOUFRIOUA
+
+  ┌─────────┬──────────────────────────────────────────────────────┬─────────────────┬──────────────────────────────────┐
+  │  CODE   │  TERME EXACT (référentiel DNB)                       │  FOURCHETTE /10 │  SAISIE TERRAIN                  │
+  ├─────────┼──────────────────────────────────────────────────────┼─────────────────┼──────────────────────────────────┤
+  │  C1+    │  Jeu varié, en contre-attaque ou placé               │  8 à 10 pts     │  Entourer C + écrire ___/10      │
+  │  C1~    │  Jeu simple, en contre-attaque ou placé              │  5 à 7 pts      │  Entourer B + écrire ___/10      │
+  │  C1−    │  Jeu direct                                          │  0 à 4 pts      │  Entourer A + écrire ___/10      │
+  └─────────┴──────────────────────────────────────────────────────┴─────────────────┴──────────────────────────────────┘
+
+  Conduites observables :
+  C1+ (8–10)  Varie CA et attaque placée · s'adapte en temps réel au rapport de force adverse
+  C1~ (5–7)   Progresse vers zone favorable · ne varie ni n'adapte constamment ses choix collectifs
+  C1− (0–4)   Progression désorganisée · pas de lecture défense · pas d'organisation collective
+
+  NOTE TERRAIN : Observer les ajustements lors des temps de concertation entre les phases.
+  Signal immédiat → « L'équipe monte vite quand la défense n'est pas replacée »
+                  → « L'équipe ralentit et s'organise quand la défense est en place »
+
+  Sous-critère intégré : Gains des matchs /2 pts (inclus dans la fourchette /10)
+
+
+────────────────────────────────────────────────────
+CRITÈRE C2 — Efficacité individuelle dans l'organisation collective — /10
+────────────────────────────────────────────────────
+Type : TYPE 1 (niveau + fourchette)
+⚠ Conversion : référentiel DNB = /8 pts → ramenés à /10 par proportionnalité · validé formateur
+
+  ┌─────────┬──────────────────────────────────────────────────────────────────┬─────────────────┬──────────────────────────────────┐
+  │  CODE   │  TERME EXACT (référentiel DNB)                                   │  FOURCHETTE /10 │  SAISIE TERRAIN                  │
+  ├─────────┼──────────────────────────────────────────────────────────────────┼─────────────────┼──────────────────────────────────┤
+  │  C2+    │  Joueur assurant le jeu rapide ou placé par des actions variées  │  8 à 10 pts     │  Entourer C + écrire ___/10      │
+  │  C2~    │  Joueur permettant le jeu rapide ou placé                        │  5 à 7 pts      │  Entourer B + écrire ___/10      │
+  │  C2−    │  Joueur intermittent et peu collectif                            │  0 à 4 pts      │  Entourer A + écrire ___/10      │
+  └─────────┴──────────────────────────────────────────────────────────────────┴─────────────────┴──────────────────────────────────┘
+
+  Conduites observables :
+  C2+ (8–10)  Varie ses actions · accélère ou pose le jeu · tire en situation favorable
+  C2~ (5–7)   Choisit CA ou attaque placée · conserve balle · offre une passe · identifie tir en 1c0
+  C2− (0–4)   Choix inadaptés (passer/dribbler/shooter) · efficacité collective réduite
+
+
+────────────────────────────────────────────────────
+CRITÈRE C3 — Efficacité dans le rôle d'arbitre et d'observateur — /4 bonus
+────────────────────────────────────────────────────
+Type : TYPE 1 (niveau + fourchette)
+⚠ VOLET COMPLÉMENTAIRE — NE compte PAS dans la note /20
+⚠ DISTINCTION CRITIQUE : « Rôles assurés » (A) ≠ « Rôles assumés » (B) — termes EXACTS du référentiel
+
+  ┌─────────┬──────────────────────────────────┬────────────────┬──────────────────────────────────┐
+  │  CODE   │  TERME EXACT (référentiel DNB)   │  FOURCHETTE /4 │  SAISIE TERRAIN                  │
+  ├─────────┼──────────────────────────────────┼────────────────┼──────────────────────────────────┤
+  │  C3+    │  Rôles assurés                   │  3,5 à 4 pts   │  Entourer A + écrire ___/4       │
+  │  C3~    │  Rôles assumés                   │  2 à 3 pts     │  Entourer B + écrire ___/4       │
+  │  C3−    │  Rôles insuffisamment assurés    │  0 à 1,5 pts   │  Entourer C + écrire ___/4       │
+  └─────────┴──────────────────────────────────┴────────────────┴──────────────────────────────────┘
+
+  Conduites observables :
+  C3+ (3,5–4)  Données différenciées exploitables · arbitrage autonome et ferme
+  C3~ (2–3)    Données globales et fiables · arbitrage assuré avec de l'aide
+  C3− (0–1,5)  Données peu fiables · hésitation sur actions difficiles à arbitrer
+
+  Protocole : chaque élève est évalué dans les 3 rôles (joueur · observateur · co-arbitre)
+
+
+────────────────────────────────────────────────────
+CALCUL NOTE /20
+────────────────────────────────────────────────────
+
+  Note /20 = C1 (/10) + C2 (/10)
+
+  C3 = volet bonus /4 · renseigné séparément · ne compte PAS dans le /20
+  Addition directe · pas de calculatrice nécessaire
+
+  ⚠ Vérifier : C1 ≤ 10 · C2 ≤ 10 · Total ≤ 20 avant saisie
+
+
+────────────────────────────────────────────────────
+⚑ PAUSE INTERACTIVE — PROCÉDURE DE SAISIE TERRAIN
+────────────────────────────────────────────────────
+
+Pour votre APS (Basketball) · Famille : Sports collectifs
+Nous recommandons :
+  → ENTOURER le niveau (A · B · C) [TYPE 1]
+  → puis ÉCRIRE la valeur précise dans la fourchette
+    Ex : B → écrire 6/10 · pas seulement B
+
+Durée maximale recommandée : 3 secondes par élève.
+Ordre de saisie : séquentiel élève 1 → élève N.
+
+[Confirmation équipe requise avant usage terrain]
+
+
+────────────────────────────────────────────────────
+SECTION 2 — PROCÉDURE DE SAISIE TERRAIN NORMÉE
+────────────────────────────────────────────────────
+
+Famille APS       : Sports collectifs
+Référentiel       : DNB · Niveau 2 · BO spécial n°5 du 19 juillet 2012
+
+TYPE 1 — Fourchette (C1 · C2 · C3)
+  Geste normé     : Entourer niveau (A · B · C) + écrire valeur précise dans fourchette
+  Valeur précise  : OBLIGATOIRE — pas seulement le niveau
+  Exemple         : Degré B → entourer B + écrire 6/10 (pas seulement "B")
+  Durée max       : 3 secondes par élève
+  Ordre saisie    : séquentiel · élève 1 → élève N
+  Distance obs.   : 3 à 6 mètres du jeu (vue d'ensemble)
+
+TYPE 2 — Valeur chiffrable
+  → ABSENT pour ce référentiel (Basketball DNB Niveau 2 = TYPE 1 uniquement)
+  → Pas de chrono ni de distance à mesurer
+
+Gestion du doute  : Case vide + "?" · jamais inventer · signaler en Observations libres
+Stylo             : Noir uniquement · pas de crayon
+Confirmé par      : Équipe 07 · Formateur BOUFRIOUA
+Contrainte        : Aucune signalée
+
+
+────────────────────────────────────────────────────
+SECTION 3 — RÈGLES TRANSVERSALES
+────────────────────────────────────────────────────
+
+  RÈGLE 1 : 1 seul code par case · jamais 2 codes simultanés
+  RÈGLE 2 : Doute → case vide + "?" · jamais inventer
+  RÈGLE 3 : TYPE 1 → niveau ET valeur précise · pas seulement le niveau
+  RÈGLE 4 : TYPE 2 absent pour ce référentiel · sans objet
+  RÈGLE 5 : Stylo noir uniquement · pas de crayon
+  RÈGLE 6 : Note /20 = C1 + C2 · calcul direct · jamais de calculatrice
+  RÈGLE 7 : Tester avant séance → 3 élèves fictifs · vérifier calcul
+
+
+────────────────────────────────────────────────────
+SECTION 4 — GRILLE COMPLÈTE ASSEMBLÉE
+────────────────────────────────────────────────────
+
+Format de jeu      : Matchs à effectif réduit (3×3 ou 4×4) · 2 mi-temps ·
+                     équipes dont le rapport de force est équilibré a priori
+
+Rôles sociaux      : Chaque élève passe dans les 3 rôles : joueur ·
+                     observateur · co-arbitre. C3 évalué sur qualité
+                     effective du recueil et de l'arbitrage.
+
+Règles aménagées   : À compléter avant la séance
+(exemples officiels) → suppression règle 3 secondes dans la raquette
+                     → 2e chance sur tir raté avec défense placée
+                     → surnombre avec défenseur en retard
+                     → bonus de score sur tir réussi en 1c0
+                     → balle à 2 mains au-dessus de la tête = invulnérable
+
+Pondération totale : C1 /10 + C2 /10 = /20
+                     C3 /4 = bonus complémentaire
+
+Absence de barème  : Aucun barème genré pour ce référentiel
+genré              (contrairement à l'athlétisme)
+
+
+────────────────────────────────────────────────────
+SIMULATION TERRAIN — 3 ÉLÈVES FICTIFS (TEST AVANT SÉANCE)
+────────────────────────────────────────────────────
+
+  ┌────────────┬────────────────────────────────┬──────────┬────────────────────────────────────────┬──────────┬──────────┐
+  │  ÉLÈVE     │  C1 — Degré + conduite         │  Note C1 │  C2 — Degré + conduite                 │  Note C2 │  /20     │
+  ├────────────┼────────────────────────────────┼──────────┼────────────────────────────────────────┼──────────┼──────────┤
+  │  Débutant  │  C1− · Jeu direct              │   2/10   │  C2− · Intermittent, peu collectif      │   2/10   │   4/20   │
+  │  Interméd. │  C1~ · Jeu simple en CA/placé  │   5/10   │  C2~ · Joueur permettant jeu rapide     │   5/10   │  10/20   │
+  │  Avancé    │  C1+ · Jeu varié, adapté        │   8/10   │  C2+ · Joueur assurant jeu par var.     │   8/10   │  16/20   │
+  └────────────┴────────────────────────────────┴──────────┴────────────────────────────────────────┴──────────┴──────────┘
+
+  ✓ Barème lisible en moins de 3 secondes ?      OUI
+  ✓ Procédure fluide (< 10 sec/élève) ?          OUI
+  ✓ Calcul /20 direct sans calculatrice ?        OUI
+
+
+────────────────────────────────────────────────────
+SECTION F — CRITIQUE IA (à compléter par l'équipe)
+────────────────────────────────────────────────────
+
+Q1 — Les codes (C1+/C1~/C1−) sont-ils lisibles à 50cm sur fiche imprimée ?
+     Oui. Format 2 caractères + symbole · Arial Bold ≥ 14pt.
+
+Q2 — TYPE 1 : la valeur précise est-elle bien requise (pas seulement le niveau) ?
+     Oui. Règle 3 et procédure terrain rappellent : entourer niveau + écrire valeur.
+
+Q3 — TYPE 2 : barème lu directement sans calcul mental ?
+     Non applicable — TYPE 2 absent pour Basketball DNB Niveau 2.
+
+Q4 — La note /20 est-elle lisible sans calculatrice ?
+     Oui. Note /20 = C1 + C2. Addition directe.
+
+Q5 — La pause interactive a-t-elle bien eu lieu ?
+     [ À confirmer par l'équipe avant usage terrain ]
+
+Q6 — Contrainte terrain signalée :
+     [ OUI / NON — à compléter par l'équipe ]
+
+Q7 — Combien d'itérations ? Quelle composante déterminante ?
+     [ À compléter par l'équipe après usage ]
+
+Q8 — Point de vigilance principal :
+     La règle de conversion /8 → /10 doit figurer en bas de chaque grille
+     papier et être validée par le formateur BOUFRIOUA avant tout usage terrain.
+     La distinction « Rôles assurés » (C3+) ≠ « Rôles assumés » (C3~) est critique.
+
+
+────────────────────────────────────────────────────
+SOURCES
+────────────────────────────────────────────────────
+Source n°1 : Planificateur de Cycle EPS v5 — BOUARGANE · CRMEF Inezgane
+Source n°2 : grille_v1_BASKETBALL_ES-BKT.txt (P2_grille_v1_BASKETBALL_ES-BKT.txt)
+Source n°3 : ADP2026_ES_Basketball_COLL2_EQ07.xlsx
+             Feuilles : CRITÈRES C1·C2·C3 · BARÈME ES · TEST SIMULATION
+Source n°4 : BO spécial n°5 du 19 juillet 2012 (DNB Niveau 2)
+Source n°5 : Ressources collèges EPS 2009
+Source n°6 : Section A — Problématique COLL2_EQ_07 (validée formateur BOUFRIOUA)
+
+
+══════════════════════════════════════════════════════════════
+FIN — grille_Basketball_ES-BKT.txt · VERSION FINALE
+À déposer sur GitHub · À joindre à la clôture TD1
+Formateur : BOUFRIOUA · ADP 2026 — CRMEF Souss-Massa
+══════════════════════════════════════════════════════════════

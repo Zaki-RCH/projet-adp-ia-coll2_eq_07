@@ -1,0 +1,75 @@
+══════════════════════════════════════════════════════════════
+CODES COMPORTEMENTAUX — Basketball — ES-BKT
+ADP 2026 — CRMEF Souss-Massa — BOUFRIOUA
+Usage : outil HTML · saisie terrain · fiche élève
+Convention : Degré A=#FCEBEB · Degré B=#FAEEDA · Degré C=#EAF3DE
+             Arial Bold ≥ 14pt · lisible à 50cm
+══════════════════════════════════════════════════════════════
+
+
+────────────────────────────────────────────────────
+C1 — Efficacité collective dans le gain du match — /10
+TYPE 1 · Fourchette
+────────────────────────────────────────────────────
+
+  CODE   DEGRÉ   TERME EXACT (BO 2012)                          FOURCHETTE   COULEUR
+  ─────────────────────────────────────────────────────────────────────────────────
+  C1+    C       Jeu varié, en contre-attaque ou placé          8 – 10 pts   #EAF3DE
+  C1~    B       Jeu simple, en contre-attaque ou placé         5 – 7 pts    #FAEEDA
+  C1−    A       Jeu direct                                     0 – 4 pts    #FCEBEB
+
+  Saisie : Entourer code + écrire valeur précise ex : C1~ → 6/10
+
+
+────────────────────────────────────────────────────
+C2 — Efficacité individuelle dans l'organisation collective — /10
+TYPE 1 · Fourchette
+────────────────────────────────────────────────────
+
+  CODE   DEGRÉ   TERME EXACT (BO 2012)                                            FOURCHETTE   COULEUR
+  ──────────────────────────────────────────────────────────────────────────────────────────────────────
+  C2+    C       Joueur assurant le jeu rapide ou placé par des actions variées   8 – 10 pts   #EAF3DE
+  C2~    B       Joueur permettant le jeu rapide ou placé                         5 – 7 pts    #FAEEDA
+  C2−    A       Joueur intermittent et peu collectif                             0 – 4 pts    #FCEBEB
+
+  Saisie : Entourer code + écrire valeur précise ex : C2~ → 6/10
+
+
+────────────────────────────────────────────────────
+C3 — Efficacité dans le rôle d'arbitre et d'observateur — /4 BONUS
+TYPE 1 · Fourchette · NE compte PAS dans le /20
+────────────────────────────────────────────────────
+
+  CODE   DEGRÉ   TERME EXACT (BO 2012)                FOURCHETTE    COULEUR
+  ─────────────────────────────────────────────────────────────────────────
+  C3+    A       Rôles assurés                        3,5 – 4 pts   #EAF3DE
+  C3~    B       Rôles assumés                        2 – 3 pts     #FAEEDA
+  C3−    C       Rôles insuffisamment assurés         0 – 1,5 pts   #FCEBEB
+
+  ⚠ « Rôles assurés » (C3+) ≠ « Rôles assumés » (C3~) — distinction exacte référentiel
+  Saisie : Entourer code + écrire valeur précise ex : C3~ → 2,5/4
+
+
+────────────────────────────────────────────────────
+CALCUL
+────────────────────────────────────────────────────
+
+  Note /20 = C1 + C2   (addition directe · sans calculatrice)
+  C3 = bonus /4 · renseigné séparément
+
+
+────────────────────────────────────────────────────
+RÈGLES DE SAISIE TERRAIN (rappel)
+────────────────────────────────────────────────────
+
+  R1  1 seul code par case
+  R2  Doute → case vide + "?"
+  R3  Toujours écrire la valeur précise (pas seulement le code)
+  R4  Stylo noir uniquement
+  R5  Durée max : 3 secondes par élève
+
+
+══════════════════════════════════════════════════════════════
+FIN — codes_Basketball_ES-BKT.txt
+ADP 2026 — CRMEF Souss-Massa — BOUFRIOUA
+══════════════════════════════════════════════════════════════

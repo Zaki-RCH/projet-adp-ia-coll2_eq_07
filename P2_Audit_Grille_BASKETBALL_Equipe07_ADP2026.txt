@@ -1,0 +1,200 @@
+========================================================================
+RAPPORT D'AUTO-AUDIT — PROMPT P2-BIS
+APS : Basketball | DNB Niveau 2
+Grille auditée : Grille_C1C2_BBK_Equipe07_ADP2026.docx
+Équipe : 07 | Formateur : BOUFRIOUA | Date : 10 juin 2026
+========================================================================
+
+
+TABLEAU D'AUDIT — 5 CRITÈRES
+========================================================================
+
+CRITÈRE 1 — TERMES EXACTS
+------------------------------------------------------------------------
+Statut          : CONFORME ✓
+Point à corriger: Aucun
+Suggestion      : —
+
+Vérification détaillée :
+
+  C1 | A : « Jeu varié, en contre-attaque ou placé »             ✓
+     | B : « Jeu simple, en contre-attaque ou placé »            ✓
+     | C : « Jeu direct »                                        ✓
+
+  C2 | A : « Joueur assurant le jeu rapide ou placé
+           par des actions variées »                             ✓
+     | B : « Joueur permettant le jeu rapide ou placé »         ✓
+     | C : « Joueur intermittent et peu collectif »              ✓
+
+  C3 | A : « Rôles assurés »                                     ✓
+     | B : « Rôles assumés »                                     ✓
+     | C : « Rôles insuffisamment assurés »                      ✓
+
+Les 9 termes des degrés A/B/C sont repris mot pour mot depuis le
+BO spécial n°5 du 19 juillet 2012. Aucune reformulation détectée.
+
+
+------------------------------------------------------------------------
+CRITÈRE 2 — OBSERVABILITÉ TERRAIN
+------------------------------------------------------------------------
+Statut          : PARTIELLEMENT CONFORME ⚠
+Point à corriger: Indicateur C1 — « Adaptation au replacement défensif
+                  adverse » — cet indicateur nécessite une lecture
+                  tactique globale qui dépasse les 10 secondes pour un
+                  observateur stagiaire. Il ne se lit pas sur une action
+                  isolée ; il se construit sur plusieurs possessions.
+Suggestion      : Remplacer ou compléter par un indicateur comportemental
+                  plus immédiat, par exemple :
+                  « L'équipe monte vite quand la défense n'est pas
+                  replacée » OU « L'équipe ralentit et s'organise quand
+                  la défense est en place ».
+                  L'équipe reformule sans sortir des termes du référentiel.
+
+Note : les indicateurs C2 (choix PB, démarquage NPB, replacement DEF)
+et C3 (données fiables, gestes officiels, score connu) sont observables
+en temps réel. ✓
+
+
+------------------------------------------------------------------------
+CRITÈRE 3 — CALCUL /20
+------------------------------------------------------------------------
+Statut          : PARTIELLEMENT CONFORME ⚠  [PRIORITÉ HAUTE]
+Point à corriger: La conversion des barèmes originaux du référentiel
+                  (C1 /8 + C2 /8 = /16, + /4 gains de matchs) vers
+                  une grille /10 + /10 = /20 n'est pas explicitée dans
+                  la grille elle-même.
+                  Un formateur lisant la grille seule ne comprend pas
+                  sur quelle base la conversion a été faite.
+                  De plus, le sous-critère « Gains des matchs /2 pts »
+                  mentionné dans la cellule C1 n'est pas articulé avec
+                  le score /10.
+Suggestion      : Ajouter une note de bas de grille :
+                  « Les 8 pts du référentiel DNB ont été ramenés à /10
+                  par proportionnalité pour faciliter la lecture —
+                  à valider par le formateur avant tout usage. »
+                  Ne pas modifier les seuils sans validation enseignant.
+
+
+------------------------------------------------------------------------
+CRITÈRE 4 — COHÉRENCE DE LA PROGRESSION A → B → C
+------------------------------------------------------------------------
+Statut          : CONFORME ✓
+Point à corriger: Aucun
+Suggestion      : —
+
+Vérification détaillée :
+
+  C1 : Jeu direct (désorganisé)
+       → Jeu simple orienté vers la cible
+       → Jeu varié adapté au rapport de force
+       Progression du moins vers le plus élaboré. ✓
+
+  C2 : Joueur intermittent (choix inadaptés)
+       → Joueur permettant le jeu (choix basique)
+       → Joueur assurant le jeu par actions variées (maîtrise complète)
+       Progression claire et pédagogiquement cohérente. ✓
+
+  C3 : Rôles insuffisamment assurés
+       → Rôles assumés (avec aide)
+       → Rôles assurés (autonomie pleine)
+       Progression cohérente. ✓
+       Distinction « assumés » (B) ≠ « assurés » (A) bien signalée
+       dans la grille. Point fort. ✓
+
+
+------------------------------------------------------------------------
+CRITÈRE 5 — SPÉCIFICITÉS APS INTÉGRÉES
+------------------------------------------------------------------------
+Statut          : PARTIELLEMENT CONFORME ⚠
+
+Trois éléments spécifiques au Basketball DNB Niveau 2 sont absents
+ou incomplets :
+
+  5a — RÔLES SOCIAUX ROTATIFS
+  Point à corriger : La grille évalue C3 mais ne précise pas que chaque
+                     élève passe obligatoirement dans les 3 rôles
+                     (joueur / observateur / co-arbitre). Un formateur
+                     lisant la grille seule ne saurait pas que C3 est
+                     évalué sur chaque élève et non sur un observateur
+                     désigné fixe.
+  Suggestion       : Ajouter sous le tableau C3 :
+                     « Chaque élève est évalué dans les 3 rôles au cours
+                     de la séance d'évaluation. »
+
+  5b — RÈGLES AMÉNAGÉES
+  Point à corriger : Le référentiel DNB prévoit des aménagements
+                     possibles (règle des 3 secondes, 2e chance sur tir
+                     raté, surnombre, bonus de score…). La grille n'en
+                     fait aucune mention. Si des règles aménagées sont
+                     appliquées le jour J, cela peut affecter la lecture
+                     des indicateurs C1 et C2.
+  Suggestion       : Ajouter en en-tête de la grille une case :
+                     « Règles aménagées retenues : _________________ »
+                     à remplir avant la séance.
+
+  5c — TEMPS DE CONCERTATION
+  Point à corriger : Le référentiel prévoit des temps de concertation
+                     entre les phases de jeu pour ajuster les
+                     organisations collectives. Ces temps influencent
+                     l'observation de C1 mais ne sont pas mentionnés.
+  Suggestion       : Ajouter une note courte sous C1 :
+                     « Observer aussi les ajustements collectifs lors
+                     des temps de concertation entre mi-temps. »
+
+
+========================================================================
+SYNTHÈSE D'AUDIT
+========================================================================
+
+  Critère                    | Statut                  | Priorité
+  ---------------------------+-------------------------+-------------
+  C1 — Termes exacts         | CONFORME                | —
+  C2 — Observabilité terrain | PARTIELLEMENT CONFORME  | Moyenne
+  C3 — Calcul /20            | PARTIELLEMENT CONFORME  | HAUTE
+  C4 — Cohérence A→B→C       | CONFORME                | —
+  C5 — Spécificités APS      | PARTIELLEMENT CONFORME  | Moyenne
+
+CONCLUSION :
+  La grille est utilisable en l'état pour une première mise à l'essai,
+  mais trois points de précision sont recommandés avant soumission
+  définitive au formateur. Aucune non-conformité majeure sur les termes
+  exacts (C1) ni sur la cohérence pédagogique (C4). Les corrections à
+  apporter sont des ajouts de contexte et de protocole, non des
+  corrections de fond.
+
+  Nombre de critères conformes         : 2 / 5
+  Nombre de critères partiels          : 3 / 5
+  Nombre de critères non conformes     : 0 / 5
+
+
+========================================================================
+SECTION F — CRITIQUE DE L'AUDIT IA (à compléter par l'équipe)
+========================================================================
+
+Q1. Quels critères étaient non conformes avant l'audit ?
+    Réponse : Les critères 2 (observabilité), 3 (calcul /20) et 5
+    (spécificités APS) présentaient des points partiellement conformes.
+    Aucun critère n'était totalement non conforme.
+
+Q2. L'audit IA a-t-il détecté toutes les erreurs ?
+    Réponse : À compléter par l'équipe après correction et retour
+    du formateur.
+
+Q3. Y a-t-il eu des faux positifs (conformité signalée à tort) ?
+    Réponse : À compléter par l'équipe après validation terrain.
+
+Q4. Que vaut le regard critique de l'IA sur son propre travail ?
+    Réponse : L'IA a identifié des lacunes réelles (absence de mention
+    des rôles rotatifs, de la règle de conversion, des règles aménagées)
+    que le prompt P2 n'avait pas forcées à inclure. Cela confirme
+    l'utilité du P2-BIS comme filet de sécurité avant soumission.
+    En revanche, l'IA ne peut pas évaluer si les indicateurs sont
+    réellement observables en 10 secondes dans une situation de jeu
+    réelle — seul un test terrain ou le regard d'un formateur expérimenté
+    peut trancher sur ce point.
+
+========================================================================
+Rapport produit avec l'assistance de Claude (Anthropic) — 10 juin 2026
+CRMEF Souss-Massa — Section EPS — ADP 2026 — Équipe 07
+Fichier : Audit_Grille_BASKETBALL_Equipe07_ADP2026.txt
+========================================================================

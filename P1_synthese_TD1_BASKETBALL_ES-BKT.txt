@@ -1,0 +1,409 @@
+═══════════════════════════════════════════════════════════════════════════
+SYNTHÈSE TD1 — BASKETBALL — Évaluation Sommative — Collège
+ADP 2026 · CRMEF Souss-Massa · Section EPS
+Code projet : COLL2_EQ_07  |  Équipe : 07  |  Formateur : BOUFRIOUA
+Date de synthèse : 10 juin 2026
+═══════════════════════════════════════════════════════════════════════════
+
+SOMMAIRE
+───────────────────────────────────────────────────────────────────────────
+  BLOC A  →  Problématique validée
+  BLOC B  →  Grille C1/C2/C3 (production P2)
+  BLOC C  →  Codes comportementaux (production P3)
+  BLOC D  →  Rapport d'auto-audit (production P2-BIS)
+  BLOC E  →  Chaîne des prompts et statut de chaque étape
+  BLOC F  →  Bilan critique global (à compléter par l'équipe)
+───────────────────────────────────────────────────────────────────────────
+
+
+═══════════════════════════════════════════════════════════════════════════
+BLOC A — PROBLÉMATIQUE VALIDÉE
+═══════════════════════════════════════════════════════════════════════════
+
+Source : Section0_Problematique_ADP2026_rempli.docx (Section A.3)
+Statut : ☑ Validée (6/6 critères cochés)
+
+  "Cet outil permet à l'enseignant EPS d'analyser le niveau des élèves en
+  basketball en évaluant leurs compétences techniques et tactiques (dribble,
+  passe, tir, placement et engagement), afin de décider d'un niveau de
+  maîtrise et de proposer des axes de remédiation et de progression en fin
+  de cycle."
+
+TABLEAU DE VÉRIFICATION A.4
+───────────────────────────────────────────────────────────────────────────
+  Critère 1 — Décision concrète désignée                    ☑ Oui
+  Critère 2 — Utile pour un enseignant EPS réel             ☑ Oui
+  Critère 3 — Données terrain identifiables                 ☑ Oui
+  Critère 4 — Réalisable en 8 semaines                      ☑ Oui
+  Critère 5 — Formulée en une seule phrase claire           ☑ Oui
+  Critère 6 — Distincte d'un simple outil de notation      ☑ Oui
+
+IDENTIFICATION DU PROJET
+───────────────────────────────────────────────────────────────────────────
+  APS              : Basketball
+  Famille          : ES — Évaluation Sommative
+  Niveau / public  : Collège
+  Contexte         : Terrain du collège — cycle de 8 semaines
+  Référentiel      : BO spécial n°5 du 19 juillet 2012 (DNB Niveau 2)
+
+
+═══════════════════════════════════════════════════════════════════════════
+BLOC B — GRILLE D'ÉVALUATION C1/C2/C3  (Production P2)
+═══════════════════════════════════════════════════════════════════════════
+
+Source : Grille_C1C2_BASKETBALL_Equipe07_ADP2026.docx
+Référentiel : BO spécial n°5 du 19 juillet 2012
+
+───────────────────────────────────────────────────────────────────────────
+C1 — EFFICACITÉ COLLECTIVE DANS LE GAIN DU MATCH  /10
+     (dont : /2 résultats matchs · /8 jeu collectif)
+───────────────────────────────────────────────────────────────────────────
+  Indicateurs observables terrain :
+    · Type d'attaque choisie (contre-attaque ou attaque placée)
+    · Adaptation au replacement défensif adverse
+    · Résultat du match (victoires / défaites)
+
+  Degré A — Maîtrise élevée      [8 – 10 pts]
+    « Jeu varié, en contre-attaque ou placé »
+    L'équipe varie les modes d'attaque (CA et placée) et s'adapte
+    en temps réel au rapport de force adverse.
+
+  Degré B — Maîtrise partielle   [5 – 7 pts]
+    « Jeu simple, en contre-attaque ou placé »
+    L'équipe progresse vers une zone favorable mais sans varier
+    ni adapter constamment ses choix collectifs.
+
+  Degré C — Maîtrise insuffisante [0 – 4 pts]
+    « Jeu direct »
+    Progression désorganisée vers le panier, sans lecture de la
+    défense ni organisation collective.
+
+───────────────────────────────────────────────────────────────────────────
+C2 — EFFICACITÉ INDIVIDUELLE DANS L'ORGANISATION COLLECTIVE  /10
+───────────────────────────────────────────────────────────────────────────
+  Indicateurs observables terrain :
+    · PB : choix passe / dribble / tir selon défenseur
+    · NPB : se démarque et offre une solution visible
+    · DEF : se replace entre PB et panier
+
+  Degré A — Maîtrise élevée      [8 – 10 pts]
+    « Joueur assurant le jeu rapide ou placé par des actions variées »
+    Varie ses actions, accélère ou pose le jeu, tire en situation
+    favorable.
+
+  Degré B — Maîtrise partielle   [5 – 7 pts]
+    « Joueur permettant le jeu rapide ou placé »
+    Fait un choix entre CA et attaque placée, conserve le ballon
+    ou offre une passe.
+
+  Degré C — Maîtrise insuffisante [0 – 4 pts]
+    « Joueur intermittent et peu collectif »
+    Choix inadaptés (passer / dribbler / shooter), efficacité
+    collective réduite.
+
+───────────────────────────────────────────────────────────────────────────
+C3 — EFFICACITÉ DANS LE RÔLE D'ARBITRE ET D'OBSERVATEUR  /4
+     ⚠ Volet complémentaire — ne modifie pas la note /20
+───────────────────────────────────────────────────────────────────────────
+  Indicateurs observables terrain :
+    · Données d'observation fiables et exploitables
+    · Gestes officiels utilisés correctement
+    · Score connu à tout moment
+
+  Degré A — Maîtrise élevée      [3,5 – 4 pts]
+    « Rôles assurés »
+    Données différenciées exploitables. Arbitrage autonome et ferme.
+
+  Degré B — Maîtrise partielle   [2 – 3 pts]
+    « Rôles assumés »  ⚠ ≠ « assurés »
+    Données globales et fiables. Arbitrage assuré avec de l'aide.
+
+  Degré C — Maîtrise insuffisante [0 – 1,5 pts]
+    « Rôles insuffisamment assurés »
+    Données peu fiables. Hésitation sur des actions difficiles.
+
+───────────────────────────────────────────────────────────────────────────
+NOTE FINALE
+───────────────────────────────────────────────────────────────────────────
+  Note /20 = C1 (/10) + C2 (/10)
+  C3 (/4) renseigné séparément — ne modifie pas la note principale
+
+───────────────────────────────────────────────────────────────────────────
+SECTION F — CRITIQUE P2 (réponses de l'équipe)
+───────────────────────────────────────────────────────────────────────────
+  Q1 — Termes A/B/C exactement ceux du référentiel ?
+       Oui. Les 9 termes ont été repris mot pour mot depuis le BO spécial
+       n°5 du 19 juillet 2012, sans reformulation.
+
+  Q2 — Indicateurs observables en temps réel ?
+       Oui pour C2 et C3. Pour C1, l'indicateur « adaptation au
+       replacement défensif » est plus exigeant pour un stagiaire
+       débutant — peut nécessiter une grille de comptage.
+
+  Q3 — Calcul /20 lisible sans calculatrice ?
+       Oui. Note /20 = C1 + C2, addition directe. C3 isolé.
+
+  Q4 — Itération la plus significative ?
+       La conversion des barèmes originaux (/8 → /10) a été l'ajustement
+       le plus délicat. À valider par le formateur avant usage terrain.
+
+  Q5 — Ce qu'on aurait précisé différemment dans [5] ?
+       Préciser la règle de conversion /8 → /10 dans la contrainte [5],
+       et clarifier le traitement du sous-critère « Gains des matchs /2 ».
+
+
+═══════════════════════════════════════════════════════════════════════════
+BLOC C — CODES COMPORTEMENTAUX  (Production P3)
+═══════════════════════════════════════════════════════════════════════════
+
+Source : Codes_BASKETBALL_Equipe07_ADP2026.txt
+Généré via Prompt P3
+
+LÉGENDE COULEURS
+───────────────────────────────────────────────────────────────────────────
+  Degré A  [#FCEBEB — rouge]  =  Insuffisant / non acquis
+  Degré B  [#FAEEDA — amber]  =  En cours d'acquisition
+  Degré C  [#EAF3DE — vert ]  =  Maîtrisé / acquis
+  Police imposée : Arial Bold ≥ 14pt
+
+───────────────────────────────────────────────────────────────────────────
+TABLEAU DES 9 CODES (3 volets × 3 degrés)
+───────────────────────────────────────────────────────────────────────────
+
+  Volet  |  Degré A            |  Degré B            |  Degré C
+  -------|---------------------|---------------------|--------------------
+  JC     |  JC−  [#FCEBEB]     |  JC~  [#FAEEDA]     |  JC+  [#EAF3DE]
+  JI     |  JI−  [#FCEBEB]     |  JI~  [#FAEEDA]     |  JI+  [#EAF3DE]
+  AR     |  AR−  [#FCEBEB]     |  AR~  [#FAEEDA]     |  AR+  [#EAF3DE]
+
+VOLET JC — Jeu Collectif
+───────────────────────────────────────────────────────────────────────────
+  JC−  Degré A [#FCEBEB]
+    Jeu direct uniquement : progression simple vers le panier,
+    pas de circulation de balle organisée entre partenaires.
+    Barème DNB : 0 – 2,5 pts
+
+  JC~  Degré B [#FAEEDA]
+    Jeu simple en contre-attaque ou attaque placée : montée de balle
+    rapide OU circulation de base ; utilisation d'un rapport de force
+    favorable.
+    Barème DNB : 3 – 4,5 pts
+
+  JC+  Degré C [#EAF3DE]
+    Jeu varié en contre-attaque ou attaque placée : adapte constamment
+    et rapidement le choix tactique selon le rapport de force adverse.
+    Barème DNB : 5 – 6 pts
+
+VOLET JI — Jeu Individuel (Porteur de balle / Non-porteur)
+───────────────────────────────────────────────────────────────────────────
+  JI−  Degré A [#FCEBEB]
+    Joueur intermittent et peu collectif : ne fait pas toujours les
+    bons choix (passer, dribbler, shooter), ce qui limite son efficacité
+    dans le jeu collectif.
+    Barème DNB : 0 – 3,5 pts
+
+  JI~  Degré B [#FAEEDA]
+    Joueur permettant le jeu rapide ou placé : choisit entre contre-
+    attaque et attaque placée, conserve la balle, assure une passe ou
+    offre une solution de passe, identifie le tir en 1 contre 0.
+    Barème DNB : 4 – 6 pts
+
+  JI+  Degré C [#EAF3DE]
+    Joueur assurant le jeu rapide ou placé par actions variées :
+    bonifie les ballons, varie les conditions d'accès à la cible,
+    pose le jeu ou l'accélère, tire en situation favorable.
+    Barème DNB : 6,5 – 8 pts
+
+VOLET AR — Arbitre / Observateur
+───────────────────────────────────────────────────────────────────────────
+  AR−  Degré A [#FCEBEB]
+    Rôles insuffisamment assurés : recueille des données peu fiables ;
+    hésite sur les décisions difficiles à arbitrer.
+    Barème DNB : 0 – 1,5 pts
+
+  AR~  Degré B [#FAEEDA]
+    Rôles assumés : recueille des données globales, justes et fiables ;
+    assume le rôle d'arbitre avec de l'aide.
+    Barème DNB : 2 – 3 pts
+
+  AR+  Degré C [#EAF3DE]
+    Rôles assurés : recueille des données différenciées exploitables ;
+    assure son rôle d'arbitre de façon autonome.
+    Barème DNB : 3,5 – 4 pts
+
+───────────────────────────────────────────────────────────────────────────
+SECTION F — CRITIQUE P3 (à compléter par l'équipe)
+───────────────────────────────────────────────────────────────────────────
+  Prompt N°          : P3
+  Tâche              : Déduire les 9 codes depuis la grille C1/C2 validée
+  Nb itérations      : [ à renseigner ]
+  Composante clé     : [ à renseigner ]
+
+  IA a bien fait     : Codes alignés sur les termes exacts du référentiel
+                       DNB niveaux 1 et 2 ; progression A→B→C cohérente
+                       avec les plages de points officielles.
+  IA a mal fait      : [ à renseigner ]
+  Ajustement décisif : [ à renseigner ]
+  Après discussion   : [ à renseigner ]
+  Décision finale    : [ Gardé tel quel / Modifié / Rejeté et refait ]
+
+
+═══════════════════════════════════════════════════════════════════════════
+BLOC D — RAPPORT D'AUTO-AUDIT  (Production P2-BIS)
+═══════════════════════════════════════════════════════════════════════════
+
+Source : Audit_Grille_BASKETBALL_Equipe07_ADP2026.txt
+Grille auditée : Grille_C1C2_BASKETBALL_Equipe07_ADP2026.docx
+Date : 10 juin 2026
+
+───────────────────────────────────────────────────────────────────────────
+TABLEAU DE SYNTHÈSE D'AUDIT (5 critères)
+───────────────────────────────────────────────────────────────────────────
+
+  Critère                      | Statut                  | Priorité
+  -----------------------------|-------------------------|---------------
+  C1 — Termes exacts           | CONFORME         ✓      | —
+  C2 — Observabilité terrain   | PARTIELLEMENT    ⚠      | Moyenne
+  C3 — Calcul /20              | PARTIELLEMENT    ⚠      | HAUTE
+  C4 — Cohérence A→B→C         | CONFORME         ✓      | —
+  C5 — Spécificités APS        | PARTIELLEMENT    ⚠      | Moyenne
+
+  Conformes : 2/5   |   Partiels : 3/5   |   Non conformes : 0/5
+
+───────────────────────────────────────────────────────────────────────────
+DÉTAIL DES POINTS À CORRIGER
+───────────────────────────────────────────────────────────────────────────
+
+  C2 — OBSERVABILITÉ TERRAIN
+    Point : L'indicateur C1 « Adaptation au replacement défensif adverse »
+    nécessite une lecture tactique globale sur plusieurs possessions,
+    difficile pour un observateur stagiaire en 10 secondes.
+    Suggestion : Ajouter un indicateur comportemental immédiat :
+    « L'équipe monte vite quand la défense n'est pas replacée » OU
+    « L'équipe ralentit et s'organise quand la défense est en place. »
+
+  C3 — CALCUL /20  [PRIORITÉ HAUTE]
+    Point : La conversion des barèmes originaux (/8 → /10) n'est pas
+    explicitée dans la grille. Le sous-critère « Gains des matchs /2 pts »
+    n'est pas articulé avec le score /10.
+    Suggestion : Ajouter une note de bas de grille :
+    « Les 8 pts du référentiel DNB ont été ramenés à /10 par
+    proportionnalité pour faciliter la lecture — à valider par le
+    formateur avant tout usage. »
+
+  C5a — RÔLES SOCIAUX ROTATIFS
+    Point : La grille n'indique pas que chaque élève passe dans les 3
+    rôles (joueur / observateur / co-arbitre).
+    Suggestion : Ajouter sous le tableau C3 :
+    « Chaque élève est évalué dans les 3 rôles au cours de la séance. »
+
+  C5b — RÈGLES AMÉNAGÉES
+    Point : Le référentiel DNB prévoit des aménagements possibles
+    (3 secondes, 2e chance, surnombre, bonus…) non mentionnés.
+    Suggestion : Ajouter en en-tête :
+    « Règles aménagées retenues : _________________ »
+
+  C5c — TEMPS DE CONCERTATION
+    Point : Les temps de concertation prévus par le référentiel
+    influencent C1 mais ne sont pas mentionnés.
+    Suggestion : Ajouter une note sous C1 :
+    « Observer aussi les ajustements lors des temps de concertation. »
+
+───────────────────────────────────────────────────────────────────────────
+CONCLUSION D'AUDIT
+───────────────────────────────────────────────────────────────────────────
+  La grille est utilisable pour une première mise à l'essai. Trois points
+  de précision sont recommandés avant soumission définitive au formateur.
+  Aucune non-conformité majeure sur les termes exacts (C1) ni sur la
+  cohérence pédagogique (C4). Les corrections sont des ajouts de contexte
+  et de protocole, non des corrections de fond.
+
+───────────────────────────────────────────────────────────────────────────
+SECTION F — CRITIQUE DE L'AUDIT IA (réponses de l'équipe)
+───────────────────────────────────────────────────────────────────────────
+  Q1 — Critères non conformes avant l'audit ?
+       Critères 2 (observabilité), 3 (calcul /20) et 5 (spécificités APS)
+       présentaient des points partiels. Aucun totalement non conforme.
+
+  Q2 — L'audit IA a-t-il détecté toutes les erreurs ?
+       [ À compléter après correction et retour du formateur ]
+
+  Q3 — Y a-t-il eu des faux positifs ?
+       [ À compléter après validation terrain ]
+
+  Q4 — Valeur du regard critique de l'IA sur son propre travail ?
+       L'IA a identifié des lacunes réelles que le prompt P2 n'avait pas
+       forcées (rôles rotatifs, règle de conversion, règles aménagées).
+       Utilité du P2-BIS confirmée comme filet de sécurité. Limite :
+       l'IA ne peut pas évaluer si les indicateurs sont réellement
+       observables en 10 secondes en situation de jeu réelle.
+
+
+═══════════════════════════════════════════════════════════════════════════
+BLOC E — CHAÎNE DES PROMPTS ET STATUT
+═══════════════════════════════════════════════════════════════════════════
+
+  Étape        | Prompt    | Livrable                        | Statut
+  -------------|-----------|----------------------------------|----------
+  Problématique| P1 + A.6  | Section A validée               | ✓ VALIDÉ
+  Grille       | P2        | Grille_C1C2_BBK_EQ07.docx       | ✓ PRODUIT
+  Audit grille | P2-BIS    | Audit_Grille_BBK_EQ07.txt       | ✓ PRODUIT
+  Codes        | P3        | Codes_BBK_EQ07.txt              | ✓ PRODUIT
+  Fiche DOCX   | P4        | [ à produire ]                  | ○ SUIVANT
+  Fiche HTML   | P5        | [ à produire ]                  | ○ EN ATTENTE
+  Application  | P7 (ES)   | [ à produire ]                  | ○ EN ATTENTE
+
+RÈGLE DE DÉPENDANCE RAPPELÉE
+───────────────────────────────────────────────────────────────────────────
+  Chaque prompt utilise la sortie du précédent comme entrée [4].
+  P4 peut maintenant être lancé — Bloc A validé + Grille + Codes prêts.
+
+
+═══════════════════════════════════════════════════════════════════════════
+BLOC F — BILAN CRITIQUE GLOBAL  (à compléter collectivement)
+═══════════════════════════════════════════════════════════════════════════
+
+  ┌────────────────────────────────────────────────────────────────────┐
+  │  Ce bilan est à remplir par l'équipe lors de la discussion finale  │
+  │  du TD1, avant soumission au formateur.                            │
+  └────────────────────────────────────────────────────────────────────┘
+
+  1. Cohérence d'ensemble (Bloc A → Bloc B → Bloc C)
+     Réponse : [ à renseigner ]
+
+  2. Points forts de la démarche IA-assistée identifiés par l'équipe
+     Réponse : [ à renseigner ]
+
+  3. Points faibles ou limites rencontrées
+     Réponse : [ à renseigner ]
+
+  4. Ce qui aurait été différent sans IA
+     Réponse : [ à renseigner ]
+
+  5. Correction prioritaire avant remise au formateur
+     Réponse : Ajouter la note de conversion /8 → /10 en bas de grille
+               [Critère C3 de l'audit — priorité haute]
+
+  6. Décision finale de l'équipe
+     Réponse : [ Soumis tel quel / Soumis après corrections mineures /
+                Refait partiellement ]
+
+
+═══════════════════════════════════════════════════════════════════════════
+CONTRAINTES DE MISE EN PAGE (rappel pour intégration)
+═══════════════════════════════════════════════════════════════════════════
+  · Codes      : 2 caractères MAX  (JC− / JI~ / AR+ etc.)
+  · Police     : Arial Bold ≥ 14pt
+  · Fond A     : #FCEBEB (rouge)
+  · Fond B     : #FAEEDA (amber)
+  · Fond C     : #EAF3DE (vert)
+  · Référentiel: BO spécial n°5 du 19 juillet 2012 (DNB Niveau 2)
+  · Règle clé  : Termes exacts du référentiel EN PREMIER dans chaque
+                 libellé, puis observable terrain en complément
+
+
+═══════════════════════════════════════════════════════════════════════════
+Synthèse produite avec l'assistance de Claude (Anthropic) — 10 juin 2026
+CRMEF Souss-Massa — Section EPS — ADP 2026 — Équipe 07
+Fichier : synthese_TD1_Basketball_COLL2_EQ07.txt
+═══════════════════════════════════════════════════════════════════════════

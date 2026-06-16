@@ -1,0 +1,185 @@
+══════════════════════════════════════════════════════
+GRILLE SOMMATIVE v1 — BASKETBALL — ES-BKT
+ADP 2026 — CRMEF Souss-Massa — BOUFRIOUA
+Type          : ES — Évaluation Sommative
+Note maximale : /20 = C1 + C2
+Niveau scolaire (arrière-plan) : Collège (cycle DNB)
+Niveau de contenu identifié   : Niveau 2 — DNB
+                                 BO spécial n°5 du 19 juillet 2012
+══════════════════════════════════════════════════════
+
+
+────────────────────────────────────────────────────
+CRITÈRE C1 — Efficacité collective dans le gain du match — /10
+────────────────────────────────────────────────────
+Type de donnée : TYPE 1 (niveau + fourchette)
+                 L'observateur entoure le degré ET écrit la valeur précise.
+
+  Sous-critère intégré : Gains des matchs /2 pts
+  → Ajouter /2 au score du degré pour obtenir la note C1 finale /10
+  → Note C1 /10 = score degré (converti) + gains des matchs
+  ⚠ Règle de conversion : les 6 pts du référentiel DNB (jeu collectif)
+    ont été ramenés à /8 par proportionnalité, puis ajoutés aux /2 gains
+    pour atteindre /10. À valider par le formateur avant usage terrain.
+
+DEGRÉ A — « Jeu varié, en contre-attaque ou placé » · 8 à 10 pts
+  Conduite observable : Varie CA et attaque placée · s'adapte en temps
+                        réel au rapport de force adverse
+  Saisie terrain      : Entourer A + écrire valeur précise ex : ___/10
+
+DEGRÉ B — « Jeu simple, en contre-attaque ou placé » · 5 à 7 pts
+  Conduite observable : Progresse vers zone favorable sans varier
+                        ni adapter constamment les choix collectifs
+  Saisie terrain      : Entourer B + écrire valeur précise ex : ___/10
+
+DEGRÉ C — « Jeu direct » · 0 à 4 pts
+  Conduite observable : Progression désorganisée · pas de lecture
+                        défense · pas d'organisation collective
+  Saisie terrain      : Entourer C + écrire valeur précise ex : ___/10
+
+  NOTE TERRAIN : Observer aussi les ajustements lors des temps de
+  concertation entre les phases (prévu par le référentiel DNB).
+  Indicateur immédiat : « L'équipe monte vite quand la défense
+  n'est pas replacée » / « L'équipe ralentit et s'organise quand
+  la défense est en place. »
+
+
+────────────────────────────────────────────────────
+CRITÈRE C2 — Efficacité individuelle dans l'organisation collective — /10
+────────────────────────────────────────────────────
+Type de donnée : TYPE 1 (niveau + fourchette)
+                 L'observateur entoure le degré ET écrit la valeur précise.
+
+  ⚠ Règle de conversion : les 8 pts du référentiel DNB ont été ramenés
+    à /10 par proportionnalité. À valider par le formateur avant usage.
+
+DEGRÉ A — « Joueur assurant le jeu rapide ou placé par des actions variées » · 8 à 10 pts
+  Conduite observable : Varie ses actions · accélère ou pose le jeu ·
+                        tire en situation favorable
+  Saisie terrain      : Entourer A + écrire valeur précise ex : ___/10
+
+DEGRÉ B — « Joueur permettant le jeu rapide ou placé » · 5 à 7 pts
+  Conduite observable : Choisit CA ou attaque placée · conserve balle ·
+                        offre une passe · identifie tir en 1 contre 0
+  Saisie terrain      : Entourer B + écrire valeur précise ex : ___/10
+
+DEGRÉ C — « Joueur intermittent et peu collectif » · 0 à 4 pts
+  Conduite observable : Choix inadaptés (passer/dribbler/shooter) ·
+                        efficacité collective réduite
+  Saisie terrain      : Entourer C + écrire valeur précise ex : ___/10
+
+
+────────────────────────────────────────────────────
+CRITÈRE C3 — Efficacité dans le rôle d'arbitre et d'observateur — /4 bonus
+────────────────────────────────────────────────────
+Type de donnée : TYPE 1 (niveau + fourchette)
+                 ⚠ Volet COMPLÉMENTAIRE — NE compte PAS dans la note /20
+
+  ⚠ DISTINCTION TERMINOLOGIQUE CRITIQUE :
+    « Rôles assurés » (A) ≠ « Rôles assumés » (B)
+    Ces deux termes sont EXACTS dans le référentiel. Ne pas les inverser.
+
+  Protocole : chaque élève est évalué dans les 3 rôles au cours de
+  la séance (joueur · observateur · co-arbitre).
+
+DEGRÉ A — « Rôles assurés » · 3,5 à 4 pts
+  Conduite observable : Données différenciées exploitables ·
+                        arbitrage autonome et ferme
+  Saisie terrain      : Entourer A + écrire valeur précise ex : ___/4
+
+DEGRÉ B — « Rôles assumés » · 2 à 3 pts
+  Conduite observable : Données globales et fiables ·
+                        arbitrage assuré avec de l'aide
+  Saisie terrain      : Entourer B + écrire valeur précise ex : ___/4
+
+DEGRÉ C — « Rôles insuffisamment assurés » · 0 à 1,5 pts
+  Conduite observable : Données peu fiables ·
+                        hésitation sur actions difficiles
+  Saisie terrain      : Entourer C + écrire valeur précise ex : ___/4
+
+
+────────────────────────────────────────────────────
+CALCUL NOTE /20
+────────────────────────────────────────────────────
+Note /20 = C1 (/10) + C2 (/10)
+C3 = volet bonus /4 · ne compte pas dans le /20
+Calcul direct · pas de calculatrice nécessaire
+
+
+────────────────────────────────────────────────────
+SPÉCIFICITÉS APS IDENTIFIÉES
+────────────────────────────────────────────────────
+Format de jeu       : Matchs à effectif réduit (3×3 ou 4×4) · 2 mi-temps ·
+                      équipes dont le rapport de force est équilibré a priori
+
+Rôles sociaux       : Chaque élève passe dans les 3 rôles : joueur ·
+                      observateur · co-arbitre. L'évaluation de C3 est
+                      liée à la qualité effective du recueil de données
+                      et de l'arbitrage réalisé.
+
+Règles aménagées    : Règles aménagées retenues : _______________________
+(à compléter avant  Exemples officiels : suppression règle 3 secondes ·
+la séance)            2e chance sur tir raté avec défense placée ·
+                      surnombre avec défenseur en retard · bonus de score
+                      sur tir en 1×0 · balle à 2 mains au-dessus de la
+                      tête = invulnérable.
+
+Pondération totale  : C1 + C2 + C3 = 8 + 8 + 4 = 20 pts (DNB)
+                      → converti outil : C1/10 + C2/10 + C3/4
+                      ⚠ Vérifier l'addition avant de saisir les notes.
+
+Absence de barème   : Aucun barème genré pour ce référentiel
+genré               (contrairement à l'athlétisme).
+
+
+────────────────────────────────────────────────────
+BILAN D'ENRICHISSEMENT
+────────────────────────────────────────────────────
+Compléments proposés : 0 · à valider : 0 · URLs non vérif. : 0
+Toutes les données sont tracées dans les fichiers joints (MODE 1 — Analyse fidèle).
+
+
+────────────────────────────────────────────────────
+SOURCES
+────────────────────────────────────────────────────
+Source n°1 : Planificateur de Cycle EPS v5 — BOUARGANE · CRMEF Inezgane
+Source n°2 : P1_Analyse_Ref_BASKETBALL_Equipe07_ADP2026.md
+Source n°3 : P1_synthese_TD1_Basketball_COLL2_EQ07.txt (Sections A, B, D)
+Source n°4 : BO spécial n°5 du 19 juillet 2012 (DNB Niveau 2)
+Source n°5 : Ressources collèges EPS 2009
+
+
+══════════════════════════════════════════════════════
+FIN — grille_v1_BASKETBALL_ES-BKT.txt
+À soumettre au formateur BOUFRIOUA · validé avant remplissage Excel ES
+══════════════════════════════════════════════════════
+
+
+────────────────────────────────────────────────────
+SECTION F — CRITIQUE IA (à compléter par l'équipe)
+────────────────────────────────────────────────────
+Q1 — Les termes A/B/C sont-ils exactement ceux du référentiel ?
+     Oui. Les 9 termes ont été repris mot pour mot depuis le BO spécial
+     n°5 du 19 juillet 2012, sans reformulation ni abréviation.
+
+Q2 — Le type de donnée est-il correctement identifié pour chaque critère ?
+     Oui. Les 3 critères sont TYPE 1 (niveau + fourchette) : basketball
+     DNB n°2 ne comporte pas de mesure chiffrable directe (pas de chrono
+     ni de distance) → TYPE 2 absent pour ce référentiel.
+
+Q3 — Le barème TYPE 2 est-il lisible directement sans calculatrice ?
+     Non applicable (TYPE 2 absent). Le calcul /20 = C1 + C2 est une
+     addition directe sans calculatrice.
+
+Q4 — Le calcul /20 est-il simple et direct ?
+     Oui. Note /20 = C1 (/10) + C2 (/10). C3 renseigné séparément.
+     ⚠ Point de vigilance signalé (audit P2-BIS, priorité haute) :
+     la règle de conversion /8 → /10 doit figurer en bas de grille
+     et être validée par le formateur avant tout usage.
+
+Q5 — Combien d'itérations ? Quelle composante a été déterminante ?
+     [ À compléter par l'équipe après usage terrain ]
+
+Q6 — Ce qui aurait été reformulé différemment dans le prompt [5] :
+     Préciser explicitement la règle de conversion /8 → /10 et le
+     traitement du sous-critère « Gains des matchs /2 » dans C1.
