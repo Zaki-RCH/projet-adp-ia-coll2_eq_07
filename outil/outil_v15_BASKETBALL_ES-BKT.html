@@ -1,0 +1,3688 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+<title>Outil EPS — Basketball ES-BKT · v10</title>
+<style>
+/* ── RESET & BASE ───────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;scroll-behavior:smooth}
+body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;transition:background .25s,color .25s}
+button{font-family:inherit;cursor:pointer}
+input,select,textarea{font-family:inherit}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* ── DESIGN TOKENS ──────────────────────────────────────────── */
+:root{
+  --court-navy:#0d2137;
+  --court-blue:#1a4f82;
+  --hoop-orange:#e8580a;
+  --hoop-light:#fde8d8;
+  --line-white:#f8fafc;
+  --deg-a-bg:#FCEBEB;--deg-a-border:#c00000;--deg-a-text:#7b1010;
+  --deg-b-bg:#FAEEDA;--deg-b-border:#c07000;--deg-b-text:#7a4500;
+  --deg-c-bg:#EAF3DE;--deg-c-border:#375623;--deg-c-text:#1e3d0f;
+  --step-locked:#e2e8f0;--step-locked-text:#94a3b8;
+  --shadow-card:0 2px 12px rgba(13,33,55,.12);
+  --radius:10px;--radius-sm:6px;
+  --bg:#f0f4f8;--surface:#fff;--surface-2:#f8fafc;--text:#1a2332;--text-soft:#64748b;
+  --border:#cbd5e1;--border-soft:#e2e8f0;
+}
+/* ── DARK MODE — GitHub Dark High Contrast (lisibilité plein soleil terrain) ── */
+:root[data-theme="dark"]{
+  --court-navy:#0a1828;--court-blue:#1a4070;
+  --hoop-orange:#ff967d;
+  --hoop-light:#3a2010;
+  --bg:#0a0c10;--surface:#12161f;--surface-2:#1c212b;--text:#ffffff;--text-soft:#8b949e;
+  --border:#f0f6fc;--border-soft:#f0f6fc;
+  --deg-a-bg:#3a1c1c;--deg-a-border:#e05656;--deg-a-text:#ffb3b3;
+  --deg-b-bg:#3a2c12;--deg-b-border:#e0a040;--deg-b-text:#ffd99a;
+  --deg-c-bg:#1c3320;--deg-c-border:#5cc070;--deg-c-text:#b3f0c0;
+  --step-locked:#2a3850;--step-locked-text:#8b949e;
+  --shadow-card:0 2px 14px rgba(0,0,0,.6);
+}
+/* IMPORTANT : ce bloc doit rester strictement identique au précédent —
+   seule façon de gérer le mode sombre "auto" (préférence système) sans JS. */
+@media(prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --court-navy:#0a1828;--court-blue:#1a4070;
+    --hoop-orange:#ff967d;
+    --hoop-light:#3a2010;
+    --bg:#0a0c10;--surface:#12161f;--surface-2:#1c212b;--text:#ffffff;--text-soft:#8b949e;
+    --border:#f0f6fc;--border-soft:#f0f6fc;
+    --deg-a-bg:#3a1c1c;--deg-a-border:#e05656;--deg-a-text:#ffb3b3;
+    --deg-b-bg:#3a2c12;--deg-b-border:#e0a040;--deg-b-text:#ffd99a;
+    --deg-c-bg:#1c3320;--deg-c-border:#5cc070;--deg-c-text:#b3f0c0;
+    --step-locked:#2a3850;--step-locked-text:#8b949e;
+    --shadow-card:0 2px 14px rgba(0,0,0,.6);
+  }
+}
+
+/* ── HEADER ─────────────────────────────────────────────────── */
+.site-header{
+  background:var(--court-navy);
+  padding:0 1.5rem;
+  display:none; /* caché sur l'écran splash */
+  align-items:center;justify-content:space-between;
+  gap:1rem;height:58px;position:sticky;top:0;z-index:100;
+  box-shadow:0 2px 8px rgba(0,0,0,.35);
+}
+.site-header.visible{display:flex}
+
+/* Quand splash actif: scroll vertical autorisé (contenu peut dépasser 100vh) */
+body.splash-mode{overflow-y:auto;overflow-x:hidden}
+.header-brand{display:flex;align-items:center;gap:.75rem}
+.header-ball{font-size:1.6rem;line-height:1}
+.header-title{color:#fff;font-size:.95rem;font-weight:700;letter-spacing:.02em;line-height:1.2}
+.header-sub{color:#7fb3d9;font-size:.72rem;font-weight:400;letter-spacing:.03em}
+.header-badge{
+  background:var(--hoop-orange);color:#fff;
+  font-size:.7rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+  padding:.25rem .6rem;border-radius:4px;white-space:nowrap;
+}
+
+/* ── STEPPER ────────────────────────────────────────────────── */
+.stepper{
+  display:none; /* caché jusqu'à lancerOutil() */
+  align-items:center;gap:0;
+  background:var(--court-blue);padding:.5rem 1.5rem;
+  overflow-x:auto;scrollbar-width:none;
+  position:sticky;top:58px;z-index:90;
+}
+.stepper.visible{display:flex}
+.stepper::-webkit-scrollbar{display:none}
+.step-item{
+  display:flex;align-items:center;gap:.4rem;
+  padding:.35rem .7rem;border-radius:20px;
+  font-size:.75rem;font-weight:600;letter-spacing:.03em;
+  color:#7fb3d9;cursor:default;white-space:nowrap;
+  transition:all .2s;
+}
+.step-item.active{background:var(--hoop-orange);color:#fff;cursor:pointer}
+.step-item.done{background:rgba(255,255,255,.12);color:#d0e8f8;cursor:pointer}
+.step-item.done:hover{background:rgba(255,255,255,.2)}
+.step-sep{color:#3a6a9a;font-size:.9rem;padding:0 .1rem}
+
+/* ── MAIN LAYOUT ────────────────────────────────────────────── */
+.main{max-width:980px;margin:0 auto;padding:1.5rem 1rem 4rem}
+.step-panel{display:none}
+.step-panel.visible{display:block}
+
+/* ── CARDS ──────────────────────────────────────────────────── */
+.card{
+  background:var(--surface);border-radius:var(--radius);
+  box-shadow:var(--shadow-card);padding:1.5rem;margin-bottom:1.25rem;
+}
+.card-title{
+  font-size:1rem;font-weight:700;color:var(--text);
+  margin-bottom:1rem;display:flex;align-items:center;gap:.5rem;
+}
+.card-title .ico{font-size:1.1rem}
+
+/* ── DEGREE BADGES ──────────────────────────────────────────── */
+.deg-badge{
+  display:inline-block;padding:.2rem .55rem;border-radius:4px;
+  font-size:.78rem;font-weight:700;letter-spacing:.04em;border-width:1px;border-style:solid;
+}
+.deg-a{background:var(--deg-a-bg);border-color:var(--deg-a-border);color:var(--deg-a-text)}
+.deg-b{background:var(--deg-b-bg);border-color:var(--deg-b-border);color:var(--deg-b-text)}
+.deg-c{background:var(--deg-c-bg);border-color:var(--deg-c-border);color:var(--deg-c-text)}
+
+/* ── STEP 1 — SAISIE ────────────────────────────────────────── */
+.student-grid{display:flex;flex-direction:column;gap:.5rem}
+.student-row{
+  display:grid;
+  grid-template-columns:2rem 1fr 9rem 9rem 9rem;
+  gap:.4rem;align-items:start;
+  padding-top:1.4rem;
+}
+.student-row .row-num{
+  font-size:.8rem;color:#94a3b8;text-align:center;font-weight:600;
+}
+.student-row input[type=text]{
+  border:1.5px solid #cbd5e1;border-radius:var(--radius-sm);
+  padding:.45rem .65rem;font-size:.88rem;
+  transition:border-color .15s;
+}
+.student-row input[type=text]:focus{border-color:var(--court-blue);outline:none}
+.student-row input[type=text].error{border-color:var(--deg-a-border)!important}
+
+.score-field{position:relative;padding-bottom:.1rem}
+.score-field input{
+  width:100%;border:1.5px solid #cbd5e1;border-radius:var(--radius-sm);
+  padding:.45rem .65rem;font-size:.92rem;font-weight:600;text-align:center;
+  transition:border-color .15s,background .15s;
+}
+.score-field input:focus{border-color:var(--court-blue);outline:none}
+.score-field input.deg-a-input{background:var(--deg-a-bg);border-color:var(--deg-a-border);color:var(--deg-a-text)}
+.score-field input.deg-b-input{background:var(--deg-b-bg);border-color:var(--deg-b-border);color:var(--deg-b-text)}
+.score-field input.deg-c-input{background:var(--deg-c-bg);border-color:var(--deg-c-border);color:var(--deg-c-text)}
+.score-field .field-label{
+  position:absolute;top:-1.35rem;left:0;right:0;
+  font-size:.65rem;font-weight:600;color:#64748b;text-align:center;letter-spacing:.04em;
+  white-space:nowrap;
+}
+.score-field .range-hint{
+  font-size:.6rem;color:#94a3b8;text-align:center;margin-top:.15rem;
+  white-space:nowrap;
+}
+.row-labels-header{
+  display:grid;
+  grid-template-columns:2rem 1fr 9rem 9rem 9rem;
+  gap:.4rem;margin-bottom:.35rem;
+}
+.row-labels-header span{
+  font-size:.65rem;font-weight:700;color:#64748b;text-align:center;letter-spacing:.05em;text-transform:uppercase;
+}
+.row-labels-header span:nth-child(2){text-align:left;padding-left:.65rem}
+
+.add-row-btn{
+  background:none;border:1.5px dashed #cbd5e1;border-radius:var(--radius-sm);
+  color:#64748b;font-size:.82rem;padding:.5rem;width:100%;
+  margin-top:.35rem;transition:all .15s;
+}
+.add-row-btn:hover{border-color:var(--court-blue);color:var(--court-blue)}
+
+/* ── IMPORT CSV ─────────────────────────────────────────────── */
+.import-zone{
+  border:2px dashed #cbd5e1;border-radius:var(--radius);padding:1.2rem;
+  text-align:center;cursor:pointer;transition:all .2s;
+  background:#f8fafc;
+}
+.import-zone:hover,.import-zone.drag-over{border-color:var(--court-blue);background:#eff6ff}
+.import-zone input{display:none}
+.import-zone .iz-icon{font-size:1.8rem;margin-bottom:.4rem}
+.import-zone .iz-text{font-size:.85rem;color:#64748b}
+.import-zone .iz-text strong{color:var(--court-blue)}
+
+/* ── BUTTONS ────────────────────────────────────────────────── */
+.btn{
+  display:inline-flex;align-items:center;gap:.45rem;
+  padding:.6rem 1.25rem;border-radius:var(--radius-sm);
+  font-size:.9rem;font-weight:600;border:none;
+  transition:all .18s;letter-spacing:.01em;
+}
+.btn-primary{background:var(--court-blue);color:#fff}
+.btn-primary:hover{background:#1a4070}
+.btn-primary:disabled{background:#cbd5e1;color:#94a3b8;cursor:not-allowed}
+.btn-orange{background:var(--hoop-orange);color:#fff}
+.btn-orange:hover{background:#c44a06}
+.btn-orange:disabled{background:#f7c5aa;color:#fff;cursor:not-allowed}
+.btn-ghost{background:none;border:1.5px solid #cbd5e1;color:#475569}
+.btn-ghost:hover{border-color:var(--court-blue);color:var(--court-blue)}
+.btn-sm{padding:.4rem .85rem;font-size:.8rem}
+.btn-danger{background:#fee2e2;border:1.5px solid #fca5a5;color:#991b1b}
+.btn-danger:hover{background:#fca5a5}
+.btn-row{display:flex;gap:.75rem;flex-wrap:wrap;align-items:center;margin-top:1rem}
+
+/* ── STEP 2 — DIAGNOSTIC ────────────────────────────────────── */
+.stat-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.75rem;margin-bottom:1.25rem}
+.stat-card{
+  background:#fff;border-radius:var(--radius);padding:1rem;
+  box-shadow:var(--shadow-card);text-align:center;
+}
+.stat-card .val{font-size:2rem;font-weight:800;color:var(--court-navy);line-height:1}
+.stat-card .lbl{font-size:.72rem;color:#64748b;margin-top:.3rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+
+.profile-bar{display:flex;border-radius:6px;overflow:hidden;height:22px;margin-bottom:.5rem}
+.profile-bar .seg{height:100%;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;transition:width .4s}
+.profile-bar .seg-a{background:var(--deg-a-border);color:#fff}
+.profile-bar .seg-b{background:var(--deg-b-border);color:#fff}
+.profile-bar .seg-c{background:var(--deg-c-border);color:#fff}
+
+.diag-table{width:100%;border-collapse:collapse;font-size:.82rem}
+.diag-table th{
+  background:var(--court-navy);color:#fff;padding:.5rem .7rem;
+  font-weight:700;font-size:.72rem;letter-spacing:.04em;text-align:center;
+}
+.diag-table td{padding:.45rem .7rem;border-bottom:1px solid #e2e8f0;text-align:center}
+.diag-table tr:hover td{background:#f8fafc}
+.diag-table .name-cell{text-align:left;font-weight:600}
+.diag-table .note-20{font-weight:800;font-size:1rem;color:var(--court-navy)}
+
+.lacune-tag{
+  display:inline-block;padding:.1rem .4rem;border-radius:3px;
+  font-size:.7rem;font-weight:700;background:#fee2e2;color:#7b1010;border:1px solid #fca5a5;
+}
+.obs-tag{
+  font-size:.7rem;color:#64748b;font-style:italic;
+}
+
+/* ── STEP 3 — AXES ──────────────────────────────────────────── */
+.axes-grid{display:flex;flex-direction:column;gap:.75rem;margin-bottom:1rem}
+.axe-card{
+  border:1.5px solid #e2e8f0;border-radius:var(--radius);padding:1rem;
+  cursor:pointer;transition:all .2s;position:relative;
+  display:flex;gap:.85rem;align-items:flex-start;
+}
+.axe-card:hover{border-color:var(--court-blue);box-shadow:0 0 0 3px rgba(26,79,130,.1)}
+.axe-card.selected{border-color:var(--court-blue);background:#eff6ff;box-shadow:0 0 0 3px rgba(26,79,130,.15)}
+.axe-card.selected .axe-check{background:var(--court-blue);border-color:var(--court-blue);color:#fff}
+.axe-check{
+  width:22px;height:22px;min-width:22px;border-radius:50%;
+  border:2px solid #cbd5e1;display:flex;align-items:center;justify-content:center;
+  font-size:.75rem;transition:all .2s;background:#fff;margin-top:.1rem;
+}
+.axe-body{flex:1}
+.axe-title{font-size:.92rem;font-weight:700;color:var(--court-navy);margin-bottom:.3rem}
+.axe-desc{font-size:.8rem;color:#475569;line-height:1.5;margin-bottom:.4rem}
+.axe-meta{display:flex;flex-wrap:wrap;gap:.4rem}
+.axe-pill{
+  font-size:.68rem;font-weight:600;padding:.15rem .45rem;border-radius:3px;
+  background:#f1f5f9;color:#475569;border:1px solid #e2e8f0;
+}
+.axe-pill.hot{background:var(--hoop-light);border-color:var(--hoop-orange);color:#92340a}
+.axe-counter{
+  font-size:.82rem;font-weight:600;color:#64748b;
+  margin-bottom:.75rem;
+}
+.axe-counter .hl{color:var(--court-blue);font-weight:800}
+.axe-counter .warn{color:var(--hoop-orange)}
+.axe-limit-box{display:flex;align-items:center;gap:.65rem;flex-wrap:wrap;margin:.85rem 0 1rem;padding:.75rem .9rem;border:1px solid var(--border-soft);border-radius:var(--radius-sm);background:#f8fafc}
+.axe-limit-box label{font-size:.82rem;font-weight:700;color:var(--text)}
+.axe-limit-select{border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:.42rem .65rem;font-size:.85rem;font-weight:700;background:var(--surface);color:var(--text)}
+:root[data-theme="dark"] .axe-limit-box{background:var(--surface-2);border-color:var(--border)}
+
+/* ── STEP 4 — PARAM ─────────────────────────────────────────── */
+.slider-wrap{margin:1.25rem 0}
+.slider-display{
+  font-size:2.4rem;font-weight:800;color:var(--court-navy);
+  text-align:center;line-height:1;margin-bottom:.2rem;
+}
+.slider-display span{font-size:1rem;font-weight:500;color:#64748b}
+.slider-sub{text-align:center;font-size:.8rem;color:#64748b;margin-bottom:1rem}
+input[type=range]{
+  -webkit-appearance:none;width:100%;height:6px;
+  background:linear-gradient(to right,var(--court-blue) 0%,var(--court-blue) 50%,#e2e8f0 50%,#e2e8f0 100%);
+  border-radius:3px;outline:none;margin:.5rem 0;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:22px;height:22px;border-radius:50%;
+  background:var(--court-blue);border:3px solid #fff;
+  box-shadow:0 1px 5px rgba(0,0,0,.25);cursor:pointer;
+}
+.slider-ticks{display:flex;justify-content:space-between;padding:0 .1rem;font-size:.7rem;color:#94a3b8;font-weight:600}
+
+.distrib-preview{
+  background:#f8fafc;border:1px solid #e2e8f0;border-radius:var(--radius);
+  padding:1rem;margin-top:1rem;
+}
+.distrib-preview .dp-title{font-size:.8rem;font-weight:700;color:#64748b;margin-bottom:.65rem;text-transform:uppercase;letter-spacing:.05em}
+.seq-row{
+  display:flex;align-items:center;gap:.65rem;margin-bottom:.5rem;
+  font-size:.82rem;
+}
+.seq-num{
+  min-width:24px;height:24px;border-radius:50%;background:var(--court-blue);
+  color:#fff;font-weight:700;font-size:.72rem;display:flex;align-items:center;justify-content:center;
+}
+.seq-info{color:#475569;line-height:1.4}
+.seq-info strong{color:var(--court-navy)}
+
+/* ── STEP 5 — PLANIF ────────────────────────────────────────── */
+.sequence-block{
+  border:1px solid #e2e8f0;border-radius:var(--radius);overflow:hidden;margin-bottom:1rem;
+}
+.sequence-header{
+  background:var(--court-navy);color:#fff;padding:.75rem 1rem;
+  display:flex;align-items:center;gap:.75rem;
+}
+.sequence-header .seq-badge{
+  background:var(--hoop-orange);color:#fff;font-size:.75rem;font-weight:800;
+  padding:.2rem .55rem;border-radius:4px;letter-spacing:.04em;white-space:nowrap;
+}
+.sequence-header .seq-title{font-size:.92rem;font-weight:700}
+.sequence-header .seq-obj{font-size:.75rem;color:#7fb3d9;margin-top:.15rem}
+
+.seance-table{width:100%;border-collapse:collapse}
+.seance-table th{
+  background:#1a3a5c;color:#7fb3d9;padding:.45rem .7rem;
+  font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;text-align:left;
+  border-right:1px solid rgba(255,255,255,.06);
+}
+.seance-table td{
+  padding:.65rem .7rem;border-bottom:1px solid #f1f5f9;
+  border-right:1px solid #f1f5f9;font-size:.8rem;vertical-align:top;
+}
+.seance-table tr:last-child td{border-bottom:none}
+.seance-num{font-weight:800;color:var(--court-blue);font-size:.88rem;text-align:center;min-width:3rem}
+.group-cell .gc-sa{font-weight:700;color:var(--court-navy);font-size:.78rem;margin-bottom:.2rem}
+.group-cell .gc-consigne{font-size:.74rem;color:#475569;line-height:1.45;margin-bottom:.2rem}
+.group-cell .gc-critere{font-size:.68rem;color:#64748b;font-style:italic}
+.group-cell-a{background:rgba(252,235,235,.4)}
+.group-cell-b{background:rgba(250,238,218,.4)}
+.group-cell-c{background:rgba(234,243,222,.4)}
+
+.passage-indicator{
+  margin:0;padding:.4rem .7rem;
+  background:linear-gradient(135deg,#eff6ff,#f0fdf4);
+  border-left:3px solid var(--court-blue);
+  font-size:.72rem;color:#475569;line-height:1.45;
+}
+.passage-indicator strong{color:var(--court-navy)}
+.passage-indicator .pi-label{font-size:.65rem;color:#94a3b8;display:block;margin-top:.15rem;font-style:italic}
+
+/* ── CYCLE SUMMARY ──────────────────────────────────────────── */
+.cycle-summary{
+  background:linear-gradient(135deg,var(--court-navy),var(--court-blue));
+  color:#fff;border-radius:var(--radius);padding:1.25rem;margin-top:1rem;
+}
+.cycle-summary h3{font-size:1rem;font-weight:700;margin-bottom:.85rem;color:var(--hoop-light)}
+.cs-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.65rem}
+.cs-item{background:rgba(255,255,255,.1);border-radius:var(--radius-sm);padding:.65rem;text-align:center}
+.cs-item .csi-val{font-size:1.5rem;font-weight:800;line-height:1}
+.cs-item .csi-lbl{font-size:.68rem;color:#7fb3d9;margin-top:.2rem;text-transform:uppercase;letter-spacing:.04em}
+.cycle-reco{margin-top:.85rem;background:rgba(255,255,255,.08);border-radius:var(--radius-sm);padding:.75rem;font-size:.82rem;line-height:1.55}
+.cycle-reco strong{color:var(--hoop-light)}
+
+/* ── EXPORT BAR ─────────────────────────────────────────────── */
+.export-bar{
+  position:fixed;bottom:0;left:0;right:0;
+  background:var(--court-navy);border-top:2px solid var(--hoop-orange);
+  display:none;align-items:center;justify-content:flex-end;gap:.65rem;
+  padding:.5rem 1.5rem;z-index:99;flex-wrap:wrap;
+}
+.export-bar.visible{display:flex}
+.export-bar .eb-label{color:#7fb3d9;font-size:.78rem;margin-right:auto;font-weight:600}
+
+/* ── ALERTE BANNERS ─────────────────────────────────────────── */
+.alert{border-radius:var(--radius-sm);padding:.65rem .9rem;font-size:.82rem;margin-bottom:.75rem;display:flex;gap:.5rem;align-items:flex-start}
+.alert-warn{background:#fffbeb;border:1px solid #fbbf24;color:#92400e}
+.alert-info{background:#eff6ff;border:1px solid #93c5fd;color:#1e40af}
+.alert-ok{background:#f0fdf4;border:1px solid #86efac;color:#14532d}
+.alert-err{background:#fff1f2;border:1px solid #fda4af;color:#9f1239}
+
+/* ── PROGRESS INDICATOR ─────────────────────────────────────── */
+.progress-dots{display:flex;gap:.3rem;align-items:center;margin-left:auto}
+.pdot{width:7px;height:7px;border-radius:50%;background:#94a3b8;transition:all .2s}
+.pdot.done{background:var(--hoop-orange)}
+.pdot.active{background:var(--court-blue);width:20px;border-radius:3px}
+
+/* ── THEME TOGGLE BTN ───────────────────────────────────────── */
+.theme-toggle{
+  background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);
+  color:#fff;width:36px;height:32px;border-radius:8px;font-size:1rem;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;transition:background .2s;
+}
+.theme-toggle:hover{background:rgba(255,255,255,.22)}
+
+/* ══════════════════════════════════════════════════════════════
+   ACCUEIL CINÉMATIQUE v05
+══════════════════════════════════════════════════════════════ */
+.splash{
+  position:relative;overflow:hidden;
+  background:#0a1118;
+  min-height:100vh;width:100%;display:flex;align-items:center;justify-content:center;
+  padding:1.5rem 1.5rem;
+  box-sizing:border-box;
+}
+/* Grille terrain basketball */
+.splash-court{
+  position:absolute;inset:0;pointer-events:none;opacity:.13;
+}
+/* Kura dakhila */
+.splash-ball{
+  position:absolute;right:-60px;top:50%;transform:translateY(-50%);
+  font-size:22rem;opacity:.07;line-height:1;pointer-events:none;
+  user-select:none;
+}
+.splash-inner{
+  position:relative;z-index:2;width:100%;max-width:560px;
+}
+.splash-tag{
+  display:inline-flex;align-items:center;gap:.5rem;
+  background:rgba(232,88,10,.15);border:1px solid rgba(232,88,10,.4);
+  color:#e8580a;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  padding:.35rem .85rem;border-radius:30px;margin-bottom:1.5rem;
+}
+.splash-title{
+  font-size:clamp(2.2rem,7vw,3.8rem);font-weight:900;line-height:1.05;
+  color:#fff;letter-spacing:-.02em;margin-bottom:.3rem;
+}
+.splash-title span{color:#e8580a;display:block}
+.splash-sub{
+  font-size:.85rem;font-weight:700;color:#7fb3d9;letter-spacing:.12em;
+  text-transform:uppercase;margin-bottom:.5rem;
+}
+.splash-desc{
+  font-size:.82rem;color:#8fa5ba;line-height:1.55;margin-bottom:1.75rem;
+  max-width:46ch;
+}
+
+/* Sélection professeur */
+.splash-section{margin-bottom:1.5rem}
+.splash-label{
+  font-size:.65rem;font-weight:700;color:#e8580a;letter-spacing:.12em;
+  text-transform:uppercase;margin-bottom:.6rem;display:flex;align-items:center;gap:.5rem;
+}
+.splash-label::before{content:'';flex:0 0 20px;height:1px;background:#e8580a;opacity:.5}
+
+/* Select professeur */
+.prof-select-wrap{
+  display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;
+}
+.prof-select{
+  flex:1;min-width:200px;
+  background:#131e2c;border:1.5px solid #2a3d55;color:#e6edf5;
+  border-radius:8px;padding:.65rem .9rem;font-size:.88rem;font-weight:600;
+  appearance:none;-webkit-appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M0 0l6 8 6-8z' fill='%237fb3d9'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right .9rem center;
+  transition:border-color .2s;cursor:pointer;
+}
+.prof-select:focus{border-color:#e8580a;outline:none}
+.prof-select option{background:#131e2c;color:#e6edf5}
+
+/* Champ "Autre nom" */
+.prof-custom{
+  display:none;flex:1;min-width:200px;
+  background:#131e2c;border:1.5px solid #2a3d55;color:#e6edf5;
+  border-radius:8px;padding:.65rem .9rem;font-size:.88rem;font-weight:600;
+  transition:border-color .2s;
+}
+.prof-custom:focus{border-color:#e8580a;outline:none}
+.prof-custom::placeholder{color:#4a6070}
+.prof-custom.visible{display:block}
+
+/* Groupe / Fوج */
+.splash-groups{display:flex;gap:.5rem;flex-wrap:wrap}
+.grp-btn{
+  background:#131e2c;border:1.5px solid #2a3d55;color:#7fb3d9;
+  border-radius:8px;padding:.5rem .9rem;font-size:.82rem;font-weight:700;
+  transition:all .2s;letter-spacing:.04em;
+}
+.grp-btn:hover{border-color:#e8580a;color:#e8580a}
+.grp-btn.selected{background:#e8580a;border-color:#e8580a;color:#fff}
+
+/* Niveau scolaire + note procédurale */
+.splash-levels{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.55rem}
+.level-btn{
+  background:#131e2c;border:1.5px solid #2a3d55;color:#7fb3d9;
+  border-radius:10px;padding:.65rem .7rem;text-align:left;
+  transition:all .2s;letter-spacing:.02em;min-height:74px;
+}
+.level-btn:hover{border-color:#e8580a;color:#e8580a;transform:translateY(-1px)}
+.level-btn.selected{background:rgba(232,88,10,.16);border-color:#e8580a;color:#fff;box-shadow:0 0 0 3px rgba(232,88,10,.12)}
+.level-name{display:block;font-size:1rem;font-weight:900;margin-bottom:.2rem;color:#fff}
+.level-note{display:block;font-size:.72rem;font-weight:700;color:#7fb3d9}
+.level-btn.selected .level-note{color:#ffd1b5}
+.level-procedure{
+  margin-top:.55rem;background:rgba(232,88,10,.1);border:1px solid rgba(232,88,10,.3);
+  color:#ffd1b5;border-radius:8px;padding:.55rem .7rem;font-size:.78rem;line-height:1.45;display:none;
+}
+.level-procedure.visible{display:block}
+
+/* Bouton lancer */
+.splash-launch{
+  width:100%;padding:.9rem 1.5rem;border-radius:10px;border:none;
+  background:#e8580a;color:#fff;font-size:1rem;font-weight:800;
+  letter-spacing:.06em;text-transform:uppercase;
+  display:flex;align-items:center;justify-content:center;gap:.65rem;
+  transition:background .2s,transform .1s;margin-top:.5rem;
+}
+.splash-launch:hover{background:#c44a06;transform:translateY(-1px)}
+.splash-launch:active{transform:translateY(0)}
+.splash-launch:disabled{background:#4a3020;color:#7a5040;cursor:not-allowed;transform:none}
+
+/* Footer splash */
+.splash-footer{
+  position:absolute;bottom:1rem;left:0;right:0;text-align:center;
+  font-size:.65rem;color:#3a5060;letter-spacing:.06em;text-transform:uppercase;
+}
+
+/* ── FICHE TERRAIN CARD ─────────────────────────────────────── */
+.fiche-card{
+  background:var(--court-navy);border-radius:var(--radius);
+  padding:1.25rem 1.5rem;margin-bottom:1.25rem;
+  border-left:4px solid var(--hoop-orange);
+}
+.fiche-card .card-title{color:#fff}
+.fiche-desc{font-size:.83rem;color:#7fb3d9;line-height:1.55;margin-bottom:1rem}
+.fiche-btns{display:flex;gap:.65rem;flex-wrap:wrap;margin-bottom:1rem}
+.btn-fiche{background:#e8580a;color:#fff;border:none;border-radius:var(--radius-sm);padding:.6rem 1rem;font-size:.82rem;font-weight:700;display:inline-flex;align-items:center;gap:.4rem;transition:background .2s}
+.btn-fiche:hover{background:#c44a06}
+.btn-fiche-ghost{background:transparent;border:1.5px solid rgba(255,255,255,.25);color:#a9cce6;border-radius:var(--radius-sm);padding:.6rem 1rem;font-size:.82rem;font-weight:700;display:inline-flex;align-items:center;gap:.4rem;transition:all .2s}
+.btn-fiche-ghost:hover{border-color:#e8580a;color:#e8580a}
+
+/* Prompt IA box */
+.prompt-box{
+  background:#070e18;border:1px solid #1a3a5c;border-radius:8px;
+  padding:1rem 1.1rem;margin-top:.75rem;
+}
+.prompt-box .pb-label{font-size:.68rem;color:#e8580a;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:.5rem;display:flex;align-items:center;gap:.4rem}
+.prompt-text{
+  font-family:'Courier New',monospace;font-size:.74rem;color:#7fb3d9;
+  line-height:1.55;word-break:break-word;margin-bottom:.75rem;
+}
+.prompt-format{font-size:.68rem;color:#3a6080;margin-top:.4rem}
+.btn-copy{background:#1a3a5c;border:1px solid #2a5a8c;color:#7fb3d9;border-radius:6px;padding:.4rem .8rem;font-size:.76rem;font-weight:700;transition:all .15s;display:inline-flex;align-items:center;gap:.35rem}
+.btn-copy:hover{background:#2a5a8c;color:#fff}
+.btn-copy.copied{background:#1c3320;border-color:#5cc070;color:#5cc070}
+
+/* ── NOTE /14 AUTO-CALC ─────────────────────────────────────── */
+.student-row-v4{
+  display:grid;
+  grid-template-columns:1.8rem minmax(130px,1fr) 5.2rem 5.2rem 7.8rem 8.2rem 5rem 2rem;
+  gap:.35rem;align-items:start;padding:.55rem 0;
+  border-bottom:1px solid var(--border-soft);
+}
+.row-labels-v4{
+  display:grid;
+  grid-template-columns:1.8rem minmax(130px,1fr) 5.2rem 5.2rem 7.8rem 8.2rem 5rem 2rem;
+  gap:.35rem;padding-bottom:.4rem;margin-bottom:.25rem;
+  border-bottom:2px solid var(--border-soft);
+}
+.row-labels-v4 span,.row-hdr{
+  font-size:.62rem;font-weight:700;color:var(--text-soft);
+  text-align:center;text-transform:uppercase;letter-spacing:.04em;
+}
+.row-labels-v4 span:nth-child(2){text-align:left;padding-left:.4rem}
+
+.note14-cell{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:.4rem .2rem;border-radius:var(--radius-sm);
+  font-weight:800;font-size:.95rem;min-height:2rem;
+  background:var(--surface-alt,#f7fafc);border:1.5px solid var(--border-soft);
+  transition:all .2s;
+}
+.note14-cell.n-low{background:var(--deg-a-bg);border-color:var(--deg-a-border);color:var(--deg-a-text)}
+.note14-cell.n-mid{background:var(--deg-b-bg);border-color:var(--deg-b-border);color:var(--deg-b-text)}
+.note14-cell.n-high{background:var(--deg-c-bg);border-color:var(--deg-c-border);color:var(--deg-c-text)}
+.note14-cell.n-empty{color:var(--text-soft);font-size:.72rem;font-weight:500}
+.note14-cell .n-sub{font-size:.58rem;font-weight:500;opacity:.7;margin-top:.05rem}
+
+/* ── DEL BTN ────────────────────────────────────────────────── */
+.del-btn{
+  background:transparent;border:none;font-size:.95rem;color:var(--text-soft);
+  width:1.8rem;height:1.8rem;border-radius:5px;transition:all .15s;padding:0;
+  display:flex;align-items:center;justify-content:center;margin-top:.25rem;
+}
+.del-btn:hover{background:var(--deg-a-bg);color:var(--deg-a-border)}
+
+.name-input-v4{
+  width:100%;border:1.5px solid var(--border);border-radius:var(--radius-sm);
+  padding:.4rem .55rem;font-size:.86rem;background:var(--surface);color:var(--text);
+  transition:border-color .15s;
+}
+.name-input-v4:focus{border-color:var(--court-blue);outline:none}
+.name-input-v4.error{border-color:var(--deg-a-border)!important}
+
+/* ── DEGREE SELECT — dark mode complet ──────────────────────── */
+.deg-select-wrap{display:flex;flex-direction:column;gap:.2rem}
+.deg-select{
+  width:100%;border:1.5px solid var(--border);border-radius:var(--radius-sm);
+  padding:.38rem .3rem;font-size:.78rem;font-weight:600;
+  background:var(--surface);color:var(--text);
+  transition:border-color .15s,background .15s,color .15s;
+}
+.deg-select:focus{border-color:var(--court-blue);outline:none}
+.deg-select.sa{background:var(--deg-a-bg)!important;border-color:var(--deg-a-border)!important;color:var(--deg-a-text)!important}
+.deg-select.sb{background:var(--deg-b-bg)!important;border-color:var(--deg-b-border)!important;color:var(--deg-b-text)!important}
+.deg-select.sc{background:var(--deg-c-bg)!important;border-color:var(--deg-c-border)!important;color:var(--deg-c-text)!important}
+
+/* ── VAL INPUT ──────────────────────────────────────────────── */
+.val-input{
+  width:100%;border:1.5px solid var(--border);border-radius:var(--radius-sm);
+  padding:.38rem .3rem;font-size:.88rem;font-weight:700;text-align:center;
+  background:var(--surface);color:var(--text);
+  transition:border-color .15s,background .15s,color .15s;
+}
+.val-input:focus{border-color:var(--court-blue);outline:none}
+.val-input:disabled{background:var(--step-locked);color:var(--step-locked-text);cursor:not-allowed}
+.val-input.deg-a-input{background:var(--deg-a-bg)!important;border-color:var(--deg-a-border)!important;color:var(--deg-a-text)!important}
+.val-input.deg-b-input{background:var(--deg-b-bg)!important;border-color:var(--deg-b-border)!important;color:var(--deg-b-text)!important}
+.val-input.deg-c-input{background:var(--deg-c-bg)!important;border-color:var(--deg-c-border)!important;color:var(--deg-c-text)!important}
+.val-input.flash-err{animation:shake .4s;border-color:var(--deg-a-border)!important;background:var(--deg-a-bg)!important;color:var(--deg-a-text)!important}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.rng-hint{font-size:.6rem;color:var(--text-soft);text-align:center;margin-top:.1rem;white-space:nowrap}
+
+/* ── DARK MODE FIXES complets ───────────────────────────────── */
+:root[data-theme="dark"] .note14-cell{background:var(--surface-2);border-color:var(--border);color:var(--text-soft)}
+:root[data-theme="dark"] .card{background:var(--surface)}
+:root[data-theme="dark"] .import-zone{background:var(--surface-2);border-color:var(--border)}
+:root[data-theme="dark"] .import-zone:hover{background:var(--surface-2);border-color:var(--court-blue)}
+:root[data-theme="dark"] .axe-card{border-color:var(--border);background:var(--surface)}
+:root[data-theme="dark"] .axe-card.selected{background:var(--surface-2)}
+:root[data-theme="dark"] .diag-table tr:hover td{background:var(--surface-2)}
+:root[data-theme="dark"] .distrib-preview{background:var(--surface-2);border-color:var(--border)}
+:root[data-theme="dark"] .stat-card{background:var(--surface)}
+:root[data-theme="dark"] .alert-info{background:var(--surface-2);border-color:var(--court-blue);color:var(--text-soft)}
+:root[data-theme="dark"] .alert-warn{background:#3a2c12;border-color:var(--deg-b-border);color:var(--deg-b-text)}
+:root[data-theme="dark"] .alert-ok{background:#1c3320;border-color:var(--deg-c-border);color:var(--deg-c-text)}
+:root[data-theme="dark"] .alert-err{background:var(--deg-a-bg);border-color:var(--deg-a-border);color:var(--deg-a-text)}
+:root[data-theme="dark"] .seance-table td{border-bottom-color:var(--border-soft);border-right-color:var(--border-soft)}
+:root[data-theme="dark"] .group-cell-a{background:rgba(58,28,28,.3)}
+:root[data-theme="dark"] .group-cell-b{background:rgba(58,44,18,.3)}
+:root[data-theme="dark"] .group-cell-c{background:rgba(28,51,32,.3)}
+:root[data-theme="dark"] .export-bar{background:var(--court-navy)}
+:root[data-theme="dark"] .add-row-btn{border-color:var(--border);color:var(--text-soft)}
+:root[data-theme="dark"] .add-row-btn:hover{border-color:var(--court-blue);color:var(--court-blue)}
+:root[data-theme="dark"] .modal-box{background:var(--surface)}
+:root[data-theme="dark"] .grp-btn{background:var(--surface-2);border-color:var(--border)}
+:root[data-theme="dark"] .level-btn{background:var(--surface-2);border-color:var(--border)}
+:root[data-theme="dark"] .level-btn.selected{background:rgba(255,150,125,.16);border-color:var(--hoop-orange)}
+
+/* Options in dark mode */
+:root[data-theme="dark"] .deg-select option,
+:root[data-theme="dark"] select option{
+  background:#172234;color:#e6edf5;
+}
+
+/* ── MODAL ──────────────────────────────────────────────────── */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.6);
+  display:none;align-items:center;justify-content:center;z-index:200;padding:1rem;
+}
+.modal-overlay.open{display:flex}
+.modal-box{
+  background:var(--surface);border-radius:var(--radius);
+  padding:1.5rem;max-width:400px;width:100%;
+  box-shadow:0 10px 40px rgba(0,0,0,.4);
+}
+.modal-box h3{font-size:1.05rem;color:var(--text);margin-bottom:.5rem;display:flex;align-items:center;gap:.45rem}
+.modal-box p{font-size:.86rem;color:var(--text-soft);line-height:1.5;margin-bottom:1.1rem}
+.modal-btns{display:flex;gap:.6rem;justify-content:flex-end}
+
+/* ── TOAST — top-centré, auto-disparaît, couleurs sémantiques ── */
+.toast{
+  position:fixed;top:1.25rem;left:50%;
+  transform:translateX(-50%) translateY(-150%);
+  background:#0d2137;color:#fff;
+  padding:.55rem .65rem .55rem 1rem;
+  border-radius:30px;
+  font-size:.82rem;font-weight:600;
+  box-shadow:0 6px 24px rgba(0,0,0,.45);
+  z-index:500;
+  transition:transform .35s cubic-bezier(.34,1.56,.64,1);
+  display:flex;align-items:center;gap:.55rem;
+  max-width:90vw;pointer-events:auto;
+  border:1px solid rgba(255,255,255,.1);
+}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast.toast-success{background:#238636;border-color:rgba(255,255,255,.18)}
+.toast.toast-error{background:#da3633;border-color:rgba(255,255,255,.18)}
+.toast-msg{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.toast-close{
+  background:rgba(255,255,255,.15);border:none;color:#fff;
+  width:22px;height:22px;border-radius:50%;font-size:.72rem;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;flex-shrink:0;transition:background .15s;
+}
+.toast-close:hover{background:rgba(255,255,255,.3)}
+
+/* ── ACCUEIL HERO (conservé pour fallback) ──────────────────── */
+.accueil-hero{
+  background:linear-gradient(135deg,var(--court-navy),var(--court-blue));
+  border-radius:var(--radius);padding:2rem 1.75rem;margin-bottom:1.25rem;
+  color:#fff;
+}
+.accueil-hero h1{font-size:1.5rem;margin-bottom:.5rem;display:flex;align-items:center;gap:.6rem}
+.accueil-hero p{font-size:.88rem;color:#cfe2f2;line-height:1.6;margin-bottom:1.25rem}
+.accueil-cta{display:flex;gap:.75rem;flex-wrap:wrap}
+.ref-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:.85rem;font-size:.8rem}
+.ref-col{line-height:1.7}
+.ref-col strong{display:block;margin-bottom:.4rem;color:var(--text)}
+
+/* ── EXPORT JSON / DEMO / RESET ─────────────────────────────── */
+.btn-teal{background:#0d9488;color:#fff}
+.btn-teal:hover{background:#0f7a6f}
+.btn-demo{background:#7c3aed;color:#fff}
+.btn-demo:hover{background:#6d28d9}
+.btn-reset-global{background:#fee2e2;border:1.5px solid #fca5a5;color:#991b1b}
+.btn-reset-global:hover{background:#fca5a5}
+
+/* ── RESPONSIVE ─────────────────────────────────────────────── */
+@media(max-width:960px){
+  .student-row-v4,.row-labels-v4{
+    grid-template-columns:1.5rem minmax(90px,1fr) 4.8rem 4.8rem 6.6rem 7rem 4.6rem 1.8rem;
+    gap:.25rem;
+  }
+}
+@media(max-width:640px){
+  .student-row-v4,.row-labels-v4{
+    grid-template-columns:1.3rem minmax(80px,1fr) 4.3rem 4.3rem 5.8rem 6.2rem 4rem 1.5rem;
+    gap:.18rem;
+  }
+  .row-labels-v4 span{font-size:.54rem}
+  .deg-select{font-size:.7rem;padding:.3rem .15rem}
+  .val-input{font-size:.78rem}
+  .seance-table{font-size:.72rem}
+  .stat-cards{grid-template-columns:repeat(2,1fr)}
+  .export-bar{padding:.5rem .75rem}
+  .main{padding:1rem .55rem 4rem}
+  .header-sub{display:none}
+  .splash-title{font-size:2rem}
+  .splash-ball{font-size:12rem;right:-30px}
+  .splash-levels{grid-template-columns:1fr}
+  .level-btn{min-height:auto}
+}
+@media(max-width:480px){
+  .student-row-v4,.row-labels-v4{
+    grid-template-columns:1.2rem 1fr 3.8rem 3.8rem 5rem 5.4rem 3.8rem 1.4rem;
+    gap:.14rem;font-size:.7rem;
+  }
+}
+
+/* ── PRINT (bloc unique consolidé) ──────────────────────────── */
+@media print{
+  .site-header,.stepper,.export-bar,.btn,.btn-row,
+  .del-btn,.theme-toggle,.accueil-cta,.fiche-btns,
+  .add-row-btn,.import-zone,
+  .modal-overlay,.toast,.splash{display:none!important}
+  .step-panel{display:none!important}
+  #panel-1.visible,#panel-2.visible,#panel-5.visible{display:block!important}
+  .main{max-width:100%;padding:0}
+  body{background:#fff;color:#000}
+  .card{box-shadow:none;border:1px solid #ccc;page-break-inside:avoid}
+  .seance-table th{background:#0d2137!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+
+
+/* ── RÉFÉRENTIEL PANEL — mise en page grille (réutilisée pour le nouvel onglet) ── */
+.ref-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:.85rem;font-size:.8rem}
+.ref-col strong{display:block;margin-bottom:.4rem;color:var(--text)}
+.ref-col{line-height:1.7}
+
+/* ── STEP 0 ACCUEIL PANEL — step-panel ─────────────────────── */
+/* uses existing .step-panel{display:none} .step-panel.visible{display:block} */
+
+/* ── MODAL ──────────────────────────────────────────────────── */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.55);
+  display:none;align-items:center;justify-content:center;z-index:200;padding:1rem;
+}
+.modal-overlay.open{display:flex}
+.modal-box{
+  background:var(--surface);border-radius:var(--radius);
+  padding:1.5rem;max-width:400px;width:100%;
+  box-shadow:0 10px 40px rgba(0,0,0,.4);
+}
+.modal-box h3{font-size:1.05rem;color:var(--text);margin-bottom:.5rem;display:flex;align-items:center;gap:.45rem}
+.modal-box p{font-size:.86rem;color:var(--text-soft);line-height:1.5;margin-bottom:1.1rem}
+.modal-btns{display:flex;gap:.6rem;justify-content:flex-end}
+
+/* toast v06 — voir ci-dessus */
+
+/* ── DEGREE SELECT ──────────────────────────────────────────── */
+.deg-select-wrap{display:flex;flex-direction:column;gap:.2rem}
+.deg-select{
+  width:100%;border:1.5px solid var(--border);border-radius:var(--radius-sm);
+  padding:.38rem .35rem;font-size:.78rem;font-weight:600;
+  background:var(--surface);color:var(--text);
+  transition:border-color .15s,background .15s;
+}
+.deg-select:focus{border-color:var(--court-blue);outline:none}
+.deg-select.sa{background:var(--deg-a-bg);border-color:var(--deg-a-border);color:var(--deg-a-text)}
+.deg-select.sb{background:var(--deg-b-bg);border-color:var(--deg-b-border);color:var(--deg-b-text)}
+.deg-select.sc{background:var(--deg-c-bg);border-color:var(--deg-c-border);color:var(--deg-c-text)}
+
+/* ── VAL INPUT ──────────────────────────────────────────────── */
+.val-input{
+  width:100%;border:1.5px solid var(--border);border-radius:var(--radius-sm);
+  padding:.38rem .35rem;font-size:.88rem;font-weight:700;text-align:center;
+  background:var(--surface);color:var(--text);
+  transition:border-color .15s,background .15s;
+}
+.val-input:focus{border-color:var(--court-blue);outline:none}
+.val-input:disabled{background:var(--step-locked);color:var(--step-locked-text);cursor:not-allowed}
+.val-input.deg-a-input{background:var(--deg-a-bg);border-color:var(--deg-a-border);color:var(--deg-a-text)}
+.val-input.deg-b-input{background:var(--deg-b-bg);border-color:var(--deg-b-border);color:var(--deg-b-text)}
+.val-input.deg-c-input{background:var(--deg-c-bg);border-color:var(--deg-c-border);color:var(--deg-c-text)}
+.val-input.flash-err{animation:shake .4s;border-color:var(--deg-a-border)!important;background:var(--deg-a-bg)!important}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.rng-hint{font-size:.6rem;color:var(--text-soft);text-align:center;margin-top:.1rem;white-space:nowrap}
+
+/* ── DARK inputs fix ────────────────────────────────────────── */
+:root[data-theme="dark"] input[type=text],
+:root[data-theme="dark"] input[type=number],
+:root[data-theme="dark"] select{
+  background:var(--surface);color:var(--text);border-color:var(--border);
+}
+:root[data-theme="dark"] .card{background:var(--surface)}
+:root[data-theme="dark"] .import-zone{background:var(--surface-2);border-color:var(--border)}
+:root[data-theme="dark"] .import-zone:hover{background:var(--surface-2);border-color:var(--court-blue)}
+:root[data-theme="dark"] .axe-card{border-color:var(--border);background:var(--surface)}
+:root[data-theme="dark"] .axe-card.selected{background:var(--surface-2)}
+:root[data-theme="dark"] .diag-table tr:hover td{background:var(--surface-2)}
+:root[data-theme="dark"] .distrib-preview{background:var(--surface-2);border-color:var(--border)}
+:root[data-theme="dark"] .stat-card{background:var(--surface)}
+:root[data-theme="dark"] .alert-info{background:var(--surface-2);border-color:var(--court-blue);color:var(--text-soft)}
+:root[data-theme="dark"] .alert-warn{background:#3a2c12;border-color:var(--deg-b-border);color:var(--deg-b-text)}
+:root[data-theme="dark"] .alert-ok{background:#1c3320;border-color:var(--deg-c-border);color:var(--deg-c-text)}
+:root[data-theme="dark"] .alert-err{background:var(--deg-a-bg);border-color:var(--deg-a-border);color:var(--deg-a-text)}
+:root[data-theme="dark"] .seance-table td{border-bottom-color:var(--border-soft);border-right-color:var(--border-soft)}
+:root[data-theme="dark"] .group-cell-a{background:rgba(58,28,28,.3)}
+:root[data-theme="dark"] .group-cell-b{background:rgba(58,44,18,.3)}
+:root[data-theme="dark"] .group-cell-c{background:rgba(28,51,32,.3)}
+:root[data-theme="dark"] .export-bar{background:var(--court-navy)}
+
+/* ── RESPONSIVE ─────────────────────────────────────────────── */
+/* (consolidé avec le bloc RESPONSIVE principal ci-dessus — voir grid-template-columns 10 colonnes) */
+
+
+/* ══════════════════════════════════════════════════════════════
+   DARK MODE — FIXES COMPLETS v06
+   Tout texte doit être lisible en mode sombre
+══════════════════════════════════════════════════════════════ */
+
+/* Inputs/selects de base */
+:root[data-theme="dark"] input,
+:root[data-theme="dark"] input[type=text],
+:root[data-theme="dark"] input[type=number],
+:root[data-theme="dark"] select,
+:root[data-theme="dark"] textarea {
+  background:var(--surface) !important;
+  color:var(--text) !important;
+  border-color:var(--border) !important;
+}
+
+/* Inputs colorés par degré en dark */
+:root[data-theme="dark"] .deg-select.sa,
+:root[data-theme="dark"] .val-input.deg-a-input {
+  background:var(--deg-a-bg) !important;
+  border-color:var(--deg-a-border) !important;
+  color:var(--deg-a-text) !important;
+}
+:root[data-theme="dark"] .deg-select.sb,
+:root[data-theme="dark"] .val-input.deg-b-input {
+  background:var(--deg-b-bg) !important;
+  border-color:var(--deg-b-border) !important;
+  color:var(--deg-b-text) !important;
+}
+:root[data-theme="dark"] .deg-select.sc,
+:root[data-theme="dark"] .val-input.deg-c-input {
+  background:var(--deg-c-bg) !important;
+  border-color:var(--deg-c-border) !important;
+  color:var(--deg-c-text) !important;
+}
+/* Options des selects */
+:root[data-theme="dark"] select option {
+  background:#172234 !important;
+  color:#e6edf5 !important;
+}
+
+/* Cards et surfaces */
+:root[data-theme="dark"] .card { background:var(--surface); color:var(--text); }
+:root[data-theme="dark"] .modal-box { background:var(--surface); color:var(--text); }
+:root[data-theme="dark"] .modal-box h3 { color:var(--text); }
+:root[data-theme="dark"] .modal-box p { color:var(--text-soft); }
+:root[data-theme="dark"] .card-title { color:var(--text); }
+
+/* Note /14 cell */
+:root[data-theme="dark"] .note14-cell { background:var(--surface-2); border-color:var(--border); color:var(--text-soft); }
+:root[data-theme="dark"] .note14-cell.n-low  { background:var(--deg-a-bg); border-color:var(--deg-a-border); color:var(--deg-a-text); }
+:root[data-theme="dark"] .note14-cell.n-mid  { background:var(--deg-b-bg); border-color:var(--deg-b-border); color:var(--deg-b-text); }
+:root[data-theme="dark"] .note14-cell.n-high { background:var(--deg-c-bg); border-color:var(--deg-c-border); color:var(--deg-c-text); }
+
+/* Alerts */
+:root[data-theme="dark"] .alert-info  { background:var(--surface-2); border-color:var(--court-blue); color:var(--text-soft); }
+:root[data-theme="dark"] .alert-warn  { background:#3a2c12; border-color:var(--deg-b-border); color:var(--deg-b-text); }
+:root[data-theme="dark"] .alert-ok    { background:#1c3320; border-color:var(--deg-c-border); color:var(--deg-c-text); }
+:root[data-theme="dark"] .alert-err   { background:var(--deg-a-bg); border-color:var(--deg-a-border); color:var(--deg-a-text); }
+
+/* Import zone */
+:root[data-theme="dark"] .import-zone { background:var(--surface-2); border-color:var(--border); }
+:root[data-theme="dark"] .import-zone .iz-text { color:var(--text-soft); }
+:root[data-theme="dark"] .import-zone:hover { background:var(--surface-2); border-color:var(--court-blue); }
+
+/* Axes */
+:root[data-theme="dark"] .axe-card { border-color:var(--border); background:var(--surface); }
+:root[data-theme="dark"] .axe-card.selected { background:var(--surface-2); }
+:root[data-theme="dark"] .axe-title { color:var(--text); }
+:root[data-theme="dark"] .axe-desc  { color:var(--text-soft); }
+:root[data-theme="dark"] .axe-pill  { background:var(--surface-2); color:var(--text-soft); border-color:var(--border); }
+:root[data-theme="dark"] .axe-check { background:var(--surface); border-color:var(--border); color:var(--text); }
+:root[data-theme="dark"] .axe-card.selected .axe-check { background:var(--court-blue); border-color:var(--court-blue); color:#fff; }
+
+/* Tables */
+:root[data-theme="dark"] .diag-table td { color:var(--text); border-bottom-color:var(--border-soft); }
+:root[data-theme="dark"] .diag-table tr:hover td { background:var(--surface-2); }
+:root[data-theme="dark"] .name-cell { color:var(--text) !important; }
+:root[data-theme="dark"] .note-20 { color:var(--text) !important; }
+:root[data-theme="dark"] .obs-tag  { color:var(--text-soft); }
+
+/* Stat cards */
+:root[data-theme="dark"] .stat-card { background:var(--surface); }
+:root[data-theme="dark"] .stat-card .val { color:var(--text); }
+:root[data-theme="dark"] .stat-card .lbl { color:var(--text-soft); }
+
+/* Distrib preview */
+:root[data-theme="dark"] .distrib-preview { background:var(--surface-2); border-color:var(--border); color:var(--text); }
+:root[data-theme="dark"] .seq-info { color:var(--text-soft); }
+
+/* Seance table */
+:root[data-theme="dark"] .seance-table td { border-bottom-color:var(--border-soft); border-right-color:var(--border-soft); color:var(--text-soft); }
+:root[data-theme="dark"] .seance-num { color:var(--court-blue); }
+:root[data-theme="dark"] .gc-sa { color:var(--text); }
+:root[data-theme="dark"] .group-cell-a { background:rgba(58,28,28,.3); }
+:root[data-theme="dark"] .group-cell-b { background:rgba(58,44,18,.3); }
+:root[data-theme="dark"] .group-cell-c { background:rgba(28,51,32,.3); }
+
+/* Lacune tag */
+:root[data-theme="dark"] .lacune-tag { background:var(--deg-a-bg); color:var(--deg-a-text); border-color:var(--deg-a-border); }
+
+/* Cycle summary */
+:root[data-theme="dark"] .cycle-reco { color:var(--text-soft); }
+
+/* Export bar */
+:root[data-theme="dark"] .export-bar { background:var(--court-navy); }
+
+/* Add row btn */
+:root[data-theme="dark"] .add-row-btn { border-color:var(--border); color:var(--text-soft); }
+:root[data-theme="dark"] .add-row-btn:hover { border-color:var(--court-blue); color:var(--court-blue); }
+
+/* Row num */
+:root[data-theme="dark"] .row-num { color:var(--text-soft); }
+
+/* Name input */
+:root[data-theme="dark"] .name-input-v4 { background:var(--surface); color:var(--text); border-color:var(--border); }
+
+/* Val input disabled */
+:root[data-theme="dark"] .val-input:disabled { background:var(--step-locked); color:var(--step-locked-text); }
+
+/* Row labels */
+:root[data-theme="dark"] .row-labels-v4 span { color:var(--text-soft); }
+
+/* Fiche terrain card en dark */
+:root[data-theme="dark"] .fiche-card { background:var(--court-navy); border-color:var(--hoop-orange); }
+:root[data-theme="dark"] .fiche-desc { color:var(--text-soft); }
+:root[data-theme="dark"] .prompt-box { background:var(--bg); border-color:var(--border); }
+:root[data-theme="dark"] .prompt-text { color:var(--text-soft); }
+
+/* Stepper */
+:root[data-theme="dark"] .step-sep { color:var(--text-soft); }
+
+/* Deg badges */
+:root[data-theme="dark"] .deg-badge.deg-a { background:var(--deg-a-bg); border-color:var(--deg-a-border); color:var(--deg-a-text); }
+:root[data-theme="dark"] .deg-badge.deg-b { background:var(--deg-b-bg); border-color:var(--deg-b-border); color:var(--deg-b-text); }
+:root[data-theme="dark"] .deg-badge.deg-c { background:var(--deg-c-bg); border-color:var(--deg-c-border); color:var(--deg-c-text); }
+
+/* Profile bar labels */
+:root[data-theme="dark"] .profile-bar .seg-a { background:var(--deg-a-border); }
+:root[data-theme="dark"] .profile-bar .seg-b { background:var(--deg-b-border); }
+:root[data-theme="dark"] .profile-bar .seg-c { background:var(--deg-c-border); }
+
+
+/* ── SPLASH FULL SCREEN — override du .main ────────────────── */
+body.splash-mode{width:100%}
+body.splash-mode .main{padding:0;max-width:100%;margin:0}
+#panel-0{margin:0;padding:0}
+#panel-0 .splash{
+  position:relative;
+  min-height:100vh;width:100%;
+  overflow:visible;
+}
+
+
+/* ── GRILLE ÉVALUATION v13 — C3 conceptuel /3 + C4 comportemental adaptatif ───── */
+.student-row-v4,.row-labels-v4{
+  grid-template-columns:1.6rem minmax(120px,1.2fr) 5.7rem 4.3rem 5.7rem 4.3rem 5.7rem 4.3rem 5.7rem 4.3rem 4.8rem 4.8rem 2rem !important;
+  gap:.30rem !important;
+  min-width:1080px;
+}
+.row-labels-v4 span{font-size:.56rem;line-height:1.15}
+.student-row-v4{align-items:start}
+.code-note{font-size:.6rem;color:var(--text-soft);text-align:center;margin-top:.1rem;white-space:nowrap}
+@media(max-width:640px){
+  .student-row-v4,.row-labels-v4{min-width:1080px !important;}
+}
+
+
+/* ── CORRECTIF MOBILE v13 — saisie lisible sur téléphone ────────────────────── */
+@media(max-width:640px){
+  html,body{max-width:100%;overflow-x:hidden;}
+  body:not(.splash-mode){padding-bottom:0;}
+
+  /* Header compact : pas de débordement horizontal */
+  .site-header{
+    height:auto;min-height:52px;padding:.42rem .5rem;gap:.35rem;
+    align-items:center;position:sticky;top:0;
+  }
+  .header-brand{min-width:0;flex:1;gap:.35rem;overflow:hidden;}
+  .header-ball{font-size:1.05rem;line-height:1;flex:0 0 auto;}
+  .header-title{font-size:.72rem;line-height:1.05;max-width:42vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .header-sub{display:block;font-size:.56rem;line-height:1.15;max-width:50vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .site-header > div:last-child{flex:0 0 auto;gap:.25rem;max-width:42vw;}
+  .site-header .btn-ghost{display:none!important;}
+  .header-badge{font-size:.50rem;padding:.16rem .32rem;border-radius:4px;white-space:nowrap;}
+  .theme-toggle{width:28px;height:28px;border-radius:7px;font-size:.82rem;}
+
+  /* Stepper compact et scrollable */
+  .stepper{top:52px;padding:.34rem .42rem;gap:.24rem;scroll-snap-type:x mandatory;}
+  .step-item{font-size:.62rem;padding:.28rem .46rem;scroll-snap-align:start;}
+  .step-sep{display:none;}
+
+  .main{padding:.55rem .42rem 1rem;}
+  .card{padding:.72rem;margin-bottom:.7rem;border-radius:9px;}
+  .card-title{font-size:.86rem;gap:.35rem;}
+  .alert{font-size:.72rem;padding:.48rem .55rem;line-height:1.35;}
+  .fiche-card{padding:.75rem  .85rem;margin-bottom:.75rem;}
+  .fiche-desc{font-size:.74rem;}
+  .fiche-btns{gap:.45rem;}
+  .fiche-btns .btn-fiche,.fiche-btns .btn-fiche-ghost{flex:1 1 100%;justify-content:center;font-size:.75rem;padding:.52rem .45rem;}
+  .prompt-text{font-size:.66rem;}
+  .import-zone{padding:.85rem .5rem;}
+  .import-zone .iz-text{font-size:.70rem;line-height:1.35;}
+
+  /* La grille devient des cartes, donc plus besoin du long scroll horizontal */
+  #panel-1 .card > div[style*="overflow-x"]{overflow-x:visible!important;}
+  .row-labels-v4{display:none!important;}
+  .student-grid{gap:.65rem;}
+  .student-row-v4{
+    min-width:0!important;width:100%!important;
+    display:grid!important;
+    grid-template-columns:1.55rem minmax(0,1fr) minmax(0,1fr) 1.45rem!important;
+    grid-template-areas:
+      "num name name del"
+      "c1d c1d c1v c1v"
+      "c2d c2d c2v c2v"
+      "c3d c3d c3v c3v"
+      "c4d c4d c4v c4v"
+      "proc proc total total"!important;
+    gap:.38rem!important;
+    align-items:start!important;
+    padding:.58rem!important;
+    border:1px solid var(--border-soft)!important;
+    border-radius:10px!important;
+    background:var(--surface)!important;
+    box-shadow:0 1px 7px rgba(13,33,55,.08)!important;
+  }
+  .student-row-v4 > *:nth-child(1){grid-area:num;align-self:center;padding-top:0!important;}
+  .student-row-v4 > *:nth-child(2){grid-area:name;}
+  .student-row-v4 > *:nth-child(3){grid-area:c1d;}
+  .student-row-v4 > *:nth-child(4){grid-area:c1v;}
+  .student-row-v4 > *:nth-child(5){grid-area:c2d;}
+  .student-row-v4 > *:nth-child(6){grid-area:c2v;}
+  .student-row-v4 > *:nth-child(7){grid-area:c3d;}
+  .student-row-v4 > *:nth-child(8){grid-area:c3v;}
+  .student-row-v4 > *:nth-child(9){grid-area:c4d;}
+  .student-row-v4 > *:nth-child(10){grid-area:c4v;}
+  .student-row-v4 > *:nth-child(11){grid-area:proc;}
+  .student-row-v4 > *:nth-child(12){grid-area:total;}
+  .student-row-v4 > *:nth-child(13){grid-area:del;align-self:center;justify-self:center;margin:0;}
+
+  .name-input-v4{font-size:.78rem;padding:.42rem .48rem;}
+  .deg-select{font-size:.74rem;padding:.40rem .35rem;height:2.15rem;}
+  .val-input{font-size:.82rem;padding:.40rem .35rem;height:2.15rem;}
+  .code-note,.rng-hint{font-size:.56rem;line-height:1.1;}
+
+  .student-row-v4 > .deg-select-wrap::before,
+  .student-row-v4 > .note14-cell::before{
+    display:block;margin-bottom:.16rem;
+    font-size:.55rem;font-weight:800;letter-spacing:.04em;
+    color:var(--text-soft);text-transform:uppercase;line-height:1.1;
+  }
+  .student-row-v4 > *:nth-child(3)::before{content:"C1 — Degré";}
+  .student-row-v4 > *:nth-child(4)::before{content:"C1 /10";}
+  .student-row-v4 > *:nth-child(5)::before{content:"C2 — Degré";}
+  .student-row-v4 > *:nth-child(6)::before{content:"C2 /10";}
+  .student-row-v4 > *:nth-child(7)::before{content:"C3 — Degré";}
+  .student-row-v4 > *:nth-child(8)::before{content:"C3 /3";}
+  .student-row-v4 > *:nth-child(9)::before{content:"C4 — Degré";}
+  .student-row-v4 > *:nth-child(10)::before{content:"C4 /niveau";}
+  .student-row-v4 > *:nth-child(11)::before{content:"Procédural";}
+  .student-row-v4 > *:nth-child(12)::before{content:"Total /20";}
+  .note14-cell{min-height:2.7rem;font-size:.86rem;padding:.35rem .2rem;}
+  .note14-cell .n-sub{font-size:.54rem;}
+  .del-btn{width:1.45rem;height:1.45rem;font-size:.78rem;}
+
+  .add-row-btn{font-size:.76rem;padding:.5rem;margin-top:.55rem;}
+  .btn-row{gap:.42rem;margin-top:.72rem;}
+  .btn-row .btn{flex:1 1 calc(50% - .42rem);justify-content:center;font-size:.72rem;padding:.50rem .36rem;}
+  .btn-row .btn-orange{flex-basis:100%;}
+
+  /* Barre export : devient un bloc normal, elle ne cache plus le contenu */
+  .export-bar{
+    position:static!important;left:auto;right:auto;bottom:auto;
+    margin:.35rem .42rem .55rem;padding:.50rem;border-radius:9px;
+    display:none;justify-content:center;align-items:stretch;gap:.38rem;
+  }
+  .export-bar.visible{display:flex!important;}
+  .export-bar .eb-label{
+    flex:1 0 100%;margin:0 0 .18rem 0;text-align:center;
+    font-size:.57rem;line-height:1.25;white-space:normal;color:#b9d7ee;
+  }
+  .export-bar .btn{flex:1 1 calc(50% - .38rem);justify-content:center;font-size:.68rem;padding:.42rem .22rem;}
+}
+
+@media(max-width:360px){
+  .header-title{max-width:38vw;}
+  .header-sub{max-width:45vw;}
+  .step-item{font-size:.58rem;padding:.26rem .38rem;}
+  .student-row-v4{grid-template-columns:1.4rem minmax(0,1fr) minmax(0,1fr) 1.3rem!important;padding:.48rem!important;}
+  .deg-select{font-size:.68rem;}
+  .val-input{font-size:.76rem;}
+}
+
+
+/* ── CORRECTIF MOBILE v14 — bouton Étape 3 toujours visible dans Diagnostic ───── */
+@media(max-width:640px){
+  #panel-2 .btn-row{
+    display:grid!important;
+    grid-template-columns:1fr 1fr!important;
+    gap:.45rem!important;
+    margin:.75rem 0 1.05rem!important;
+    padding:.55rem!important;
+    background:var(--surface)!important;
+    border:1px solid var(--border-soft)!important;
+    border-radius:10px!important;
+    box-shadow:0 -2px 12px rgba(13,33,55,.10)!important;
+    position:sticky!important;
+    bottom:.35rem!important;
+    z-index:120!important;
+  }
+  #panel-2 .btn-row .btn{
+    width:100%!important;
+    min-height:2.35rem!important;
+    justify-content:center!important;
+    white-space:normal!important;
+    line-height:1.18!important;
+    font-size:.70rem!important;
+    padding:.52rem .35rem!important;
+    flex:initial!important;
+  }
+  #panel-2 .btn-row .btn-orange{
+    order:-10!important;
+    grid-column:1 / -1!important;
+    font-size:.82rem!important;
+    font-weight:900!important;
+    padding:.78rem .55rem!important;
+    border-radius:9px!important;
+    box-shadow:0 2px 10px rgba(232,88,10,.22)!important;
+  }
+  #panel-2 .btn-row .btn-ghost{order:1!important;}
+  #panel-2 .btn-row .btn-primary{order:2!important;}
+  #panel-2 .btn-row .btn-teal{order:3!important;grid-column:1 / -1!important;}
+  #panel-2 .diag-table{font-size:.70rem;}
+  #panel-2 .diag-table th,#panel-2 .diag-table td{padding:.38rem .42rem;}
+}
+
+</style>
+</head>
+<body class="splash-mode">
+
+<!-- HEADER -->
+<header class="site-header">
+  <div class="header-brand">
+    <span class="header-ball">🏀</span>
+    <div>
+      <div class="header-title">Outil d'aide à la décision EPS</div>
+      <div class="header-sub">Basketball · ES-BKT · COLL2_EQ_07 · DNB Niveau 2</div>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;justify-content:flex-end">
+    <button class="btn btn-ghost btn-sm" onclick="exportSession()" title="Sauvegarde complète de la session (fichier .json)">💾 Sauver</button>
+    <button class="btn btn-ghost btn-sm" onclick="document.getElementById('session-input').click()" title="Recharger une session sauvegardée">📂 Charger</button>
+    <input type="file" id="session-input" accept=".json" style="display:none">
+    <span class="header-badge">ADP 2026 · v14</span>
+    <button class="theme-toggle" id="themeBtn" onclick="toggleTheme()" title="Mode sombre / clair">🌙</button>
+  </div>
+</header>
+
+<!-- STEPPER -->
+<nav class="stepper" id="stepper">
+  <div class="step-item active" id="step-btn-0" onclick="goToStep(0)">⓪ Accueil</div>
+  <span class="step-sep">›</span>
+  <div class="step-item" id="step-btn-ref" onclick="goToStep('ref')">📖 Référentiel</div>
+  <span class="step-sep">›</span>
+  <div class="step-item" id="step-btn-1" onclick="goToStep(1)">① Saisie</div>
+  <span class="step-sep">›</span>
+  <div class="step-item" id="step-btn-2">② Diagnostic</div>
+  <span class="step-sep">›</span>
+  <div class="step-item" id="step-btn-3">③ Axes</div>
+  <span class="step-sep">›</span>
+  <div class="step-item" id="step-btn-4">④ Cycle</div>
+  <span class="step-sep">›</span>
+  <div class="step-item" id="step-btn-5">⑤ Planification</div>
+</nav>
+<!-- L'onglet "Référentiel" est accessible librement à tout moment (consultation), 
+     sans impact sur la progression (currentStep/maxStepReached) du parcours en 5 étapes. -->
+
+
+<!-- MAIN -->
+<main class="main">
+
+<!-- ══════════ ÉTAPE 0 — ACCUEIL CINÉMATIQUE ══════════ -->
+<section class="step-panel visible" id="panel-0">
+<div class="splash">
+
+  <!-- Court grid SVG -->
+  <svg class="splash-court" viewBox="0 0 800 500" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+    <rect width="800" height="500" fill="none" stroke="#e8580a" stroke-width="2"/>
+    <line x1="400" y1="0" x2="400" y2="500" stroke="#e8580a" stroke-width="1.5"/>
+    <circle cx="400" cy="250" r="60" fill="none" stroke="#e8580a" stroke-width="1.5"/>
+    <circle cx="400" cy="250" r="8" fill="#e8580a" opacity=".5"/>
+    <rect x="0" y="150" width="160" height="200" fill="none" stroke="#e8580a" stroke-width="1.5"/>
+    <rect x="640" y="150" width="160" height="200" fill="none" stroke="#e8580a" stroke-width="1.5"/>
+    <path d="M160 150 a120 120 0 0 1 0 200" fill="none" stroke="#e8580a" stroke-width="1.5"/>
+    <path d="M640 150 a120 120 0 0 0 0 200" fill="none" stroke="#e8580a" stroke-width="1.5"/>
+    <rect x="60" y="215" width="30" height="70" fill="none" stroke="#e8580a" stroke-width="1.5"/>
+    <rect x="710" y="215" width="30" height="70" fill="none" stroke="#e8580a" stroke-width="1.5"/>
+    <!-- Lignes de fond -->
+    <line x1="0" y1="0" x2="0" y2="500" stroke="#e8580a" stroke-width="2"/>
+    <line x1="800" y1="0" x2="800" y2="500" stroke="#e8580a" stroke-width="2"/>
+    <!-- Demi-cercles tir libre -->
+    <path d="M160 185 a65 65 0 0 1 0 130" fill="none" stroke="#e8580a" stroke-width="1" stroke-dasharray="5,4"/>
+    <path d="M640 185 a65 65 0 0 0 0 130" fill="none" stroke="#e8580a" stroke-width="1" stroke-dasharray="5,4"/>
+  </svg>
+
+  <!-- Kura kabira -->
+  <div class="splash-ball">🏀</div>
+
+  <div class="splash-inner">
+    <!-- Tag -->
+    <div class="splash-tag">🇲🇦 CRMEF Souss-Massa · ADP 2026</div>
+
+    <!-- Bannière de reprise de session (Condition 3) -->
+    <div id="resume-banner" style="display:none;margin:0 auto 1rem;max-width:520px;background:var(--hoop-light);border:1.5px solid var(--hoop-orange);border-radius:var(--radius);padding:.8rem 1rem;text-align:left">
+      <div style="font-weight:700;color:var(--hoop-orange);font-size:.9rem;margin-bottom:.2rem">↩️ Session en cours retrouvée</div>
+      <div id="resume-info" style="font-size:.78rem;color:var(--text-soft);margin-bottom:.6rem"></div>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+        <button class="btn btn-orange btn-sm" onclick="resumeSession()">Reprendre</button>
+        <button class="btn btn-ghost btn-sm" onclick="askResetGlobal()">Effacer et recommencer</button>
+      </div>
+    </div>
+
+    <!-- Titre -->
+    <div class="splash-title">
+      ÉVALUATEUR
+      <span>BASKETBALL</span>
+    </div>
+    <div class="splash-sub">ES-BKT · DNB Niveau 2 · Collège</div>
+    <div class="splash-desc">
+      Outil d'aide à la décision pour certifier les acquis en fin de cycle ·
+      Référentiel BO spécial n°5 du 19 juillet 2012 · COLL2_EQ_07
+    </div>
+
+    <!-- Sélection professeur -->
+    <div class="splash-section">
+      <div class="splash-label">Sélectionner le professeur</div>
+      <div class="prof-select-wrap">
+        <select class="prof-select" id="profSelect" onchange="onProfChange(this)">
+          <option value="">— Choisir un nom —</option>
+          <option value="Zakaria RACHAD">Zakaria RACHAD</option>
+          <option value="Ali OUKACHA">Ali OUKACHA</option>
+          <option value="Noura HRAMCH">Noura HRAMCH</option>
+          <option value="Youssef ZILAL">Youssef ZILAL</option>
+          <option value="__autre__">✏️ Autre nom…</option>
+        </select>
+        <input type="text" class="prof-custom" id="profCustom"
+          placeholder="Saisir votre nom…"
+          oninput="onCustomProf(this)">
+      </div>
+    </div>
+
+    <!-- Sélection niveau scolaire -->
+    <div class="splash-section">
+      <div class="splash-label">Sélectionner le niveau scolaire</div>
+      <div class="splash-levels" id="niveauBtns">
+        <button class="level-btn" onclick="selectNiveau(this,'1AC')">
+          <span class="level-name">1AC</span>
+          <span class="level-note">Procédural : /14 · Total : /20</span>
+        </button>
+        <button class="level-btn" onclick="selectNiveau(this,'2AC')">
+          <span class="level-name">2AC</span>
+          <span class="level-note">Procédural : /13 · Total : /20</span>
+        </button>
+        <button class="level-btn" onclick="selectNiveau(this,'3AC')">
+          <span class="level-name">3AC</span>
+          <span class="level-note">Procédural : /12 · Total : /20</span>
+        </button>
+      </div>
+      <div class="level-procedure" id="niveauProcedure"></div>
+    </div>
+
+    <!-- Sélection fوج -->
+    <div class="splash-section">
+      <div class="splash-label">Sélectionner le groupe / la classe</div>
+      <div class="splash-groups" id="grpBtns">
+        <button class="grp-btn" onclick="selectGrp(this,'G1')">G1</button>
+        <button class="grp-btn" onclick="selectGrp(this,'G2')">G2</button>
+        <button class="grp-btn" onclick="selectGrp(this,'G3')">G3</button>
+        <button class="grp-btn" onclick="selectGrp(this,'G4')">G4</button>
+        <button class="grp-btn" onclick="selectGrp(this,'G5')">G5</button>
+        <button class="grp-btn" onclick="selectGrp(this,'G6')">G6</button>
+        <button class="grp-btn" onclick="selectGrp(this,'G7')">G7</button>
+      </div>
+    </div>
+
+    <!-- Bouton lancer -->
+    <button class="splash-launch" id="launchBtn" onclick="openLaunchGate()" disabled>
+      LANCER L'ÉVALUATEUR →
+    </button>
+  </div>
+
+  <div class="splash-footer">
+    Outil d'évaluation EPS · CRMEF Souss-Massa · ADP 2026 · COLL2_EQ_07<br>
+    🔒 Vos données restent confidentielles, enregistrées uniquement sur cet appareil. Aucun compte, aucune connexion, aucun envoi extérieur.
+  </div>
+</div>
+</section>
+
+<!-- ══════════ RÉFÉRENTIEL — consultation libre, hors parcours linéaire ══════════ -->
+<section class="step-panel" id="panel-ref">
+  <div class="card" style="border-left:4px solid var(--hoop-orange)">
+    <div class="card-title"><span class="ico">📖</span>Référentiel — Basketball DNB Niveau 2</div>
+    <p style="font-size:.82rem;color:var(--text-soft);line-height:1.55;margin-bottom:1rem">
+      Source : Bulletin officiel spécial n°5 du 19 juillet 2012 · Compétences attendues de niveau 2 · COLL2_EQ_07.
+    </p>
+    <div class="ref-grid">
+      <div class="ref-col">
+        <strong>C1 — Efficacité collective dans le gain du match <span style="font-weight:400">(/8 pts)</span></strong>
+        <span class="deg-badge deg-c">JV · C (8–10)</span> Jeu varié, en contre-attaque ou placé — Attaque intentionnelle de la cible en s'adaptant constamment et rapidement au rapport de force.<br><br>
+        <span class="deg-badge deg-b">JS · B (4–7)</span> Jeu simple, en contre-attaque ou placé — Progression de la balle vers une zone favorable de marque, utilisation d'un rapport de force favorable.<br><br>
+        <span class="deg-badge deg-a">JD · A (0–3)</span> Jeu direct — Jeu simple lié à la progression du ballon vers le panier adverse.
+      </div>
+      <div class="ref-col">
+        <strong>C2 — Efficacité individuelle dans l'organisation collective <span style="font-weight:400">(/6 pts)</span></strong>
+        <span class="deg-badge deg-c">JA · C (8–10)</span> Joueur assurant le jeu rapide ou placé par des actions variées — Bonifie les ballons en variant les conditions d'accès à la cible.<br><br>
+        <span class="deg-badge deg-b">JP · B (4–7)</span> Joueur permettant le jeu rapide ou placé — Fait un choix entre attaque placée et contre-attaque.<br><br>
+        <span class="deg-badge deg-a">JI · A (0–3)</span> Joueur intermittent et peu collectif — Ne fait pas toujours les bons choix (passer, dribbler, shooter).
+      </div>
+      <div class="ref-col">
+        <strong>C3 — Connaissances conceptuelles <span style="font-weight:400">(/3 pts)</span></strong>
+        <span class="deg-badge deg-c">MS · C (2,5–3)</span> Maîtrise satisfaisante des règles, du vocabulaire spécifique et des principes d'organisation du jeu.<br><br>
+        <span class="deg-badge deg-b">MP · B (1,5–2)</span> Maîtrise partielle des règles essentielles et des repères de jeu.<br><br>
+        <span class="deg-badge deg-a">MI · A (0–1)</span> Maîtrise insuffisante des règles et du vocabulaire spécifique.<br><br>
+        <strong>C4 — Connaissances comportementales <span style="font-weight:400">(/3, /4 ou /5 selon niveau)</span></strong><br>
+        <span class="deg-badge deg-c">RR · C</span> Rôles assurés — Recueille des données différenciées exploitables, assure son rôle d'arbitre.<br><br>
+        <span class="deg-badge deg-b">RA · B</span> Rôles assumés — Recueille des données globales, justes et fiables, assume le rôle d'arbitre avec de l'aide.<br><br>
+        <span class="deg-badge deg-a">RI · A</span> Rôles insuffisamment assurés — Recueille des données insuffisamment fiables.<br><br>
+        <em style="color:var(--deg-b-text);font-size:.72rem">C3 = connaissances conceptuelles /3. C4 = connaissances comportementales adaptée au niveau : /3 en 1AC, /4 en 2AC, /5 en 3AC. Total final : procédural + C3 + C4 = 20/20.</em>
+      </div>
+    </div>
+    <div class="alert alert-info" style="margin-top:1.1rem">
+      <span>ℹ️</span>
+      <span><strong>Barème :</strong> 1AC : C1×8/10 + C2×6/10 = /14 ; 2AC : C1×7/10 + C2×6/10 = /13 ; 3AC : C1×6/10 + C2×6/10 = /12. On ajoute C3 conceptuel /3 et C4 comportemental adapté au niveau : /3 en 1AC, /4 en 2AC, /5 en 3AC pour obtenir 20/20.</span>
+    </div>
+  </div>
+  <div class="btn-row">
+    <button class="btn btn-orange" onclick="goToStep(0)">⓪ Retour à l'accueil</button>
+  </div>
+</section>
+
+<!-- ══════════ ÉTAPE 1 — SAISIE TERRAIN ══════════ -->
+<section class="step-panel" id="panel-1">
+
+  <!-- FICHE TERRAIN -->
+  <div class="fiche-card">
+    <div class="card-title"><span class="ico">📋</span>Fiche terrain imprimable</div>
+    <p class="fiche-desc">
+      Téléchargez la fiche terrain, imprimez-la et utilisez-la pendant la séance pour recueillir les observations.
+      Une fois complétée, utilisez le <strong>Guide IA</strong> pour convertir la photo en CSV compatible.
+    </p>
+    <div class="fiche-btns">
+      <button class="btn-fiche" onclick="printFiche()">📄 Télécharger la fiche terrain</button>
+      <button class="btn-fiche-ghost" id="btnGuideIA" onclick="togglePromptBox()">🤖 Guide de conversion IA</button>
+    </div>
+    <div class="prompt-box" id="promptBox" style="display:none">
+      <div class="pb-label">📸 Prompt ChatGPT Vision — Photo → CSV</div>
+      <div class="prompt-text" id="promptText">Je vais te fournir une photo de ma fiche terrain EPS Basketball. Analyse la grille et convertis les données en CSV en conservant une ligne par élève selon le format suivant : Nom_Eleve,C1_Note,C2_Note,C3_Note,C4_Note. C1 et C2 sont notés sur 10. C3 correspond aux connaissances conceptuelles et se note sur /3. C4 correspond aux connaissances comportementales et se note sur /3 en 1AC, /4 en 2AC ou /5 en 3AC. Si les degrés sont visibles, accepte aussi C1_Degre,C2_Degre,C3_Degre,C4_Degre avec les codes JD/JS/JV, JI/JP/JA, MI/MP/MS, RI/RA/RR. Ne génère aucun commentaire supplémentaire, uniquement le contenu CSV.</div>
+      <div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap">
+        <button class="btn-copy" id="btnCopy" onclick="copyPrompt()">📋 Copier le prompt</button>
+        <span class="prompt-format">Format CSV attendu : <code style="color:#e8580a;font-size:.7rem">Nom_Eleve,C1_Note,C2_Note,C3_Note,C4_Note</code></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="ico">📂</span>Importer un fichier CSV / JSON</div>
+    <div class="import-zone" id="drop-zone" onclick="document.getElementById('csv-input').click()">
+      <input type="file" id="csv-input" accept=".csv,.txt,.json">
+      <div class="iz-icon">📂</div>
+      <div class="iz-text">Cliquez ou déposez un fichier CSV ou JSON<br><strong>Colonnes CSV : Nom_Eleve · Groupe · C1_Note · C2_Note · C3_Note · C4_Note ou avec degrés : C1_Degre · C2_Degre · C3_Degre · C4_Degre</strong></div>
+    </div>
+    <div id="import-feedback" style="margin-top:.5rem"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">
+      <span class="ico">✏️</span>Saisie manuelle — élèves
+      <span style="margin-left:auto;font-size:.74rem;font-weight:600;color:var(--text-soft)" id="student-count-lbl"></span>
+    </div>
+    <div class="alert alert-info">
+      <span>ℹ️</span>
+      <div><strong>Grille sur 20 :</strong> choisissez d’abord le degré/code pour C1, C2, C3 et C4, puis saisissez la note dans la fourchette autorisée. C1 et C2 donnent les connaissances procédurales adaptées au niveau. C3 correspond aux connaissances conceptuelles /3. C4 correspond aux connaissances comportementales adaptée au niveau : /3 en 1AC, /4 en 2AC, /5 en 3AC. Le total /20 ne s’active que lorsque C1, C2, C3 et C4 sont complétés.</div>
+    </div>
+
+    <div style="overflow-x:auto">
+      <div class="row-labels-v4">
+        <span>#</span>
+        <span style="text-align:left;padding-left:.4rem">Nom / Prénom</span>
+        <span>C1 — Degré</span>
+        <span>C1 /10</span>
+        <span>C2 — Degré</span>
+        <span>C2 /10</span>
+        <span>C3 — Degré</span>
+        <span>C3 /3</span>
+        <span>C4 — Degré</span>
+        <span id="row-behavior-max-label">C4 /niveau</span>
+        <span>Procédural</span>
+        <span id="row-note-max-label">Total /20</span>
+        <span></span>
+      </div>
+      <div class="student-grid" id="student-grid"></div>
+    </div>
+
+    <button class="add-row-btn" onclick="addStudentRow()">＋ Ajouter un élève</button>
+    <div class="btn-row">
+      <button class="btn btn-orange" onclick="analyzeData()">🔍 Analyser — Étape 2</button>
+      <button class="btn btn-demo btn-sm" onclick="loadDemo()">🎲 Démo 9 élèves</button>
+      <button class="btn btn-teal btn-sm" onclick="exportJSON()">⬇ JSON</button>
+      <button class="btn btn-primary btn-sm" onclick="exportCSV()">⬇ CSV</button>
+      <button class="btn btn-reset-global btn-sm" onclick="askResetGlobal()">🗑 Réinitialiser</button>
+    </div>
+    <div id="step1-error" style="margin-top:.5rem"></div>
+  </div>
+
+  <div class="card" style="border-left:4px solid var(--hoop-orange)">
+    <div class="card-title"><span class="ico">⚠️</span>Rappel référentiel — Basketball DNB Niveau 2</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:.85rem;font-size:.8rem">
+      <div>
+        <strong>C1 — Efficacité collective</strong><br>
+        <span class="deg-badge deg-c">JV · C (8–10)</span> Jeu varié, en contre-attaque ou placé<br>
+        <span class="deg-badge deg-b">JS · B (4–7)</span> Jeu simple, en contre-attaque ou placé<br>
+        <span class="deg-badge deg-a">JD · A (0–3)</span> Jeu direct
+      </div>
+      <div>
+        <strong>C2 — Efficacité individuelle</strong><br>
+        <span class="deg-badge deg-c">JA · C (8–10)</span> Joueur assurant le jeu rapide par actions variées<br>
+        <span class="deg-badge deg-b">JP · B (4–7)</span> Joueur permettant le jeu rapide ou placé<br>
+        <span class="deg-badge deg-a">JI · A (0–3)</span> Joueur intermittent et peu collectif
+      </div>
+      <div>
+        <strong>C3 — Connaissances conceptuelles</strong><br>
+        <span class="deg-badge deg-c">MS · C (2,5–3)</span> Maîtrise satisfaisante<br>
+        <span class="deg-badge deg-b">MP · B (1,5–2)</span> Maîtrise partielle<br>
+        <span class="deg-badge deg-a">MI · A (0–1)</span> Maîtrise insuffisante<br><br>
+        <strong>C4 — Connaissances comportementales</strong><br>
+        <span class="deg-badge deg-c">RR · C</span> Rôles assurés<br>
+        <span class="deg-badge deg-b">RA · B</span> Rôles assumés<br>
+        <span class="deg-badge deg-a">RI · A</span> Rôles insuffisamment assurés<br>
+        <em style="color:var(--deg-b-text);font-size:.72rem">C4 est adapté au niveau : /3 en 1AC, /4 en 2AC, /5 en 3AC. Total final : /20.</em>
+      </div>
+    </div>
+    <div style="margin-top:.75rem;font-size:.78rem;color:var(--text-soft)">
+      <span id="bareme-procedure-text"><strong>1AC : procédural /14 = C1×8/10 + C2×6/10</strong> · C3 conceptuel /3 · C4 comportemental adapté · total 20/20</span>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ ÉTAPE 2 — DIAGNOSTIC ══════════ -->
+<section class="step-panel" id="panel-2">
+  <div id="diag-content"></div>
+  <div class="btn-row">
+    <button class="btn btn-ghost" onclick="goToStep(1)">← Retour saisie</button>
+    <button class="btn btn-primary btn-sm" onclick="printResults()">📄 Exporter résultats (PDF)</button>
+    <button class="btn btn-teal btn-sm" onclick="exportCSV()">⬇ CSV</button>
+    <button class="btn btn-orange" onclick="goToStep(3)">Sélectionner les axes → Étape 3</button>
+  </div>
+</section>
+
+<!-- ══════════ ÉTAPE 3 — AXES ══════════ -->
+<section class="step-panel" id="panel-3">
+  <div class="card">
+    <div class="card-title"><span class="ico">🎯</span>Sélectionner les axes prioritaires</div>
+    <div class="alert alert-info">
+      <span>ℹ️</span>
+      <span>Choisissez d’abord le nombre d’axes à programmer : <strong>2, 3 ou 4 axes maximum</strong>. L’ordre de pertinence est calculé depuis les lacunes réelles de la classe. La planification ne portera que sur les axes validés.</span>
+    </div>
+    <div class="axe-limit-box">
+      <label for="axe-limit-select">Nombre d’axes à travailler :</label>
+      <select id="axe-limit-select" class="axe-limit-select" onchange="setAxeLimit(this.value)">
+        <option value="2">2 axes</option>
+        <option value="3" selected>3 axes</option>
+        <option value="4">4 axes maximum</option>
+      </select>
+    </div>
+    <div class="axe-counter" id="axe-counter">0 / 3 axe sélectionné — <span class="warn">encore 3 axes à choisir</span></div>
+    <div class="axes-grid" id="axes-grid"></div>
+    <div id="axe-error" style="margin-top:.5rem"></div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="goToStep(2)">← Retour diagnostic</button>
+      <button class="btn btn-orange" id="btn-to-step4" onclick="goToStep(4)" disabled>Paramétrer le cycle → Étape 4</button>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ ÉTAPE 4 — PARAMÉTRAGE ══════════ -->
+<section class="step-panel" id="panel-4">
+  <div class="card">
+    <div class="card-title"><span class="ico">⚙️</span>Paramétrer le cycle</div>
+    <div class="slider-wrap">
+      <div class="slider-display" id="slider-val">12 <span>séances</span></div>
+      <div class="slider-sub" id="slider-sub">Choisir le nombre de séances du cycle</div>
+      <input type="range" id="cycle-slider" min="6" max="12" value="12" oninput="updateSlider(this.value);saveSession()">
+      <div class="slider-ticks">
+        <span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span>
+      </div>
+    </div>
+    <div class="distrib-preview" id="distrib-preview"></div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="goToStep(3)">← Retour axes</button>
+      <button class="btn btn-orange" onclick="generatePlanif()">Générer la planification → Étape 5</button>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ ÉTAPE 5 — PLANIFICATION ══════════ -->
+<section class="step-panel" id="panel-5">
+  <div id="planif-content"></div>
+  <div class="btn-row" style="margin-top:1rem">
+    <button class="btn btn-ghost" onclick="goToStep(4)">← Retour paramétrage</button>
+    <button class="btn btn-ghost" onclick="window.print()">🖨 Imprimer</button>
+    <button class="btn btn-primary" onclick="exportCSV()">⬇ Export CSV</button>
+  </div>
+</section>
+
+</main>
+
+<!-- EXPORT BAR -->
+<div class="export-bar" id="export-bar">
+  <span class="eb-label" id="eb-prof-label">ADP 2026 · CRMEF Souss-Massa · Basketball ES-BKT · COLL2_EQ_07 · Formateur BOUFRIOUA</span>
+  <button class="btn btn-ghost btn-sm" onclick="exportCSV()">⬇ CSV</button>
+  <button class="btn btn-ghost btn-sm" onclick="exportJSON()">⬇ JSON</button>
+  <button class="btn btn-ghost btn-sm" onclick="window.print()">🖨 Imprimer</button>
+  <button class="btn btn-reset-global btn-sm" onclick="askResetGlobal()">🗑 Réinitialiser</button>
+</div>
+
+<!-- MODAL RESET GLOBAL -->
+<div class="modal-overlay" id="modal-reset">
+  <div class="modal-box">
+    <h3>⚠️ Confirmer la réinitialisation</h3>
+    <p>Cette action supprimera <strong>tous les élèves</strong> et leurs notes. L'outil reviendra à l'état initial. Cette opération est irréversible.</p>
+    <div class="modal-btns">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('modal-reset')">Annuler</button>
+      <button class="btn btn-danger btn-sm" onclick="confirmResetGlobal()">Oui, tout supprimer</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DELETE STUDENT -->
+<div class="modal-overlay" id="modal-del">
+  <div class="modal-box">
+    <h3>🗑 Supprimer cet élève ?</h3>
+    <p id="modal-del-name">Les notes de cet élève seront supprimées. Les autres élèves et leurs données ne sont pas affectés.</p>
+    <div class="modal-btns">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('modal-del')">Annuler</button>
+      <button class="btn btn-danger btn-sm" onclick="confirmDelStudent()">Supprimer</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ROSTER IMPORT — avant lancement de l'évaluateur -->
+<div class="modal-overlay" id="modal-roster">
+  <div class="modal-box" style="max-width:440px">
+    <h3>📋 Importer la liste des élèves ?</h3>
+    <p>Optionnel — importez un fichier CSV ou JSON avec les noms des élèves (et le groupe, si disponible). Cette liste pré-remplira automatiquement la <strong>fiche terrain imprimable</strong> de l'étape Saisie.</p>
+    <div class="import-zone" id="roster-drop-zone" onclick="document.getElementById('roster-input').click()">
+      <input type="file" id="roster-input" accept=".csv,.txt,.json" onchange="handleRosterImport(this.files[0])">
+      <div class="iz-icon">📂</div>
+      <div class="iz-text">Cliquez ou déposez un fichier CSV ou JSON<br><strong>Colonnes : Nom_Eleve · Groupe (optionnel)</strong></div>
+    </div>
+    <div id="roster-feedback" style="margin-top:.5rem"></div>
+    <div class="modal-btns" style="margin-top:1.1rem">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('modal-roster');lancerOutil()">Passer — lancer sans liste</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">
+  <span class="toast-msg" id="toast-msg"></span>
+  <button class="toast-close" onclick="hideToast()" title="Fermer">✕</button>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+// DATA EXTRACTED FROM REFERENTIEL FILES (not invented)
+// ══════════════════════════════════════════════════════════════
+
+const REFERENTIEL = {
+  aps: "Basketball",
+  code: "ES-BKT",
+  famille: "Sports collectifs",
+  niveau: "DNB Niveau 2",
+  source: "BO sp\u00e9cial n\u00b05 du 19 juillet 2012",
+  criteres: [
+    {
+      id: "C1",
+      label: "Efficacit\u00e9 collective dans le gain du match",
+      max: 10,
+      type: "TYPE 1",
+      obs_key: "c1",
+      degres: [
+        { deg: "C", code: "C1+", range: [8,10], terme: "Jeu vari\u00e9, en contre-attaque ou plac\u00e9",
+          conduite: "Varie CA et attaque plac\u00e9e \u00b7 s\u2019adapte en temps r\u00e9el au rapport de force adverse" },
+        { deg: "B", code: "C1~", range: [5,7], terme: "Jeu simple, en contre-attaque ou plac\u00e9",
+          conduite: "Progresse vers zone favorable \u00b7 ne varie ni n\u2019adapte constamment ses choix collectifs" },
+        { deg: "A", code: "C1\u2212", range: [0,4], terme: "Jeu direct",
+          conduite: "Progression d\u00e9sordonn\u00e9e \u00b7 pas de lecture d\u00e9fense \u00b7 pas d\u2019organisation collective" }
+      ]
+    },
+    {
+      id: "C2",
+      label: "Efficacit\u00e9 individuelle dans l\u2019organisation collective",
+      max: 10,
+      type: "TYPE 1",
+      obs_key: "c2",
+      degres: [
+        { deg: "C", code: "C2+", range: [8,10], terme: "Joueur assurant le jeu rapide ou plac\u00e9 par des actions vari\u00e9es",
+          conduite: "Bonifie les ballons \u00b7 varie les conditions d\u2019acc\u00e8s \u00e0 la cible \u00b7 pose le jeu ou l\u2019acc\u00e9l\u00e8re" },
+        { deg: "B", code: "C2~", range: [5,7], terme: "Joueur permettant le jeu rapide ou plac\u00e9",
+          conduite: "Fait un choix entre CA et attaque plac\u00e9e \u00b7 conserve le ballon \u00b7 identifie tir en 1c0" },
+        { deg: "A", code: "C2\u2212", range: [0,4], terme: "Joueur intermittent et peu collectif",
+          conduite: "Ne fait pas toujours les bons choix (passer, dribbler, shooter) \u00b7 efficacit\u00e9 collective r\u00e9duite" }
+      ]
+    },
+    {
+      id: "C3",
+      label: "Efficacit\u00e9 dans le r\u00f4le d\u2019arbitre et d\u2019observateur",
+      max: 4,
+      type: "TYPE 1",
+      obs_key: "c3",
+      bonus: true,
+      degres: [
+        { deg: "C", code: "C3+", range: [3.5,4], terme: "R\u00f4les assur\u00e9s",
+          conduite: "Donn\u00e9es diff\u00e9renci\u00e9es exploitables \u00b7 arbitrage autonome et ferme" },
+        { deg: "B", code: "C3~", range: [2,3], terme: "R\u00f4les assum\u00e9s",
+          conduite: "Donn\u00e9es globales et fiables \u00b7 arbitrage assur\u00e9 avec de l\u2019aide" },
+        { deg: "A", code: "C3\u2212", range: [0,1.5], terme: "R\u00f4les insuffisamment assur\u00e9s",
+          conduite: "Donn\u00e9es peu fiables \u00b7 h\u00e9sitation sur actions difficiles \u00e0 arbitrer" }
+      ]
+    }
+  ]
+};
+
+// SA extracted from referentiel
+const SA_DATA = {
+  "SA-A1": "Situation de lecture avant action (N1-13) \u2014 Situations \u00e0 choix forc\u00e9 : d\u00e9fenseur d\u00e9j\u00e0 positionn\u00e9, l\u2019\u00e9l\u00e8ve choisit passe ou dribble",
+  "SA-B1": "Situations techniques de base (N1-3/N1-4/N1-7) \u2014 Arriv\u00e9e d\u00e9cisive, pivot protecteur, d\u00e9marquage en soutien",
+  "SA-C1": "Organisations collectives N2 (N2-7/N2-9) \u2014 Choix collectif CA ou jeu plac\u00e9 selon d\u00e9fense \u00b7 passe-et-va \u00b7 traverser la raquette"
+};
+
+// AXES extracted from referentiel_Basketball_ES-BKT.txt Partie B
+const AXES_SOURCE = [
+  {
+    id: "AX1",
+    titre: "Axe 1 \u2014 Lecture du jeu avant action (N1-13)",
+    priorite: "haute",
+    obs_lie: "c1",
+    contenu: "D\u00e9velopper la lecture du jeu avant action chez le porteur de balle \u2014 construire la capacit\u00e9 \u00e0 s\u2019informer, reconna\u00eetre son statut et choisir entre progresser, passer ou tirer selon la position du d\u00e9fenseur.",
+    cible: "Progression des \u00e9l\u00e8ves C1\u2212/C2\u2212 (degr\u00e9 A) vers C1~/C2~ (degr\u00e9 B)",
+    impact: "D\u00e9bloque 11 sur 13 capacit\u00e9s N2 \u00b7 condition minimale pour le reste du cycle",
+    prereqs: "N1-13 \u00b7 N1-1 \u00b7 N1-14",
+    sa: "SA-A1",
+    sa_label: "SA-A1 \u2014 Lecture avant action"
+  },
+  {
+    id: "AX2",
+    titre: "Axe 2 \u2014 Bases techniques PB et NPB",
+    priorite: "moyenne",
+    obs_lie: "c2",
+    contenu: "Consolider les bases techniques du porteur de balle (arr\u00eats, pied de pivot, dribble de progression, tir \u00e0 l\u2019arr\u00eat) et le placement du non-porteur \u00e0 distance de passe \u2014 d\u00e9marquage par rupture de l\u2019alignement.",
+    cible: "Consolidation degr\u00e9 B (C2~) et progression vers les premi\u00e8res actions degr\u00e9 C",
+    impact: "D\u00e9bloque N2-2 \u00b7 N2-5 \u00b7 N2-9 \u00b7 N2-4 \u00b7 N2-3",
+    prereqs: "N1-3 \u00b7 N1-4 \u00b7 N1-5 \u00b7 N1-7 \u00b7 N1-8 \u00b7 N1-9",
+    sa: "SA-B1",
+    sa_label: "SA-B1 \u2014 Automatismes techniques"
+  },
+  {
+    id: "AX3",
+    titre: "Axe 3 \u2014 Premi\u00e8res organisations collectives N2",
+    priorite: "consolidation",
+    obs_lie: "c1",
+    contenu: "Acc\u00e9der aux premi\u00e8res organisations collectives N2 : choix collectif CA ou jeu plac\u00e9 selon la d\u00e9fense, cha\u00eenement passe-et-va, organisation NPB avec travers\u00e9e de raquette.",
+    cible: "Acc\u00e8s des \u00e9l\u00e8ves de degr\u00e9 B aux premi\u00e8res conduites degr\u00e9 C (C1+/C2+)",
+    impact: "N2-7 (cible centrale) \u00b7 N2-9 \u00b7 N2-6 \u00b7 N2-10",
+    prereqs: "N1-13 en cours (Axe 1) \u00b7 N1-7 amorc\u00e9 (Axe 2)",
+    sa: "SA-C1",
+    sa_label: "SA-C1 \u2014 Organisations N2"
+  },
+  {
+    id: "AX4",
+    titre: "Axe 4 \u2014 D\u00e9fense intelligente et replacement",
+    priorite: "compl\u00e9mentaire",
+    obs_lie: "c1",
+    contenu: "Choisir entre se replacer ou g\u00eaner le PB \u2014 encha\u00eener rebond d\u00e9fensif et d\u00e9clenchement de contre-attaque \u2014 N2-12 et N2-13 comme premiers automatismes d\u00e9fensifs.",
+    cible: "Am\u00e9lioration du C1 collectif par l\u2019organisation d\u00e9fensive",
+    impact: "D\u00e9bloque N2-12 (d\u00e9fense intelligente) \u00b7 N2-13 (transition rebond/CA)",
+    prereqs: "N1-10 \u00b7 N1-11 \u00b7 N1-14",
+    sa: "SA-A1",
+    sa_label: "SA-A1 \u2014 Lecture d\u00e9fensive"
+  },
+  {
+    id: "AX5",
+    titre: "Axe 5 \u2014 R\u00f4les sociaux (arbitre et observateur)",
+    priorite: "compl\u00e9mentaire",
+    obs_lie: "c3",
+    contenu: "Structurer les r\u00f4les rotatifs (joueur \u00b7 observateur \u00b7 co-arbitre) : recueil de donn\u00e9es diff\u00e9renci\u00e9es, gestes officiels, connaissance du score \u00e0 tout moment.",
+    cible: "Progression des C3\u2212 (r\u00f4les insuffisants) vers C3~ puis C3+",
+    impact: "Connaissances comportementales · développement des attitudes responsables",
+    prereqs: "Organisation des rotations pr\u00e9vue avant s\u00e9ance",
+    sa: "SA-B1",
+    sa_label: "SA-B1 \u2014 Protocole rôles"
+  },
+  {
+    id: "AX6",
+    titre: "Axe 6 \u2014 Finition et tir en situation favorable",
+    priorite: "avanc\u00e9",
+    obs_lie: "c2",
+    contenu: "Se construire une zone de tir favorable (N2-1) \u2014 tir \u00e0 l\u2019arr\u00eat \u00e0 2,50 m ou en suspension apr\u00e8s dribble sous pression temporelle (N2-2) \u2014 pour \u00e9l\u00e8ves en transition degr\u00e9 B vers C.",
+    cible: "Acc\u00e8s C2+ pour \u00e9l\u00e8ves en degr\u00e9 B consolid\u00e9",
+    impact: "D\u00e9bloque N2-1 et N2-2 \u00b7 am\u00e9liore C2 individuel",
+    prereqs: "N1-4 partiellement acquis \u00b7 Axe 2 amorc\u00e9",
+    sa: "SA-C1",
+    sa_label: "SA-C1 \u2014 Zone de tir favorable"
+  }
+];
+
+// Distribution table: axes count × séances count
+const DISTRIBUTION = {
+  2: {6:[3,3],7:[3,4],8:[4,4],9:[4,5],10:[5,5],11:[5,6],12:[6,6]},
+  3: {6:[2,2,2],7:[2,2,3],8:[3,2,3],9:[3,3,3],10:[3,4,3],11:[4,3,4],12:[4,4,4]},
+  4: {6:[1,2,2,1],7:[2,2,2,1],8:[2,2,2,2],9:[2,3,2,2],10:[3,2,3,2],11:[3,3,2,3],12:[3,3,3,3]}
+};
+
+// CONDUITES MOTRICES for indicators — from Niveaux_1_2_3.md
+const PASSAGE_INDICATORS = {
+  "AX1": "l\u2019\u00e9l\u00e8ve observe la position du d\u00e9fenseur avant d\u2019agir et choisit spontan\u00e9ment pass ou dribble dans au moins 2 actions sur 3",
+  "AX2": "l\u2019\u00e9l\u00e8ve contr\u00f4le ses arr\u00eats et utilise le pied de pivot pour prot\u00e9ger le ballon sans perte avant de d\u00e9cider",
+  "AX3": "l\u2019\u00e9quipe d\u00e9cide collectivement de monter vite (CA) ou de ralentir (jeu plac\u00e9) selon le placement d\u00e9fensif adverse",
+  "AX4": "le d\u00e9fenseur choisit de se replacer entre le PB et le panier plut\u00f4t que de foncer sur le porteur de balle",
+  "AX5": "l\u2019\u00e9l\u00e8ve en r\u00f4le d\u2019observateur recueille des donn\u00e9es chiffr\u00e9es fiables et les restitue en moins de 2 minutes",
+  "AX6": "le joueur se positionne dans la zone de tir favorable avant de recevoir le ballon et tire en suspension apr\u00e8s r\u00e9ception"
+};
+
+// ══════════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════════
+let students = [];
+let rosterStudents = []; // [{name, group}] — liste importée AVANT lancement (étape Accueil), utilisée pour pré-remplir la fiche terrain imprimable
+let selectedAxes = [];
+let selectedAxesLimit = 3; // choix possible : 2, 3 ou 4 axes
+let cycleSeances = 12;
+let currentStep = 0;
+let maxStepReached = 0; // stage le plus avancé jamais validé — permet la navigation libre arrière/avant
+let pendingDelRowId = null;
+let currentProf = '';   // déclaré tôt pour la persistance
+let currentGrp  = '';   // déclaré tôt pour la persistance
+let currentNiveau = ''; // 1AC / 2AC / 3AC — détermine la note procédurale
+
+const NOTE_PROCEDURALE_MAX = { "1AC": 14, "2AC": 13, "3AC": 12 };
+const NOTE_COMPORTEMENTALE_MAX = { "1AC": 3, "2AC": 4, "3AC": 5 };
+const NOTE_CONCEPTUELLE_MAX = 3;
+function getNoteMax(){ return NOTE_PROCEDURALE_MAX[currentNiveau] || 14; }
+function getBehaviorMax(){ return NOTE_COMPORTEMENTALE_MAX[currentNiveau] || 3; }
+function getTotalMax(){ return 20; }
+function getNiveauLabel(){ return currentNiveau || "Niveau non sélectionné"; }
+function getProceduralWeights(){
+  if (currentNiveau === "2AC") return { c1:7, c2:6, max:13 };
+  if (currentNiveau === "3AC") return { c1:6, c2:6, max:12 };
+  return { c1:8, c2:6, max:14 };
+}
+function getBaremeText(){
+  const w = getProceduralWeights();
+  return `Total /20 = procédural /${w.max} (C1×${w.c1}/10 + C2×${w.c2}/10) + C3 conceptuel /3 + C4 comportemental /${getBehaviorMax()}`;
+}
+
+// ══════════════════════════════════════════════════════════════
+// PERSISTANCE LOCALE (localStorage) — CONDITION 2 & 3
+// Toutes les données restent sur l'appareil de l'enseignant.
+// Aucune donnée n'est envoyée à l'extérieur.
+// ══════════════════════════════════════════════════════════════
+const STORAGE_KEY = "adp2026_es_bkt_session_v06";
+
+// Collecte l'état complet de la session dans un objet sérialisable.
+function collectSession() {
+  return {
+    version: "v06",
+    savedAt: new Date().toISOString(),
+    prof: currentProf || "",
+    groupe: currentGrp || "",
+    niveau: currentNiveau || "",
+    noteMax: getNoteMax(),
+    step: currentStep,
+    maxStepReached: maxStepReached,
+    cycleSeances: cycleSeances,
+    selectedAxesLimit: selectedAxesLimit,
+    selectedAxes: selectedAxes.slice(),
+    rosterStudents: rosterStudents.slice(),
+    students: students.map(s => ({
+      name: s.name || "",
+      group: s.group || "",
+      c1deg: s.c1deg || "", c1: s.c1 ?? "",
+      c2deg: s.c2deg || "", c2: s.c2 ?? "",
+      ccdeg: s.ccdeg || "", cc: s.cc ?? s.c3 ?? "",
+      c3deg: s.c3deg || "", cb: s.cb ?? ""
+    }))
+  };
+}
+
+// Sauvegarde automatique — appelée après chaque modification.
+let _saveTimer = null;
+function saveSession() {
+  if (_saveTimer) clearTimeout(_saveTimer);
+  _saveTimer = setTimeout(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(collectSession()));
+    } catch (e) {
+      // Quota dépassé ou stockage désactivé — on n'interrompt pas l'utilisateur.
+      console.warn("Sauvegarde locale impossible :", e);
+    }
+  }, 250);
+}
+
+// Reconstruit les lignes élèves à partir d'un tableau de données.
+function rebuildStudentsFrom(arr) {
+  students = []; rowCount = 0;
+  const grid = document.getElementById("student-grid");
+  if (grid) grid.innerHTML = "";
+  (arr || []).forEach(o => {
+    if (!o) return;
+    addStudentRow(o.name || "", o.c1deg || "", o.c1 ?? "",
+      o.c2deg || "", o.c2 ?? "", o.c3deg || o.c4deg || "", o.cb ?? o.c4 ?? "", o.cc ?? o.c3 ?? "", o.ccdeg || "");
+    if (students.length) students[students.length - 1].group = o.group || "";
+  });
+}
+
+// Restaure la session depuis localStorage au chargement de la page.
+function restoreSession() {
+  let raw;
+  try { raw = localStorage.getItem(STORAGE_KEY); } catch (e) { return false; }
+  if (!raw) return false;
+  let data;
+  try { data = JSON.parse(raw); } catch (e) { return false; }
+  if (!data || !data.students || !data.students.length) return false;
+
+  currentProf  = data.prof || "";
+  currentGrp   = data.groupe || "";
+  currentNiveau = data.niveau || (data.noteMax===13 ? "2AC" : data.noteMax===12 ? "3AC" : data.noteMax===14 ? "1AC" : "");
+  cycleSeances = data.cycleSeances || 12;
+  selectedAxesLimit = [2,3,4].includes(parseInt(data.selectedAxesLimit)) ? parseInt(data.selectedAxesLimit) : 3;
+  selectedAxes = Array.isArray(data.selectedAxes) ? data.selectedAxes.slice(0, selectedAxesLimit) : [];
+  rosterStudents = Array.isArray(data.rosterStudents) ? data.rosterStudents.slice() : [];
+  if (typeof data.step === "number") currentStep = data.step;
+  maxStepReached = typeof data.maxStepReached === "number" ? data.maxStepReached : currentStep;
+  rebuildStudentsFrom(data.students);
+
+  // Refléter le professeur et le groupe sur l'écran d'accueil.
+  if (currentProf) {
+    const ps = document.getElementById("profSelect");
+    if (ps) {
+      const match = Array.from(ps.options).some(o => o.value === currentProf);
+      if (match) { ps.value = currentProf; }
+      else {
+        ps.value = "__autre__";
+        const pc = document.getElementById("profCustom");
+        if (pc) { pc.value = currentProf; pc.classList.add("visible"); }
+      }
+    }
+  }
+  if (currentNiveau) {
+    document.querySelectorAll(".level-btn").forEach(b => {
+      if ((b.querySelector('.level-name')?.textContent || '').trim() === currentNiveau) b.classList.add("selected");
+    });
+    updateNiveauProcedure();
+  }
+  if (currentGrp) {
+    document.querySelectorAll(".grp-btn").forEach(b => {
+      if (b.textContent.trim() === currentGrp) b.classList.add("selected");
+    });
+  }
+  updateNoteLabels();
+  const lb = document.getElementById("launchBtn");
+  if (lb) lb.disabled = !(currentProf && currentGrp && currentNiveau);
+
+  // Bannière de reprise sur l'écran d'accueil.
+  const banner = document.getElementById("resume-banner");
+  if (banner) {
+    const when = data.savedAt ? new Date(data.savedAt).toLocaleString("fr-FR") : "";
+    const info = document.getElementById("resume-info");
+    if (info) info.textContent =
+      `${data.students.length} élève(s) · ${currentProf || "—"} · ${currentGrp || "—"} · ${currentNiveau || "—"} · /${getNoteMax()} pts` +
+      (when ? ` · enregistré le ${when}` : "");
+    banner.style.display = "block";
+  }
+  return true;
+}
+
+// Reprend la session sauvegardée (depuis la bannière d'accueil).
+function resumeSession() {
+  if (!currentProf || !currentGrp || !currentNiveau) {
+    // Données présentes mais identité incomplète : rester sur l'accueil.
+    showToast("Sélectionnez le professeur, le niveau et le groupe pour reprendre", 'error');
+    return;
+  }
+  document.querySelector('.site-header')?.classList.add('visible');
+  document.getElementById('stepper')?.classList.add('visible');
+  document.body.classList.remove('splash-mode');
+  const sub = document.querySelector('.header-sub');
+  if (sub) sub.textContent = `Basketball · ES-BKT · ${currentNiveau} · ${currentGrp} · ${currentProf} · /${getNoteMax()} pts`;
+  const eb = document.getElementById('eb-prof-label');
+  if (eb) eb.textContent = `ADP 2026 · ${currentProf} · ${currentNiveau} · ${currentGrp} · Basketball ES-BKT · note /20`;
+  updateNoteLabels();
+  goToStep(currentStep && currentStep > 0 ? currentStep : 1);
+  showToast(`↩️ Session reprise — ${students.length} élève(s) · ${currentNiveau} · /${getNoteMax()} pts`, 'success');
+}
+
+// ══════════════════════════════════════════════════════════════
+// STEP NAVIGATION
+// ══════════════════════════════════════════════════════════════
+function goToStep(n) {
+  // Onglet "Référentiel" : consultation libre à tout moment, hors progression linéaire.
+  if (n === 'ref') {
+    document.querySelectorAll(".step-panel").forEach(p => p.classList.remove("visible"));
+    document.getElementById("panel-ref").classList.add("visible");
+    for (let i = 0; i <= 5; i++) {
+      const btn = document.getElementById("step-btn-" + i);
+      if (btn) btn.classList.remove("active");
+    }
+    const refBtn = document.getElementById("step-btn-ref");
+    if (refBtn) refBtn.classList.add("active");
+    document.querySelector('.site-header')?.classList.add('visible');
+    document.getElementById('stepper')?.classList.add('visible');
+    document.getElementById('export-bar')?.classList.add('visible');
+    document.body.classList.remove('splash-mode');
+    window.scrollTo({top:0,behavior:"smooth"});
+    return;
+  }
+  if (n > maxStepReached && !validateCurrentStep(n)) return;
+  currentStep = n;
+  if (n > maxStepReached) maxStepReached = n;
+  document.querySelectorAll(".step-panel").forEach(p => p.classList.remove("visible"));
+  document.getElementById("panel-" + n).classList.add("visible");
+  document.getElementById("step-btn-ref")?.classList.remove("active");
+  // Header, stepper & export-bar : visibles seulement après le splash (step > 0)
+  const hdr     = document.querySelector('.site-header');
+  const stepper = document.getElementById('stepper');
+  const ebar    = document.getElementById('export-bar');
+  if (n === 0) {
+    if (hdr)     hdr.classList.remove('visible');
+    if (stepper) stepper.classList.remove('visible');
+    if (ebar)    ebar.classList.remove('visible');
+    document.body.classList.add('splash-mode');
+  } else {
+    if (hdr)     hdr.classList.add('visible');
+    if (stepper) stepper.classList.add('visible');
+    if (ebar)    ebar.classList.add('visible');
+    document.body.classList.remove('splash-mode');
+  }
+  // Update stepper buttons (0..5) — navigation libre jusqu'au stage max déjà atteint
+  for (let i = 0; i <= 5; i++) {
+    const btn = document.getElementById("step-btn-" + i);
+    if (!btn) continue;
+    btn.classList.remove("active","done");
+    if (i === n) { btn.classList.add("active"); btn.onclick = () => goToStep(i); }
+    else if (i <= maxStepReached) { btn.classList.add("done"); btn.onclick = () => goToStep(i); }
+    else btn.onclick = null;
+  }
+  if (n === 2) renderDiagnostic();
+  if (n === 3) renderAxes();
+  if (n === 4) updateSlider(cycleSeances);
+  saveSession();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function validateCurrentStep(target) {
+  if (currentStep === 1 && target >= 2) {
+    const valid = students.filter(isStudentCompleteValid);
+    if (valid.length === 0) {
+      showErr("step1-error","Saisir au moins un élève avec C1, C2, C3 conceptuel et C4 comportemental pour continuer.");
+      return false;
+    }
+    // On conserve les lignes incomplètes/non valides dans la saisie ;
+    // le diagnostic exploite uniquement les lignes complètes.
+  }
+  if (currentStep === 3 && target >= 4) {
+    if (selectedAxes.length !== selectedAxesLimit) {
+      showErr("axe-error","S\u00e9lectionner exactement " + selectedAxesLimit + " axe" + (selectedAxesLimit>1?"s":"") + " pour continuer.");
+      return false;
+    }
+  }
+  return true;
+}
+
+function showErr(id, msg) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.innerHTML = "<div class='alert alert-err'><span>❌</span><span>" + msg + "</span></div>";
+  setTimeout(() => { if(el) el.innerHTML=""; }, 4000);
+}
+
+// ══════════════════════════════════════════════════════════════
+// DARK MODE
+// ══════════════════════════════════════════════════════════════
+function toggleTheme(){
+  const root=document.documentElement;
+  const cur=root.getAttribute('data-theme');
+  const sysDark=window.matchMedia('(prefers-color-scheme:dark)').matches;
+  let next;
+  if(cur==='dark') next='light';
+  else if(cur==='light') next='dark';
+  else next=sysDark?'light':'dark';
+  root.setAttribute('data-theme',next);
+  document.getElementById('themeBtn').textContent=next==='dark'?'☀️':'🌙';
+}
+(function(){
+  if(window.matchMedia('(prefers-color-scheme:dark)').matches)
+    document.getElementById('themeBtn').textContent='☀️';
+})();
+
+// ══════════════════════════════════════════════════════════════
+// TOAST — top-centré, auto-disparaît après 4s + bouton X
+// type: 'info' (défaut) | 'success' | 'error'
+// ══════════════════════════════════════════════════════════════
+let _toastTimer = null;
+
+function showToast(msg, type) {
+  const t  = document.getElementById('toast');
+  const tm = document.getElementById('toast-msg');
+  if (!t || !tm) return;
+  tm.textContent = msg;
+  t.classList.remove('toast-success','toast-error');
+  if (type === 'success') t.classList.add('toast-success');
+  else if (type === 'error') t.classList.add('toast-error');
+  t.classList.add('show');
+  if (_toastTimer) clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(hideToast, 4000);
+}
+
+function hideToast() {
+  const t = document.getElementById('toast');
+  if (t) { t.classList.remove('show'); }
+  if (_toastTimer) { clearTimeout(_toastTimer); _toastTimer = null; }
+}
+
+// ══════════════════════════════════════════════════════════════
+// MODAL HELPERS
+// ══════════════════════════════════════════════════════════════
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+
+// ══════════════════════════════════════════════════════════════
+// FOURCHETTES v13 — degrés conservés + C4 adaptatif par niveau
+// C1/C2 : A=0→3 · B=4→7 · C=8→10
+// C3 conceptuel : A=0→1 · B=1,5→2 · C=2,5→3
+// C4 comportemental : adaptatif selon le niveau
+// 1AC : /3 — A=0→1 · B=1,5→2 · C=2,5→3
+// 2AC : /4 — A=0→1,5 · B=2→3 · C=3,5→4
+// 3AC : /5 — A=0→2 · B=2,5→3,5 · C=4→5
+// ══════════════════════════════════════════════════════════════
+const DEG_RANGES_C12 = { A:[0,3], B:[4,7], C:[8,10] };
+const DEG_LABELS_C1  = { A:'JD', B:'JS', C:'JV' };
+const DEG_LABELS_C2  = { A:'JI', B:'JP', C:'JA' };
+const DEG_LABELS_CC  = { A:'MI', B:'MP', C:'MS' };
+const DEG_LABELS_C3  = { A:'RI', B:'RA', C:'RR' }; // C4 dans la grille
+
+function getBehaviorRanges() {
+  // C4 — Connaissances comportementales : barème adapté au niveau choisi
+  if (currentNiveau === "2AC") return { A:[0,1.5], B:[2,3], C:[3.5,4] };
+  if (currentNiveau === "3AC") return { A:[0,2], B:[2.5,3.5], C:[4,5] };
+  return { A:[0,1], B:[1.5,2], C:[2.5,3] };
+}
+
+function getConceptRanges() {
+  return { A:[0,1], B:[1.5,2], C:[2.5,3] };
+}
+
+function getRangeForComp(comp, deg) {
+  if (!deg) return null;
+  if (comp === 'cc') return getConceptRanges()[deg];
+  if (comp === 'c3') return getBehaviorRanges()[deg];
+  return DEG_RANGES_C12[deg];
+}
+
+function getMaxForComp(comp) {
+  if (comp === 'cc') return NOTE_CONCEPTUELLE_MAX;
+  if (comp === 'c3') return getBehaviorMax();
+  return 10;
+}
+
+function degToCls(deg){ return deg==='A'?'sa':deg==='B'?'sb':'sc'; }
+
+function labelsForComp(comp) {
+  return comp==='c1' ? DEG_LABELS_C1 : comp==='c2' ? DEG_LABELS_C2 : comp==='cc' ? DEG_LABELS_CC : DEG_LABELS_C3;
+}
+
+function valueFieldForComp(comp) {
+  return comp === 'cc' ? 'cc' : (comp === 'c3' ? 'cb' : comp);
+}
+
+function getDegreeByComp(comp, val) {
+  const v = parseFloat(val);
+  if (isNaN(v)) return '';
+  const ranges = comp === 'cc' ? getConceptRanges() : (comp === 'c3' ? getBehaviorRanges() : DEG_RANGES_C12);
+  for (const d of ['A','B','C']) {
+    const r = ranges[d];
+    if (v >= r[0] && v <= r[1]) return d;
+  }
+  return '';
+}
+
+function parseScoreValue(val) {
+  if (val === undefined || val === null || val === '') return NaN;
+  return parseFloat(String(val).replace(',', '.'));
+}
+
+function normalizeComponent(comp, deg, val) {
+  const v = parseScoreValue(val);
+  if (isNaN(v)) return {deg: (deg || ''), val: ''};
+  const d = (deg || getDegreeByComp(comp, v) || '').toString().toUpperCase();
+  const rng = getRangeForComp(comp, d);
+  if (!d || !rng || v < rng[0] || v > rng[1]) return {deg: '', val: ''};
+  return {deg: d, val: v};
+}
+
+function isComponentValid(s, comp) {
+  if (!s) return false;
+  const field = valueFieldForComp(comp);
+  const deg = (s[comp + 'deg'] || '').toString().toUpperCase();
+  const val = s[field];
+  const v = parseScoreValue(val);
+  if (!deg || isNaN(v)) return false;
+  const rng = getRangeForComp(comp, deg);
+  return !!rng && v >= rng[0] && v <= rng[1];
+}
+
+function isStudentCompleteValid(s) {
+  return !!(s && String(s.name || '').trim() &&
+    isComponentValid(s,'c1') && isComponentValid(s,'c2') &&
+    isComponentValid(s,'cc') && isComponentValid(s,'c3'));
+}
+
+function sanitizeStudent(s) {
+  if (!s) return s;
+  const c1 = normalizeComponent('c1', s.c1deg, s.c1);
+  const c2 = normalizeComponent('c2', s.c2deg, s.c2);
+  const cc = normalizeComponent('cc', s.ccdeg, s.cc ?? s.c3);
+  const cb = normalizeComponent('c3', s.c3deg, s.cb);
+  s.c1deg = c1.deg; s.c1 = c1.val;
+  s.c2deg = c2.deg; s.c2 = c2.val;
+  s.ccdeg = cc.deg; s.cc = cc.val;
+  s.c3deg = cb.deg; s.cb = cb.val;
+  return s;
+}
+
+// ══════════════════════════════════════════════════════════════
+// STUDENT ROWS v13 — choisir le degré puis saisir la note
+// ══════════════════════════════════════════════════════════════
+let rowCount = 0;
+
+function buildDegSelect(rowId, comp, val) {
+  const labels = labelsForComp(comp);
+  const cls = val ? degToCls(val) : '';
+  return `<div class="deg-select-wrap">
+    <select class="deg-select ${cls}" onchange="onDegChange(${rowId},'${comp}',this)">
+      <option value="">— choisir</option>
+      <option value="A" ${val==='A'?'selected':''}>A · ${labels.A}</option>
+      <option value="B" ${val==='B'?'selected':''}>B · ${labels.B}</option>
+      <option value="C" ${val==='C'?'selected':''}>C · ${labels.C}</option>
+    </select>
+    <div class="code-note">degré/code</div>
+  </div>`;
+}
+
+function buildValInput(rowId, comp, deg, val) {
+  const rng = getRangeForComp(comp, deg);
+  const disabled = !deg ? 'disabled' : '';
+  const parsed = parseScoreValue(val);
+  const safeVal = (deg && rng && !isNaN(parsed) && parsed >= rng[0] && parsed <= rng[1]) ? parsed : '';
+  const degCls = !deg || safeVal==='' ? '' : getDegClassForInput(comp, safeVal);
+  const hint = rng ? `${rng[0]}→${rng[1]}` : 'choisir degré';
+  const max = getMaxForComp(comp);
+  return `<div class="deg-select-wrap">
+    <input type="number" class="val-input ${degCls}" value="${safeVal}"
+      ${disabled} min="${rng?rng[0]:0}" max="${rng?rng[1]:max}" step="0.5"
+      placeholder="${rng?rng[0]+'–'+rng[1]:'—'}"
+      oninput="onValChange(${rowId},'${comp}',this)">
+    <div class="rng-hint">${hint}</div>
+  </div>`;
+}
+
+function getDegClassForInput(comp, v) {
+  const d = getDegreeByComp(comp, v);
+  if (d === 'A') return 'deg-a-input';
+  if (d === 'B') return 'deg-b-input';
+  if (d === 'C') return 'deg-c-input';
+  return '';
+}
+
+function buildScoreInput(rowId, field, val, max, label) {
+  const parsed = parseFloat(val);
+  const safeVal = (val !== undefined && val !== null && val !== '') ? val : '';
+  const cls = isNaN(parsed) ? '' : getScoreClass(parsed, max);
+  return `<div class="deg-select-wrap">
+    <input type="number" class="val-input ${cls}" value="${safeVal}"
+      min="0" max="${max}" step="0.5" placeholder="0–${max}"
+      oninput="onScoreChange(${rowId},'${field}',this,${max})">
+    <div class="rng-hint">${label}</div>
+  </div>`;
+}
+
+function getScoreClass(v, max) {
+  if (isNaN(v)) return '';
+  const pct = max ? v / max : 0;
+  if (pct < 0.40) return 'deg-a-input';
+  if (pct < 0.75) return 'deg-b-input';
+  return 'deg-c-input';
+}
+
+function normalizeAddArgs(name, c1deg, c1, c2deg, c2, c3deg, cb, cc, ccdeg) {
+  // Compatibilité : ancienne signature addStudentRow(name,c1deg,c1,c2deg,c2,c3deg_behavior,cb_behavior,cc_concept)
+  if (cc === undefined && !['A','B','C'].includes(String(c3deg||'').toUpperCase())) {
+    cc = c3deg;
+    c3deg = '';
+  }
+  return { name, c1deg, c1, c2deg, c2, c3deg, cb, cc, ccdeg };
+}
+
+function addStudentRow(name, c1deg, c1, c2deg, c2, c3deg, cb, cc, ccdeg) {
+  const args = normalizeAddArgs(name, c1deg, c1, c2deg, c2, c3deg, cb, cc, ccdeg);
+  rowCount++;
+  const id = rowCount;
+  const c1n = normalizeComponent('c1', args.c1deg, args.c1);
+  const c2n = normalizeComponent('c2', args.c2deg, args.c2);
+  const ccn = normalizeComponent('cc', args.ccdeg, args.cc);
+  const c3n = normalizeComponent('c3', args.c3deg, args.cb);
+  const c1d = c1n.deg, c2d = c2n.deg, ccd = ccn.deg, c3d = c3n.deg;
+  const c1v = c1n.val, c2v = c2n.val, ccv = ccn.val, cbv = c3n.val;
+  const grid = document.getElementById("student-grid");
+  const div = document.createElement("div");
+  div.className = "student-row-v4";
+  div.id = "row-" + id;
+  div.innerHTML =
+    `<span class="row-num" style="text-align:center;font-size:.78rem;color:var(--text-soft);font-weight:600;padding-top:.45rem">${students.length+1}</span>` +
+    `<div><input type="text" class="name-input-v4" placeholder="Prénom Nom" value="${escHtml(args.name||'')}" oninput="updateStudentField(${id},'name',this.value)"></div>` +
+    buildDegSelect(id,'c1',c1d) +
+    buildValInput(id,'c1',c1d,c1v) +
+    buildDegSelect(id,'c2',c2d) +
+    buildValInput(id,'c2',c2d,c2v) +
+    buildDegSelect(id,'cc',ccd) +
+    buildValInput(id,'cc',ccd,ccv) +
+    buildDegSelect(id,'c3',c3d) +
+    buildValInput(id,'c3',c3d,cbv) +
+    `<div class="note14-cell n-empty" id="proc-${id}"><span>—</span><span class="n-sub">/${getNoteMax()}</span></div>` +
+    `<div class="note14-cell n-empty" id="note14-${id}"><span>—</span><span class="n-sub">/20</span></div>` +
+    `<button class="del-btn" onclick="askDelStudent(${id})" title="Supprimer cet élève">✕</button>`;
+  grid.appendChild(div);
+  students.push({ rowId:id, name:args.name||'',
+    c1deg:c1d||'', c1:c1v,
+    c2deg:c2d||'', c2:c2v,
+    ccdeg:ccd||'', cc:ccv,
+    c3deg:c3d||'', cb:cbv });
+  updateStudentCount();
+  setTimeout(() => updateNote14Cell(id), 0);
+}
+
+function rebuildRow(rowId) {
+  const s = students.find(x=>x.rowId===rowId);
+  if (!s) return;
+  sanitizeStudent(s);
+  const row = document.getElementById('row-'+rowId);
+  if (!row) return;
+  const idx = students.indexOf(s)+1;
+  const c1d = s.c1deg || getDegreeByComp('c1', s.c1);
+  const c2d = s.c2deg || getDegreeByComp('c2', s.c2);
+  const ccd = s.ccdeg || getDegreeByComp('cc', s.cc ?? s.c3);
+  const c3d = s.c3deg || getDegreeByComp('c3', s.cb);
+  row.innerHTML =
+    `<span class="row-num" style="text-align:center;font-size:.78rem;color:var(--text-soft);font-weight:600;padding-top:.45rem">${idx}</span>` +
+    `<div><input type="text" class="name-input-v4" placeholder="Prénom Nom" value="${escHtml(s.name)}" oninput="updateStudentField(${rowId},'name',this.value)"></div>` +
+    buildDegSelect(rowId,'c1',c1d) +
+    buildValInput(rowId,'c1',c1d,s.c1) +
+    buildDegSelect(rowId,'c2',c2d) +
+    buildValInput(rowId,'c2',c2d,s.c2) +
+    buildDegSelect(rowId,'cc',ccd) +
+    buildValInput(rowId,'cc',ccd,s.cc ?? s.c3 ?? '') +
+    buildDegSelect(rowId,'c3',c3d) +
+    buildValInput(rowId,'c3',c3d,s.cb) +
+    `<div class="note14-cell n-empty" id="proc-${rowId}"><span>—</span><span class="n-sub">/${getNoteMax()}</span></div>` +
+    `<div class="note14-cell n-empty" id="note14-${rowId}"><span>—</span><span class="n-sub">/20</span></div>` +
+    `<button class="del-btn" onclick="askDelStudent(${rowId})" title="Supprimer cet élève">✕</button>`;
+  setTimeout(() => updateNote14Cell(rowId), 0);
+}
+
+function onDegChange(rowId, comp, sel) {
+  const s = students.find(x=>x.rowId===rowId);
+  if (!s) return;
+  const deg = String(sel.value || '').toUpperCase();
+  const field = valueFieldForComp(comp);
+  s[comp + 'deg'] = deg;
+  const rng = getRangeForComp(comp, deg);
+  const currentVal = parseFloat(s[field]);
+  if (!rng || isNaN(currentVal) || currentVal < rng[0] || currentVal > rng[1]) {
+    s[field] = '';
+  }
+  rebuildRow(rowId);
+  updateNote14Cell(rowId);
+  saveSession();
+}
+
+function onValChange(rowId, comp, inp) {
+  const s = students.find(x=>x.rowId===rowId);
+  if (!s) return;
+  const deg = s[comp + 'deg'];
+  const field = valueFieldForComp(comp);
+  const rng = getRangeForComp(comp, deg);
+  if (!rng) return;
+  let raw = parseFloat(String(inp.value).replace(',','.'));
+  if (isNaN(raw)) { s[field]=''; updateNote14Cell(rowId); saveSession(); return; }
+  if (raw < rng[0] || raw > rng[1]) {
+    inp.classList.add('flash-err');
+    setTimeout(()=>inp.classList.remove('flash-err'),420);
+    const clamped = raw < rng[0] ? rng[0] : rng[1];
+    inp.value = clamped;
+    raw = clamped;
+    showToast(`⛔ Valeur hors degré ${deg} : ${rng[0]}–${rng[1]} — corrigée à ${clamped}`, 'error');
+  }
+  s[field] = raw;
+  inp.className = 'val-input ' + getDegClassForInput(comp, raw);
+  updateNote14Cell(rowId);
+  saveSession();
+}
+
+function onScoreChange(rowId, field, inp, max) {
+  const s = students.find(x=>x.rowId===rowId);
+  if (!s) return;
+  let raw = parseFloat(String(inp.value).replace(',','.'));
+  if (isNaN(raw)) { s[field]=''; updateNote14Cell(rowId); saveSession(); return; }
+  if (raw < 0 || raw > max) {
+    inp.classList.add('flash-err');
+    setTimeout(()=>inp.classList.remove('flash-err'),420);
+    const clamped = raw < 0 ? 0 : max;
+    inp.value = clamped;
+    raw = clamped;
+    showToast(`⛔ Valeur hors barème 0–${max} — corrigée à ${clamped}`, 'error');
+  }
+  s[field] = raw;
+  inp.className = 'val-input ' + getScoreClass(raw, max);
+  updateNote14Cell(rowId);
+  saveSession();
+}
+
+function updateStudentField(rowId, field, val) {
+  const s = students.find(x=>x.rowId===rowId);
+  if (s) s[field] = val;
+  saveSession();
+}
+
+function updateStudentCount() {
+  const lbl = document.getElementById('student-count-lbl');
+  if (lbl) lbl.textContent = students.length + (students.length>1?' élèves':' élève');
+  saveSession();
+}
+
+function escHtml(s){ return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+
+// ── DELETE SINGLE STUDENT ──────────────────────────────────────
+function askDelStudent(rowId) {
+  pendingDelRowId = rowId;
+  const s = students.find(x=>x.rowId===rowId);
+  document.getElementById('modal-del-name').innerHTML =
+    `Supprimer <strong>${escHtml(s&&s.name?s.name:'cet élève')}</strong> ? Les autres élèves et leurs données ne sont pas affectés.`;
+  openModal('modal-del');
+}
+function confirmDelStudent() {
+  if (pendingDelRowId === null) return;
+  const row = document.getElementById('row-'+pendingDelRowId);
+  if (row) row.remove();
+  students = students.filter(x=>x.rowId!==pendingDelRowId);
+  // Renumber visible row nums
+  document.querySelectorAll('#student-grid .student-row-v4').forEach((el,i)=>{
+    const num = el.querySelector('.row-num');
+    if (num) num.textContent = i+1;
+  });
+  updateStudentCount();
+  closeModal('modal-del');
+  pendingDelRowId = null;
+  showToast('🗑 Élève supprimé');
+}
+
+// ── RESET GLOBAL ──────────────────────────────────────────────
+function askResetGlobal() {
+  let hasSaved = false;
+  try { hasSaved = !!localStorage.getItem(STORAGE_KEY); } catch (e) {}
+  if (students.length===0 && !currentProf && !currentGrp && !currentNiveau && !hasSaved){ showToast('Aucune donnée à réinitialiser', 'error'); return; }
+  openModal('modal-reset');
+}
+function confirmResetGlobal() {
+  students = []; rowCount = 0; selectedAxes = []; selectedAxesLimit = 3;
+  cycleSeances = 12; maxStepReached = 0; rosterStudents = [];
+  currentProf = ''; currentGrp = ''; currentNiveau = '';
+  document.getElementById('student-grid').innerHTML = '';
+  document.getElementById('import-feedback').innerHTML = '';
+  // Effacer la sauvegarde locale (Condition 5).
+  try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+  // Réinitialiser l'écran d'accueil.
+  const ps = document.getElementById('profSelect'); if (ps) ps.value = '';
+  const pc = document.getElementById('profCustom'); if (pc) { pc.value = ''; pc.classList.remove('visible'); }
+  document.querySelectorAll('.level-btn').forEach(b => b.classList.remove('selected'));
+  document.querySelectorAll('.grp-btn').forEach(b => b.classList.remove('selected'));
+  updateNiveauProcedure();
+  updateNoteLabels();
+  const lb = document.getElementById('launchBtn'); if (lb) lb.disabled = true;
+  const banner = document.getElementById('resume-banner'); if (banner) banner.style.display = 'none';
+  updateStudentCount();
+  closeModal('modal-reset');
+  goToStep(0);
+  showToast('✅ Réinitialisé — données effacées de l\'appareil', 'success');
+}
+
+// ── CLEARALL (legacy, kept for compatibility) ──────────────────
+function clearAll() { askResetGlobal(); }
+
+function updateStudent(id, field, val) {
+  const s = students.find(s => s.rowId === id);
+  if (s) s[field] = val;
+}
+function colorScore(input, max) {
+  const v = parseFloat(input.value);
+  input.classList.remove("deg-a-input","deg-b-input","deg-c-input");
+  if (isNaN(v)) return;
+  if (max === 10) {
+    if (v <= 3) input.classList.add("deg-a-input");
+    else if (v <= 7) input.classList.add("deg-b-input");
+    else input.classList.add("deg-c-input");
+  } else {
+    if (v <= 1.5) input.classList.add("deg-a-input");
+    else if (v <= 3) input.classList.add("deg-b-input");
+    else input.classList.add("deg-c-input");
+  }
+}
+
+function analyzeData() {
+  document.getElementById("step1-error").innerHTML = "";
+  const valid = students.filter(isStudentCompleteValid);
+  if (valid.length === 0) {
+    showErr("step1-error","Saisir au moins un élève avec un prénom, C1, C2, C3 conceptuel et C4 comportemental pour analyser.");
+    return;
+  }
+  goToStep(2);
+}
+
+// ══════════════════════════════════════════════════════════════
+// DIAGNOSTIC
+// ══════════════════════════════════════════════════════════════
+function getDegree(val, max) {
+  const v = parseFloat(val);
+  if (isNaN(v)) return null;
+  if (max === 10) {
+    if (v <= 3) return "A";
+    if (v <= 7) return "B";
+    return "C";
+  } else {
+    if (v <= 1.5) return "A";
+    if (v <= 3)   return "B";
+    return "C";
+  }
+}
+
+function getLacune(s) {
+  const c1v = parseFloat(s.c1), c2v = parseFloat(s.c2);
+  const lacunes = [];
+  if (!isNaN(c1v) && c1v < 4) lacunes.push({label:"C1", val:c1v});
+  if (!isNaN(c2v) && c2v < 4) lacunes.push({label:"C2", val:c2v});
+  lacunes.sort((a,b) => a.val - b.val);
+  return lacunes;
+}
+
+function getAxePrioritaire(s) {
+  const lacunes = getLacune(s);
+  if (!lacunes.length) return "Aucune lacune d\u00e9tect\u00e9e \u2014 approfondissement C";
+  const first = lacunes[0].label;
+  if (first === "C1") return "Axe 1 \u2014 Lecture du jeu (N1-13) + Axe 3 \u2014 Organisation collective";
+  return "Axe 1 \u2014 Lecture du jeu (N1-13) + Axe 2 \u2014 Bases techniques PB/NPB";
+}
+
+function getProfile(s) {
+  const c1d = getDegree(s.c1, 10);
+  const c2d = getDegree(s.c2, 10);
+  if (!c1d || !c2d) return null;
+  const scores = [c1d, c2d];
+  const countA = scores.filter(x=>x==="A").length;
+  const countC = scores.filter(x=>x==="C").length;
+  if (countA >= 1) return "A";
+  if (countC >= 2) return "C";
+  return "B";
+}
+
+function getSA(s) {
+  const prof = getProfile(s);
+  if (prof === "A") return "SA-A1";
+  if (prof === "C") return "SA-C1";
+  return "SA-B1";
+}
+
+function renderDiagnostic() {
+  const valid = students.filter(s => s.name.trim() && s.c1 !== "" && s.c2 !== "" && (s.cc ?? s.c3 ?? "") !== "" && (s.cb ?? "") !== "");
+  const el = document.getElementById("diag-content");
+
+  // compute stats
+  const c1vals = valid.map(s=>parseFloat(s.c1)).filter(v=>!isNaN(v));
+  const c2vals = valid.map(s=>parseFloat(s.c2)).filter(v=>!isNaN(v));
+  const note20 = valid.map(s=>calcTotal20(s)).filter(v=>v!==null);
+
+  const avg = arr => arr.length ? (arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(1) : "--";
+  const avgC1 = avg(c1vals), avgC2 = avg(c2vals), avg14 = avg(note20);
+  const noteMax = getTotalMax();
+
+  const countA = valid.filter(s=>getProfile(s)==="A").length;
+  const countB = valid.filter(s=>getProfile(s)==="B").length;
+  const countC = valid.filter(s=>getProfile(s)==="C").length;
+  const total = valid.length;
+  const pA = total ? Math.round(countA/total*100) : 0;
+  const pB = total ? Math.round(countB/total*100) : 0;
+  const pC = total ? Math.round(countC/total*100) : 0;
+
+  // dominant decision
+  let decision = "";
+  if (countA >= countB && countA >= countC)
+    decision = "Classe majoritairement d\u00e9butante (profil A) \u2014 Priorit\u00e9 aux fondamentaux N1 et \u00e0 l\u2019Axe 1 (lecture du jeu).";
+  else if (countC >= countA && countC >= countB)
+    decision = "Classe majoritairement avanc\u00e9e (profil C) \u2014 Approfondissement N2 \u00b7 tutorat par les \u00e9l\u00e8ves de niveau C.";
+  else
+    decision = "Classe interm\u00e9diaire (profil B dominant) \u2014 Diff\u00e9renciation A/B active \u00b7 Axes 1+2 en parall\u00e8le.";
+
+  // C1 collective diagnosis
+  let c1Note = "", c1Note2 = "";
+  const avgC1f = parseFloat(avgC1);
+  if (!isNaN(avgC1f)) {
+    if (avgC1f < 5) { c1Note = "alert-err"; c1Note2 = "Lacune collective C1 \u2014 Sa priorit\u00e9 axe 1 (lecture du jeu)"; }
+    else if (avgC1f < 8) { c1Note = "alert-warn"; c1Note2 = "C1 en cours d\u2019acquisition \u2014 consolider"; }
+    else { c1Note = "alert-ok"; c1Note2 = "C1 bon niveau \u2014 approfondir N2"; }
+  }
+  const avgC2f = parseFloat(avgC2);
+  let c2Note = "", c2Note2 = "";
+  if (!isNaN(avgC2f)) {
+    if (avgC2f < 5) { c2Note = "alert-err"; c2Note2 = "Lacune collective C2 \u2014 priorit\u00e9 axe 2 (techniques PB/NPB)"; }
+    else if (avgC2f < 8) { c2Note = "alert-warn"; c2Note2 = "C2 en cours d\u2019acquisition \u2014 consolider"; }
+    else { c2Note = "alert-ok"; c2Note2 = "C2 bon niveau \u2014 approfondissement"; }
+  }
+
+  // Build ranked student table
+  const ranked = [...valid].map(s => ({
+    ...s,
+    n14: calcTotal20(s) || 0,
+    prof: getProfile(s),
+    lacunes: getLacune(s),
+    axe: getAxePrioritaire(s),
+    sa: getSA(s),
+    c1d: getDegree(s.c1,10),
+    c2d: getDegree(s.c2,10),
+    cc: parseFloat(s.cc ?? s.c3),
+    cb: parseFloat(s.cb)
+  })).sort((a,b)=>b.n14 - a.n14).map((s,i)=>({...s, rang:i+1}));
+
+  let tableRows = "";
+  for (const s of ranked) {
+    const profCls = s.prof === "A" ? "deg-a" : s.prof === "B" ? "deg-b" : "deg-c";
+    const lacStr = s.lacunes.length
+      ? s.lacunes.map(l=>"<span class='lacune-tag'>L1 \u2014 "+l.label+" : "+l.val.toFixed(1)+"/10</span>").join(" ")
+      : "<span style='color:#375623;font-size:.72rem'>Aucune lacune</span>";
+    const ccStr = !isNaN(s.cc) ? s.cc.toFixed(1)+"/3" : "<span style='color:#94a3b8'>—</span>";
+    const cbStr = !isNaN(s.cb) ? s.cb.toFixed(1)+"/"+getBehaviorMax() : "<span style='color:#94a3b8'>—</span>";
+    tableRows +=
+      "<tr>" +
+      "<td>" + s.rang + "</td>" +
+      "<td class='name-cell'>" + s.name + "</td>" +
+      "<td><span class='deg-badge " + (s.c1d==="A"?"deg-a":s.c1d==="B"?"deg-b":"deg-c") + "'>" + (parseFloat(s.c1)||0).toFixed(1) + "</span></td>" +
+      "<td><span class='deg-badge " + (s.c2d==="A"?"deg-a":s.c2d==="B"?"deg-b":"deg-c") + "'>" + (parseFloat(s.c2)||0).toFixed(1) + "</span></td>" +
+      "<td>" + ccStr + "</td>" +
+      "<td>" + cbStr + "</td>" +
+      "<td class='note-20'>" + s.n14.toFixed(1) + "/20</td>" +
+      "<td><span class='deg-badge " + profCls + "'>" + s.prof + "</span></td>" +
+      "<td>" + lacStr + "</td>" +
+      "<td><span style='font-size:.7rem;color:#475569'>" + s.sa + "</span></td>" +
+      "</tr>";
+  }
+
+  // Groups
+  const groupA = ranked.filter(s=>s.prof==="A");
+  const groupB = ranked.filter(s=>s.prof==="B");
+  const groupC = ranked.filter(s=>s.prof==="C");
+
+  el.innerHTML =
+    "<div class='card'>" +
+      "<div class='card-title'><span class='ico'>📊</span>Bilan de classe — " + total + " élèves · " + getNiveauLabel() + " · total /20</div>" +
+      "<div class='stat-cards'>" +
+        "<div class='stat-card'><div class='val'>" + total + "</div><div class='lbl'>\u00c9l\u00e8ves</div></div>" +
+        "<div class='stat-card'><div class='val'>" + avg14 + "</div><div class='lbl'>Moy. /20</div></div>" +
+        "<div class='stat-card'><div class='val'>" + avgC1 + "</div><div class='lbl'>Moy. C1 /10</div></div>" +
+        "<div class='stat-card'><div class='val'>" + avgC2 + "</div><div class='lbl'>Moy. C2 /10</div></div>" +
+      "</div>" +
+      "<div style='margin-bottom:.5rem;font-size:.78rem;color:#64748b;font-weight:600'>R\u00e9partition des profils</div>" +
+      "<div class='profile-bar'>" +
+        "<div class='seg seg-a' style='width:" + pA + "%'>" + (pA>6?pA+"%":"") + "</div>" +
+        "<div class='seg seg-b' style='width:" + pB + "%'>" + (pB>6?pB+"%":"") + "</div>" +
+        "<div class='seg seg-c' style='width:" + pC + "%'>" + (pC>6?pC+"%":"") + "</div>" +
+      "</div>" +
+      "<div style='display:flex;gap:.5rem;font-size:.75rem;margin-bottom:1rem'>" +
+        "<span class='deg-badge deg-a'>A : "+countA+" ("+pA+"%)</span>" +
+        "<span class='deg-badge deg-b'>B : "+countB+" ("+pB+"%)</span>" +
+        "<span class='deg-badge deg-c'>C : "+countC+" ("+pC+"%)</span>" +
+      "</div>" +
+      (c1Note ? "<div class='alert " + c1Note + "'><span>📌</span><strong>C1 \u2014 </strong><span>" + c1Note2 + "</span></div>" : "") +
+      (c2Note ? "<div class='alert " + c2Note + "'><span>📌</span><strong>C2 \u2014 </strong><span>" + c2Note2 + "</span></div>" : "") +
+      "<div class='alert alert-info'><span>🎯</span><span><strong>D\u00e9cision dominante : </strong>" + decision + "</span></div>" +
+    "</div>" +
+
+    "<div class='card'>" +
+      "<div class='card-title'><span class='ico'>👥</span>Groupes de besoin</div>" +
+      "<div style='display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.75rem'>" +
+        renderGroup("A", groupA, "SA-A1 \u2014 Lecture avant action") +
+        renderGroup("B", groupB, "SA-B1 \u2014 Automatismes techniques") +
+        renderGroup("C", groupC, "SA-C1 \u2014 Organisations N2") +
+      "</div>" +
+    "</div>" +
+
+    "<div class='card'>" +
+      "<div class='card-title'><span class='ico'>📋</span>Tableau individuel</div>" +
+      "<div style='overflow-x:auto'>" +
+      "<table class='diag-table'>" +
+        "<thead><tr>" +
+          "<th>Rang</th><th>Nom / Prénom</th><th>C1 /10</th><th>C2 /10</th><th>C3 /3</th><th>C4 /" + getBehaviorMax() + "</th>" +
+          "<th>Total /20</th><th>Profil</th><th>Lacune(s)</th><th>SA</th>" +
+        "</tr></thead>" +
+        "<tbody>" + tableRows + "</tbody>" +
+      "</table></div>" +
+    "</div>";
+}
+
+function renderGroup(deg, students, saLabel) {
+  const cls = deg==="A"?"deg-a":deg==="B"?"deg-b":"deg-c";
+  const names = students.map(s=>s.name).join(", ") || "<em style='color:#94a3b8'>Aucun</em>";
+  return "<div style='padding:.75rem;background:var(--" + (deg==="A"?"deg-a":deg==="B"?"deg-b":"deg-c") + "-bg);border:1px solid var(--" + (deg==="A"?"deg-a":deg==="B"?"deg-b":"deg-c") + "-border);border-radius:8px'>" +
+    "<div style='font-weight:700;margin-bottom:.3rem'><span class='deg-badge " + cls + "'>Profil " + deg + "</span> \u2014 " + students.length + " \u00e9l\u00e8ve(s)</div>" +
+    "<div style='font-size:.78rem;margin-bottom:.4rem;color:#475569'>" + names + "</div>" +
+    "<div style='font-size:.7rem;color:#64748b;font-weight:600'>" + saLabel + "</div>" +
+    "</div>";
+}
+
+// ══════════════════════════════════════════════════════════════
+// AXES
+// ══════════════════════════════════════════════════════════════
+function computeAxesPertinence() {
+  const valid = students.filter(s=>s.name.trim()&&s.c1!=="");
+  const c1lacune = valid.filter(s=>parseFloat(s.c1)<5).length;
+  const c2lacune = valid.filter(s=>parseFloat(s.c2)<5).length;
+  const c3lacune = valid.filter(s=>(s.cb??"")!==""&&parseFloat(s.cb)<(getBehaviorMax()*0.5)).length;
+  const total = valid.length || 1;
+  return {
+    c1: Math.round(c1lacune/total*100),
+    c2: Math.round(c2lacune/total*100),
+    c3: Math.round(c3lacune/total*100)
+  };
+}
+
+function renderAxes() {
+  const perc = computeAxesPertinence();
+  const limitSelect = document.getElementById("axe-limit-select");
+  if (limitSelect) limitSelect.value = String(selectedAxesLimit);
+  if (selectedAxes.length > selectedAxesLimit) selectedAxes = selectedAxes.slice(0, selectedAxesLimit);
+  const grid = document.getElementById("axes-grid");
+  grid.innerHTML = "";
+
+  // Sort axes by pertinence
+  const sorted = [...AXES_SOURCE].sort((a,b) => {
+    const pa = a.obs_lie === "c1" ? perc.c1 : a.obs_lie === "c2" ? perc.c2 : perc.c3;
+    const pb = b.obs_lie === "c1" ? perc.c1 : b.obs_lie === "c2" ? perc.c2 : perc.c3;
+    return pb - pa;
+  });
+
+  for (const axe of sorted) {
+    const pct = axe.obs_lie === "c1" ? perc.c1 : axe.obs_lie === "c2" ? perc.c2 : perc.c3;
+    const isSelected = selectedAxes.includes(axe.id);
+    const div = document.createElement("div");
+    div.className = "axe-card" + (isSelected?" selected":"");
+    div.id = "axe-" + axe.id;
+    div.onclick = () => toggleAxe(axe.id);
+    div.innerHTML =
+      "<div class='axe-check'>" + (isSelected ? "✓" : "") + "</div>" +
+      "<div class='axe-body'>" +
+        "<div class='axe-title'>" + axe.titre + "</div>" +
+        "<div class='axe-desc'>" + axe.contenu + "</div>" +
+        "<div style='font-size:.75rem;color:#475569;margin-bottom:.4rem'><strong>Cible :</strong> " + axe.cible + "</div>" +
+        "<div class='axe-meta'>" +
+          "<span class='axe-pill hot'>Pertinence : " + pct + "% \u00e9l\u00e8ves concern\u00e9s</span>" +
+          "<span class='axe-pill'>Observable : " + (axe.obs_lie==='c3'?'C4':axe.obs_lie.toUpperCase()) + "</span>" +
+          "<span class='axe-pill'>" + axe.sa_label + "</span>" +
+          "<span class='axe-pill'>Pr\u00e9requis : " + axe.prereqs + "</span>" +
+        "</div>" +
+      "</div>";
+    grid.appendChild(div);
+  }
+  updateAxeCounter();
+}
+
+function toggleAxe(id) {
+  const idx = selectedAxes.indexOf(id);
+  if (idx >= 0) {
+    selectedAxes.splice(idx, 1);
+  } else {
+    if (selectedAxes.length >= selectedAxesLimit) {
+      showErr("axe-error","Maximum " + selectedAxesLimit + " axe" + (selectedAxesLimit>1?"s":"") + " atteint — désélectionner un axe avant d’en ajouter un autre.");
+      return;
+    }
+    selectedAxes.push(id);
+  }
+  document.getElementById("axe-" + id).classList.toggle("selected", selectedAxes.includes(id));
+  const chk = document.querySelector("#axe-" + id + " .axe-check");
+  if (chk) chk.textContent = selectedAxes.includes(id) ? "✓" : "";
+  updateAxeCounter();
+  saveSession();
+}
+
+function setAxeLimit(val) {
+  selectedAxesLimit = Math.min(4, Math.max(2, parseInt(val) || 3));
+  if (selectedAxes.length > selectedAxesLimit) {
+    selectedAxes = selectedAxes.slice(0, selectedAxesLimit);
+    showErr("axe-error","La limite est maintenant de " + selectedAxesLimit + " axes : les choix en trop ont été retirés automatiquement.");
+  }
+  renderAxes();
+  updateSlider(cycleSeances);
+  saveSession();
+}
+
+function updateAxeCounter() {
+  const n = selectedAxes.length;
+  const max = selectedAxesLimit;
+  const el = document.getElementById("axe-counter");
+  if (!el) return;
+  let txt = "<span class='hl'>" + n + " / " + max + " axe" + (max>1?"s":"") + " sélectionné" + (n>1?"s":"") + "</span>";
+  if (n < max) txt += " — <span class='warn'>encore " + (max-n) + " axe" + ((max-n)>1?"s":"") + " à choisir</span>";
+  else txt += " — <em style='color:#375623'>✓ limite atteinte, choix valide</em>";
+  el.innerHTML = txt;
+  const btn = document.getElementById("btn-to-step4");
+  if (btn) btn.disabled = n !== max;
+}
+
+// ══════════════════════════════════════════════════════════════
+// SLIDER / DISTRIBUTION
+// ══════════════════════════════════════════════════════════════
+function updateSlider(val) {
+  val = parseInt(val);
+  cycleSeances = val;
+  const slider = document.getElementById("cycle-slider");
+  if (slider) {
+    slider.value = val;
+    const pct = (val-6)/(12-6)*100;
+    slider.style.background = "linear-gradient(to right,var(--court-blue) 0%,var(--court-blue) " + pct + "%,#e2e8f0 " + pct + "%,#e2e8f0 100%)";
+  }
+  const dispEl = document.getElementById("slider-val");
+  if (dispEl) dispEl.innerHTML = val + " <span>s\u00e9ances</span>";
+
+  const nAxes = selectedAxes.length || selectedAxesLimit || 3;
+  const key = Math.min(4, Math.max(2, nAxes));
+  const dist = (DISTRIBUTION[key] || DISTRIBUTION[3])[val] || DISTRIBUTION[3][8];
+  const seqs = dist.length;
+
+  const subEl = document.getElementById("slider-sub");
+  if (subEl) subEl.textContent = seqs + " s\u00e9quences \u00b7 distribution : " + dist.join("+") + " s\u00e9ances";
+
+  const prev = document.getElementById("distrib-preview");
+  if (!prev) return;
+  const activeAxes = selectedAxes.length > 0 ? selectedAxes.map(id => AXES_SOURCE.find(a=>a.id===id)) : AXES_SOURCE.slice(0,key);
+
+  let html = "<div class='dp-title'>Aper\u00e7u de la r\u00e9partition</div>";
+  dist.forEach((nb, i) => {
+    const axe = activeAxes[i] || activeAxes[activeAxes.length-1];
+    html += "<div class='seq-row'>" +
+      "<div class='seq-num'>" + (i+1) + "</div>" +
+      "<div class='seq-info'><strong>S\u00e9quence " + (i+1) + "</strong> \u2014 " + nb + " s\u00e9ance" + (nb>1?"s":"") + " \u2014 " +
+        (axe ? axe.titre : "Axe " + (i+1)) + "</div>" +
+      "</div>";
+  });
+  prev.innerHTML = html;
+}
+
+// ══════════════════════════════════════════════════════════════
+// PLANIFICATION
+// ══════════════════════════════════════════════════════════════
+function generatePlanif() {
+  renderPlanif();
+  goToStep(5);
+}
+
+const SEANCE_DATA = {
+  "AX1": {
+    obj: "Construire la lecture du jeu avant action \u2014 s\u2019informer et choisir selon le d\u00e9fenseur",
+    groups: {
+      A: { sa:"SA-A1", consigne:"Avant de bouger, regarder le d\u00e9fenseur : est-il entre toi et le panier ?", critere:"L\u2019\u00e9l\u00e8ve marque une pause visible avant chaque d\u00e9cision" },
+      B: { sa:"SA-A1", consigne:"Choisir passe ou dribble AVANT de recevoir la balle : d\u00e9cider sans attendre la pression d\u00e9fensive", critere:"L\u2019\u00e9l\u00e8ve engage la bonne action dans au moins 2 possessions sur 3" },
+      C: { sa:"SA-A1", consigne:"Guider l\u2019\u00e9quipe avant chaque engagement offensif : nommer le type d\u2019attaque \u00e0 voix haute", critere:"L\u2019\u00e9quipe respecte le choix collectif dans au moins 3 actions cons\u00e9cutives" }
+    }
+  },
+  "AX2": {
+    obj: "Automatiser arr\u00eat-pivot-dribble et le d\u00e9marquage du non-porteur",
+    groups: {
+      A: { sa:"SA-B1", consigne:"Enchaîner r\u00e9ception \u2014 arr\u00eat d\u00e9cisif \u2014 pivot pour prot\u00e9ger sans pression d\u00e9fensive", critere:"Z\u00e9ro perte de balle par marcher sur 5 tentatives cons\u00e9cutives" },
+      B: { sa:"SA-B1", consigne:"Sous l\u00e9g\u00e8re pression : arr\u00eat, pivot, chercher partenaire dans l\u2019espace avant", critere:"Transmission de balle vers l\u2019avant dans au moins 3 actions sur 4" },
+      C: { sa:"SA-C1", consigne:"Non-porteur : traverser la raquette pour cr\u00e9er une ligne de passe vers l\u2019avant", critere:"Au moins 2 passes vers la raquette exploit\u00e9es en tir en 1c0 par match" }
+    }
+  },
+  "AX3": {
+    obj: "D\u00e9cider collectivement entre contre-attaque et jeu plac\u00e9 selon la d\u00e9fense",
+    groups: {
+      A: { sa:"SA-A1", consigne:"Observer le placement d\u00e9fensif : si 3 d\u00e9fenseurs replacés → ralentir · sinon → monter vite", critere:"L\u2019\u00e9quipe monte en moins de 5 secondes quand la d\u00e9fense n\u2019est pas replacée" },
+      B: { sa:"SA-B1", consigne:"Mettre en place une premi\u00e8re circulation balle + joueurs en attaque plac\u00e9e \u2014 2 passes minimum avant tir", critere:"Au moins 1 tir en situation favorable par possession plac\u00e9e" },
+      C: { sa:"SA-C1", consigne:"Varier syst\u00e9matiquement CA et jeu plac\u00e9 selon le rapport de force \u2014 nommer le choix collectif", critere:"L\u2019\u00e9quipe varie les modes d\u2019attaque sur au moins 4 possessions cons\u00e9cutives" }
+    }
+  },
+  "AX4": {
+    obj: "Organiser le repli d\u00e9fensif et d\u00e9clencher la transition rebond/contre-attaque",
+    groups: {
+      A: { sa:"SA-A1", consigne:"D\u00e9s la perte de balle : se replacer entre son adversaire direct et le panier \u2014 avant toute autre action", critere:"Chaque joueur identifie son adversaire direct \u00e0 couvrir en moins de 2 secondes" },
+      B: { sa:"SA-B1", consigne:"Apr\u00e8s rebond d\u00e9fensif : courir vers l\u2019avant en regardant le porteur \u2014 ne pas attendre au sol", critere:"Transition rebond \u2192 contre-attaque amorc\u00e9e en moins de 3 secondes" },
+      C: { sa:"SA-C1", consigne:"Choisir : gêner le PB adverse OU se replacer selon la position de l\u2019\u00e9quipe \u2014 pas de choix automatique", critere:"Aucune faute de contact inutile sur 1 mi-temps compl\u00e8te" }
+    }
+  },
+  "AX5": {
+    obj: "Structurer les r\u00f4les rotatifs : observateur, co-arbitre, joueur",
+    groups: {
+      A: { sa:"SA-B1", consigne:"En r\u00f4le d\u2019observateur : noter uniquement pertes de balle et paniers · cocher sur fiche sans interpr\u00e9ter", critere:"Donn\u00e9es chiffr\u00e9es remises \u00e0 l\u2019\u00e9quipe en moins de 2 minutes apr\u00e8s le match" },
+      B: { sa:"SA-B1", consigne:"Co-arbitre : siffler uniquement sur contact clair · annoncer la faute et organiser la r\u00e9paration", critere:"Score connu avec pr\u00e9cision \u00e0 tout moment de la rencontre" },
+      C: { sa:"SA-C1", consigne:"Observateur avanc\u00e9 : distinguer tirs en situation favorable et tirs sous pression · calculer le % de r\u00e9ussite", critere:"Donn\u00e9es diff\u00e9renci\u00e9es exploit\u00e9es par l\u2019\u00e9quipe pour ajuster le projet de jeu" }
+    }
+  },
+  "AX6": {
+    obj: "Se construire une zone de tir favorable et finir en suspension",
+    groups: {
+      A: { sa:"SA-A1", consigne:"Identifier la zone de tir favorable \u2014 se positionner avant de recevoir la balle", critere:"Au moins 1 tir tent\u00e9 depuis la zone favorable par possession" },
+      B: { sa:"SA-B1", consigne:"Apr\u00e8s r\u00e9ception en zone favorable : enchaîner 1 dribble max + tir en suspension", critere:"Tir r\u00e9ussi depuis zone favorable dans au moins 2 actions sur 5" },
+      C: { sa:"SA-C1", consigne:"Cr\u00e9er sa propre zone de tir par un d\u00e9marquage actif + r\u00e9ception \u00e9loign\u00e9e du d\u00e9fenseur", critere:"Aucun tir tent\u00e9 avec d\u00e9fenseur entre le PB et le panier" }
+    }
+  }
+};
+
+function renderPlanif() {
+  const nAxes = selectedAxes.length || selectedAxesLimit || 3;
+  const key = Math.min(4, Math.max(2, nAxes));
+  const dist = (DISTRIBUTION[key]||DISTRIBUTION[3])[cycleSeances] || DISTRIBUTION[3][8];
+  const activeAxes = selectedAxes.map(id => AXES_SOURCE.find(a=>a.id===id)).filter(Boolean);
+
+  const totalA = students.filter(s=>getProfile(s)==="A").length;
+  const totalB = students.filter(s=>getProfile(s)==="B").length;
+  const totalC = students.filter(s=>getProfile(s)==="C").length;
+  const total = students.filter(s=>s.name.trim()).length;
+
+  let seanceGlobal = 0;
+  let html = "";
+
+  const SEQ_TITLES = [
+    "Ancrage des pr\u00e9requis N1",
+    "Consolidation et diff\u00e9renciation",
+    "Acc\u00e8s aux conduites N2",
+    "Approfondissement et tournoi"
+  ];
+  const SEQ_OBJS = [
+    "Travailler les lacunes dominantes \u2014 fondamentaux N1 pour tous les profils",
+    "Diff\u00e9renciation active A/B/C \u2014 consolider les acqu\u00e9rants, acc\u00e9l\u00e9rer les avanc\u00e9s",
+    "Ouvrir les premi\u00e8res capacit\u00e9s N2 pour les \u00e9l\u00e8ves ayant progress\u00e9",
+    "Consolidation finale et \u00e9valuation formative"
+  ];
+
+  dist.forEach((nbSeances, seqIdx) => {
+    const axe = activeAxes[seqIdx] || activeAxes[activeAxes.length-1];
+    const axeData = SEANCE_DATA[axe.id] || SEANCE_DATA["AX1"];
+    const seqTitle = SEQ_TITLES[seqIdx] || ("S\u00e9quence " + (seqIdx+1));
+    const seqObj = SEQ_OBJS[seqIdx] || axeData.obj;
+
+    html +=
+      "<div class='sequence-block'>" +
+      "<div class='sequence-header'>" +
+        "<span class='seq-badge'>S\u00e9q. " + (seqIdx+1) + "</span>" +
+        "<div><div class='seq-title'>" + seqTitle + "</div>" +
+        "<div class='seq-obj'>" + seqObj + " \u2014 Axe : " + axe.titre + "</div></div>" +
+      "</div>" +
+      "<table class='seance-table'>" +
+      "<thead><tr>" +
+        "<th style='width:3.5rem'>S\u00e9ance</th>" +
+        "<th style='width:22%'>Objectif de s\u00e9ance</th>" +
+        "<th>Groupe A <span style='font-weight:400;color:#fca5a5'>(d\u00e9butants)</span></th>" +
+        "<th>Groupe B <span style='font-weight:400;color:#fcd34d'>(interm\u00e9diaires)</span></th>" +
+        "<th>Groupe C <span style='font-weight:400;color:#86efac'>(avanc\u00e9s)</span></th>" +
+      "</tr></thead><tbody>";
+
+    for (let s = 1; s <= nbSeances; s++) {
+      seanceGlobal++;
+      const isLast = seqIdx === dist.length-1 && s === nbSeances;
+      const seanceObj = isLast ? "\u00c9valuation formative et tournoi \u2014 application du projet de jeu" : axeData.obj;
+      const gA = axeData.groups.A, gB = axeData.groups.B, gC = axeData.groups.C;
+      html +=
+        "<tr>" +
+        "<td class='seance-num'>" + seanceGlobal + "</td>" +
+        "<td style='font-size:.78rem;color:#475569'>" + seanceObj + "</td>" +
+        "<td class='group-cell group-cell-a'>" +
+          "<div class='gc-sa'>" + gA.sa + "</div>" +
+          "<div class='gc-consigne'>" + gA.consigne + "</div>" +
+          "<div class='gc-critere'>\u2713 " + gA.critere + "</div>" +
+        "</td>" +
+        "<td class='group-cell group-cell-b'>" +
+          "<div class='gc-sa'>" + gB.sa + "</div>" +
+          "<div class='gc-consigne'>" + gB.consigne + "</div>" +
+          "<div class='gc-critere'>\u2713 " + gB.critere + "</div>" +
+        "</td>" +
+        "<td class='group-cell group-cell-c'>" +
+          "<div class='gc-sa'>" + gC.sa + "</div>" +
+          "<div class='gc-consigne'>" + gC.consigne + "</div>" +
+          "<div class='gc-critere'>\u2713 " + gC.critere + "</div>" +
+        "</td>" +
+        "</tr>";
+
+      // Passage indicator (not last séance of sequence)
+      if (s < nbSeances) {
+        const indic = PASSAGE_INDICATORS[axe.id] || "l\u2019\u00e9l\u00e8ve manifeste un progr\u00e8s observable sur l\u2019axe travaill\u00e9 lors de la s\u00e9ance";
+        html +=
+          "<tr><td colspan='5' class='passage-indicator'>" +
+          "<strong>📋 \u00c0 observer avant la s\u00e9ance suivante \u2014 </strong>" + indic +
+          "<span class='pi-label'>(Indicatif \u2014 d\u00e9cision de progression : vous)</span>" +
+          "</td></tr>";
+      }
+    }
+
+    html += "</tbody></table></div>";
+  });
+
+  // Cycle summary
+  const domProfil = totalA >= totalB && totalA >= totalC ? "A" : totalC >= totalA && totalC >= totalB ? "C" : "B";
+  const domCount = domProfil === "A" ? totalA : domProfil === "C" ? totalC : totalB;
+  const domPct = total ? Math.round(domCount/total*100) : 0;
+  const reevalSeq = dist.length >= 3 ? 2 : 1;
+
+  html +=
+    "<div class='cycle-summary'>" +
+      "<h3>R\u00e9sum\u00e9 du cycle</h3>" +
+      "<div class='cs-grid'>" +
+        "<div class='cs-item'><div class='csi-val'>" + cycleSeances + "</div><div class='csi-lbl'>S\u00e9ances</div></div>" +
+        "<div class='cs-item'><div class='csi-val'>" + dist.length + "</div><div class='csi-lbl'>S\u00e9quences</div></div>" +
+        "<div class='cs-item'><div class='csi-val'>" + selectedAxes.length + "</div><div class='csi-lbl'>Axes travaill\u00e9s</div></div>" +
+        "<div class='cs-item'><div class='csi-val'>" + total + "</div><div class='csi-lbl'>\u00c9l\u00e8ves</div></div>" +
+      "</div>" +
+      "<div class='cycle-reco'>" +
+        "Ce cycle de <strong>" + cycleSeances + " s\u00e9ances</strong> cible <strong>" + selectedAxes.length + " axes prioritaires</strong>. " +
+        "Profil le plus concern\u00e9 : <strong>Profil " + domProfil + " (" + domCount + " \u00e9l\u00e8ves \u00b7 " + domPct + "%)</strong>. " +
+        "Ré\u00e9valuer apr\u00e8s la s\u00e9quence <strong>" + reevalSeq + "</strong> avec une nouvelle collecte terrain. " +
+        "La d\u00e9cision finale reste \u00e0 l\u2019enseignant." +
+      "</div>" +
+    "</div>";
+
+  document.getElementById("planif-content").innerHTML = html;
+}
+
+// ══════════════════════════════════════════════════════════════
+// DEMO — 9 élèves
+// ══════════════════════════════════════════════════════════════
+function demoBehaviorValue(deg) {
+  const ranges = getBehaviorRanges();
+  const r = ranges[deg] || ranges.B;
+  if (deg === 'C') return r[1];
+  if (deg === 'B') return +(Math.round(((r[0] + r[1]) / 2) * 2) / 2).toFixed(1);
+  return +(Math.round(r[1] * 2) / 2).toFixed(1);
+}
+
+function loadDemo() {
+  students=[]; rowCount=0; document.getElementById("student-grid").innerHTML="";
+  // Format : Nom, Groupe, C1_Degré, C1, C2_Degré, C2, C3_Degré, C3 /3, C4_Degré
+  // C4 est généré automatiquement selon le niveau choisi : /3 en 1AC, /4 en 2AC, /5 en 3AC.
+  const demo = [
+    ["ALAOUI Zakaria",   "G1","C",10,"C",10,"C",3,  "C"],
+    ["Benali Sara",      "G1","C", 9,"B", 7,"C",3,  "B"],
+    ["EL AMRANI Youssef","G1","B", 6,"C", 8,"B",2,  "B"],
+    ["KETTANI Ayoub",    "G2","C", 8,"B", 7,"C",3,  "C"],
+    ["EL HADDAD Mariam", "G3","C",10,"C", 9,"C",3,  "C"],
+    ["AIT TALIB Hamid",  "G5","A", 1,"A", 2,"A",1,  "A"],
+    ["AZIZ Nabil",       "G7","C", 9,"C", 9,"C",3,  "C"],
+    ["BENSLIMANE Anas",  "G4","A", 2,"A", 1,"A",1,  "A"],
+    ["TALEB Meryem",     "G6","B", 6,"C", 8,"B",2,  "B"]
+  ];
+  demo.forEach(d=>{
+    const c4Val = demoBehaviorValue(d[8]);
+    addStudentRow(d[0], d[2], d[3], d[4], d[5], d[8], c4Val, d[7], d[6]);
+    students[students.length-1].group=d[1]||"";
+  });
+  students.forEach(s => updateNote14Cell(s.rowId));
+  goToStep(1);
+  showToast("🎲 Démo chargée — toutes les cases C1, C2, C3 et C4 sont remplies", 'success');
+  saveSession();
+}
+
+// ══════════════════════════════════════════════════════════════
+// CSV / JSON IMPORT
+// ══════════════════════════════════════════════════════════════
+function handleImport(file) {
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const text = ev.target.result;
+    if (file.name.toLowerCase().endsWith('.json')) handleJSON(text);
+    else handleCSV(text);
+  };
+  reader.readAsText(file, "UTF-8");
+}
+
+function handleCSV(text) {
+  students = []; rowCount = 0;
+  document.getElementById("student-grid").innerHTML = "";
+
+  const lines = text.split(/\r?\n/);
+  let headerIdx = -1;
+  for (let i = 0; i < lines.length; i++) {
+    if (lines[i].includes("Nom_Eleve") || lines[i].includes("Nom_élève") || lines[i].includes("Prenom")) {
+      headerIdx = i; break;
+    }
+  }
+  if (headerIdx < 0) {
+    document.getElementById("import-feedback").innerHTML =
+      "<div class='alert alert-err'><span>❌</span><span>En-tête CSV non trouvé — colonne Nom_Eleve introuvable.</span></div>";
+    return;
+  }
+  const sep = lines[headerIdx].includes(";") ? ";" : ",";
+  const headers = lines[headerIdx].split(sep).map(h=>h.trim().toLowerCase());
+  const col = n => headers.findIndex(h=>h.includes(n));
+
+  const iName = col("nom")>=0?col("nom"):col("eleve")>=0?col("eleve"):0;
+  const iGrp  = col("groupe")>=0?col("groupe"):col("group")>=0?col("group"):-1;
+  const iC1d  = col("c1_deg"); const iC1n = col("c1_note")>=0?col("c1_note"):col("obs01")>=0?col("obs01"):col("c1");
+  const iC2d  = col("c2_deg"); const iC2n = col("c2_note")>=0?col("c2_note"):col("obs02")>=0?col("obs02"):col("c2");
+  const iCCd = col("c3_deg")>=0?col("c3_deg"):col("cc_deg")>=0?col("cc_deg"):col("conceptuelles_deg");
+  const iC3d = col("c4_deg")>=0?col("c4_deg"):col("cb_deg")>=0?col("cb_deg"):col("comportementales_deg")>=0?col("comportementales_deg"):col("comport_deg");
+  const iCC = col("c3_note")>=0?col("c3_note"):col("connaissances_conceptuelles")>=0?col("connaissances_conceptuelles"):col("concept")>=0?col("concept"):col("cc")>=0?col("cc"):col("conceptuelles");
+  const iCB = col("c4_note")>=0?col("c4_note"):col("connaissances_comportementales")>=0?col("connaissances_comportementales"):col("comport")>=0?col("comport"):col("cb")>=0?col("cb"):col("c4");
+
+  const mapDeg = v => {
+    if(!v) return '';
+    v=String(v).trim().toUpperCase();
+    if(['A','B','C'].includes(v)) return v;
+    if(['JD','JI','RI','MI'].includes(v)) return 'A';
+    if(['JS','JP','RA','MP'].includes(v)) return 'B';
+    if(['JV','JA','RR','MS'].includes(v)) return 'C';
+    return '';
+  };
+  const mapVal = v => { const n=parseFloat(String(v||'').replace(',','.')); return isNaN(n)?'':n; };
+
+  let imported=0, ignored=0, invalid=0;
+  for(let i=headerIdx+1;i<lines.length;i++){
+    const line=lines[i].trim();
+    if(!line||line.toLowerCase().includes("bilan")||line.toLowerCase().includes("moyenne")){ignored++;continue;}
+    const cols=line.split(sep);
+    const name=iName>=0?(cols[iName]||'').trim():'';
+    if(!name){ignored++;continue;}
+    const rawC1 = iC1n>=0?mapVal(cols[iC1n]):'';
+    const rawC2 = iC2n>=0?mapVal(cols[iC2n]):'';
+    const rawCC = iCC>=0?mapVal(cols[iCC]):'';
+    const rawCB = iCB>=0?mapVal(cols[iCB]):'';
+    addStudentRow(name,
+      iC1d>=0?mapDeg(cols[iC1d]):'', rawC1,
+      iC2d>=0?mapDeg(cols[iC2d]):'', rawC2,
+      iC3d>=0?mapDeg(cols[iC3d]):'', rawCB,
+      rawCC, iCCd>=0?mapDeg(cols[iCCd]):'');
+    const last = students[students.length-1];
+    if ((rawC1!=='' && last.c1==='') || (rawC2!=='' && last.c2==='') || (rawCC!=='' && last.cc==='') || (rawCB!=='' && last.cb==='')) invalid++;
+    if(iGrp>=0) last.group=(cols[iGrp]||'').trim();
+    imported++;
+  }
+  document.getElementById("import-feedback").innerHTML=
+    "<div class='alert "+(invalid?'alert-warn':'alert-ok')+"'><span>"+(invalid?'⚠️':'✅')+"</span><span>"+imported+" élève(s) importé(s) · "+ignored+" ligne(s) ignorée(s)"+(invalid?" · "+invalid+" ligne(s) avec valeur(s) hors barème non comptée(s)":"")+"</span></div>";
+  showToast("📥 "+imported+" élève(s) importé(s)" + (invalid?" · valeurs hors barème ignorées":""), invalid?'error':'success');
+  saveSession();
+}
+
+function handleJSON(text){
+  try{
+    const data=JSON.parse(text);
+    const arr=Array.isArray(data)?data:(data.eleves||data.students||[]);
+    if(!arr.length){showToast("JSON sans liste d'élèves", 'error');return;}
+    students=[];rowCount=0;
+    document.getElementById("student-grid").innerHTML="";
+    const mapDeg=v=>{
+      if(!v)return'';v=String(v).trim().toUpperCase();
+      if(['A','B','C'].includes(v))return v;
+      if(['JD','JI','RI','MI'].includes(v))return'A';
+      if(['JS','JP','RA','MP'].includes(v))return'B';
+      if(['JV','JA','RR','MS'].includes(v))return'C';
+      return'';
+    };
+    arr.forEach(o=>{
+      const name=String(o.Nom_Eleve||o.name||o.nom||'').trim();
+      if(!name)return;
+      addStudentRow(name,
+        mapDeg(o.C1_Degre||o.c1deg||''),o.C1_Note??o.c1??'',
+        mapDeg(o.C2_Degre||o.c2deg||''),o.C2_Note??o.c2??'',
+        mapDeg(o.C4_Degre||o.c4deg||o.CB_Degre||o.cbdeg||o.c3deg||''),
+        o.C4_Note??o.Connaissances_comportementales??o.cb??o.c4??'',
+        o.C3_Note??o.Connaissances_conceptuelles??o.cc??o.c3??'',
+        mapDeg(o.C3_Degre||o.ccdeg||''));
+      students[students.length-1].group=String(o.Groupe||o.group||'').trim();
+    });
+    showToast("📥 "+students.length+" élève(s) importé(s) depuis JSON", 'success');
+    saveSession();
+  }catch(e){showToast("❌ JSON invalide : "+e.message, 'error');}
+}
+
+document.getElementById("csv-input").addEventListener("change", function(e) {
+  const file = e.target.files[0]; if(!file)return;
+  handleImport(file); this.value='';
+});
+
+// Import de session complète (Condition 6)
+document.getElementById("session-input").addEventListener("change", function(e) {
+  const file = e.target.files[0]; if(!file)return;
+  importSessionFile(file); this.value='';
+});
+
+const dz = document.getElementById("drop-zone");
+dz.addEventListener("dragover", e => { e.preventDefault(); dz.classList.add("drag-over"); });
+dz.addEventListener("dragleave", () => dz.classList.remove("drag-over"));
+dz.addEventListener("drop", e => {
+  e.preventDefault(); dz.classList.remove("drag-over");
+  const file = e.dataTransfer.files[0]; if(!file)return;
+  handleImport(file);
+});
+
+// ══════════════════════════════════════════════════════════════
+// EXPORT CSV
+// ══════════════════════════════════════════════════════════════
+function exportCSV() {
+  const valid = students.filter(s=>s.name.trim());
+  if (!valid.length) { showToast("Aucun élève à exporter", 'error'); return; }
+  const header = "Nom_Eleve;Niveau;Groupe;C1_Degre;C1_Note;C2_Degre;C2_Note;C3_Degre;C3_Note;C4_Degre;C4_Note;Note_Procedurale;Note_Totale_20;Profil;SA";
+  const rows = valid.map(s => {
+    const c1d = s.c1deg||getDegreeByComp('c1',s.c1)||"";
+    const c2d = s.c2deg||getDegreeByComp('c2',s.c2)||"";
+    const ccd = s.ccdeg||getDegreeByComp('cc',s.cc)||"";
+    const c3d = s.c3deg||getDegreeByComp('c3',s.cb)||"";
+    const n14 = calcNote14(s) || 0;
+    const n20 = calcTotal20(s) || 0;
+    return [s.name,currentNiveau||"",s.group||"",c1d,s.c1,c2d,s.c2,ccd,s.cc??"",c3d,s.cb??"",n14.toFixed(1),n20.toFixed(1),getProfile(s)||"",getSA(s)].join(";");
+  });
+  const d=new Date();
+  const fname="outil_v04_BASKETBALL_ES-BKT_"+d.getFullYear()+(d.getMonth()+1).toString().padStart(2,"0")+d.getDate().toString().padStart(2,"0")+".csv";
+  dlFile("\uFEFF"+header+"\n"+rows.join("\n"),"text/csv;charset=utf-8",fname);
+  showToast("⬇ CSV exporté", 'success');
+}
+
+// ══════════════════════════════════════════════════════════════
+// EXPORT JSON
+// ══════════════════════════════════════════════════════════════
+function exportJSON() {
+  const valid = students.filter(s=>s.name.trim());
+  if (!valid.length) { showToast("Aucun élève à exporter", 'error'); return; }
+  const payload={
+    meta:{projet:"COLL2_EQ_07",aps:"Basketball",famille:"ES",niveau_scolaire:currentNiveau||"",niveau:"DNB N2",note_procedurale_max:getNoteMax(),note_conceptuelle_max:3,note_comportementale_max:getBehaviorMax(),note_totale_max:20,
+          bareme:getBaremeText(),date:new Date().toISOString().slice(0,10)},
+    eleves:valid.map(s=>{
+      const n14=calcNote14(s)||0;
+      return{Nom_Eleve:s.name,Niveau:currentNiveau||"",Groupe:s.group||"",
+             C1_Degre:s.c1deg||getDegreeByComp('c1',s.c1)||"",C1_Note:s.c1,
+             C2_Degre:s.c2deg||getDegreeByComp('c2',s.c2)||"",C2_Note:s.c2,
+             C3_Degre:s.ccdeg||getDegreeByComp('cc',s.cc)||"",C3_Note:s.cc??"",
+             C4_Degre:s.c3deg||getDegreeByComp('c3',s.cb)||"",C4_Note:s.cb??"",
+             Note_Procedurale:+n14.toFixed(1),Note_Totale_20:+(calcTotal20(s)||0).toFixed(1),
+             Profil:getProfile(s)||"",SA:getSA(s)};})
+  };
+  const fname="outil_v04_BASKETBALL_ES-BKT_"+new Date().toISOString().slice(0,10)+".json";
+  dlFile(JSON.stringify(payload,null,2),"application/json",fname);
+  showToast("⬇ JSON exporté", 'success');
+}
+
+function dlFile(content,type,name){
+  const blob=new Blob([content],{type});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");a.href=url;a.download=name;
+  document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+}
+
+// ══════════════════════════════════════════════════════════════
+// EXPORT / IMPORT DE SESSION COMPLÈTE — CONDITION 6
+// Sauvegarde de secours et transfert vers un autre appareil.
+// Contient TOUT l'état (prof, groupe, élèves, axes, cycle, étape).
+// ══════════════════════════════════════════════════════════════
+function exportSession() {
+  const session = collectSession();
+  session.type = "ADP2026_SESSION";   // marqueur de reconnaissance à l'import
+  const d = new Date();
+  const stamp = d.getFullYear()+(d.getMonth()+1).toString().padStart(2,"0")+d.getDate().toString().padStart(2,"0")
+    +"_"+d.getHours().toString().padStart(2,"0")+d.getMinutes().toString().padStart(2,"0");
+  const safeGrp = (currentGrp||"session").replace(/[^\w-]/g,"");
+  dlFile(JSON.stringify(session,null,2),"application/json",
+    "SESSION_BASKETBALL_ES-BKT_"+safeGrp+"_"+stamp+".json");
+  showToast("💾 Session exportée (sauvegarde complète)", 'success');
+}
+
+function importSessionFile(file) {
+  const reader = new FileReader();
+  reader.onload = ev => {
+    let data;
+    try { data = JSON.parse(ev.target.result); }
+    catch (e) { showToast("❌ Fichier de session illisible", 'error'); return; }
+    if (!data || !Array.isArray(data.students)) {
+      showToast("❌ Ce fichier n'est pas une session valide", 'error');
+      return;
+    }
+    // Restaurer l'intégralité de l'état.
+    currentProf  = data.prof || "";
+    currentGrp   = data.groupe || "";
+    currentNiveau = data.niveau || (data.noteMax===13 ? "2AC" : data.noteMax===12 ? "3AC" : data.noteMax===14 ? "1AC" : "");
+    cycleSeances = data.cycleSeances || 12;
+    selectedAxes = Array.isArray(data.selectedAxes) ? data.selectedAxes.slice() : [];
+    rosterStudents = Array.isArray(data.rosterStudents) ? data.rosterStudents.slice() : [];
+    rebuildStudentsFrom(data.students);
+    saveSession();
+
+    // Mettre à jour l'en-tête et naviguer.
+    document.querySelector('.site-header')?.classList.add('visible');
+    document.getElementById('stepper')?.classList.add('visible');
+    document.body.classList.remove('splash-mode');
+    const sub = document.querySelector('.header-sub');
+    if (sub) sub.textContent = `Basketball · ES-BKT · ${currentNiveau||"—"} · ${currentGrp||"—"} · ${currentProf||"—"} · /${getNoteMax()} pts`;
+    const eb = document.getElementById('eb-prof-label');
+    if (eb) eb.textContent = `ADP 2026 · ${currentProf||"—"} · ${currentNiveau||"—"} · ${currentGrp||"—"} · Basketball ES-BKT · note /20`;
+    updateNoteLabels();
+    goToStep(1);
+    showToast(`📂 Session importée — ${students.length} élève(s) restauré(s) · ${currentNiveau||"niveau ?"}`, 'success');
+  };
+  reader.readAsText(file, "UTF-8");
+}
+
+// ══════════════════════════════════════════════════════════════
+// v05 — SPLASH / ACCUEIL CINÉMATIQUE
+// (currentProf / currentGrp sont déclarés en tête de script)
+// ══════════════════════════════════════════════════════════════
+
+function onProfChange(sel) {
+  const val = sel.value;
+  const custom = document.getElementById('profCustom');
+  if (val === '__autre__') {
+    custom.classList.add('visible');
+    custom.focus();
+    currentProf = '';
+  } else {
+    custom.classList.remove('visible');
+    currentProf = val;
+  }
+  checkLaunchReady();
+  saveSession();
+}
+
+function onCustomProf(inp) {
+  currentProf = inp.value.trim();
+  checkLaunchReady();
+  saveSession();
+}
+
+function selectNiveau(btn, niveau) {
+  document.querySelectorAll('.level-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  currentNiveau = niveau;
+  updateNiveauProcedure();
+  updateNoteLabels();
+  students.forEach(s => rebuildRow(s.rowId));
+  checkLaunchReady();
+  saveSession();
+}
+
+function updateNiveauProcedure() {
+  const box = document.getElementById('niveauProcedure');
+  if (!box) return;
+  if (!currentNiveau) { box.classList.remove('visible'); box.textContent = ''; return; }
+  const max = getNoteMax();
+  const bmax = getBehaviorMax();
+  box.innerHTML = `<strong>${currentNiveau}</strong> sélectionné : procédural sur <strong>${max} pts</strong>, C3 conceptuel sur <strong>3 pts</strong>, C4 comportemental sur <strong>${bmax} pts</strong>, total <strong>20/20</strong>.`;
+  box.classList.add('visible');
+}
+
+function updateNoteLabels() {
+  const max = getNoteMax();
+  const w = getProceduralWeights();
+  const lbl = document.getElementById('row-note-max-label');
+  if (lbl) lbl.textContent = `Total /20`;
+  const bl = document.getElementById('row-behavior-max-label');
+  if (bl) bl.textContent = `C4 /${getBehaviorMax()}`;
+  const bareme = document.getElementById('bareme-procedure-text');
+  if (bareme) bareme.innerHTML = `<strong>Note totale /20</strong> · ${getNiveauLabel()} : procédural /${max} = C1×${w.c1}/10 + C2×${w.c2}/10 · C3 conceptuel /3 · C4 comportemental /${getBehaviorMax()}`;
+}
+
+function selectGrp(btn, grp) {
+  document.querySelectorAll('.grp-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  currentGrp = grp;
+  checkLaunchReady();
+  saveSession();
+}
+
+function checkLaunchReady() {
+  const btn = document.getElementById('launchBtn');
+  if (btn) btn.disabled = !(currentProf.trim() && currentNiveau && currentGrp);
+}
+
+// ══════════════════════════════════════════════════════════════
+// PORTAIL DE LANCEMENT — popup d'import de la liste élèves
+// Déclenché après sélection Prof/Niveau/Groupe, AVANT lancerOutil().
+// ══════════════════════════════════════════════════════════════
+function openLaunchGate() {
+  if (!currentProf || !currentGrp || !currentNiveau) return;
+  const fb = document.getElementById('roster-feedback');
+  if (fb) fb.innerHTML = '';
+  const ri = document.getElementById('roster-input');
+  if (ri) ri.value = '';
+  openModal('modal-roster');
+}
+
+// Parse un CSV/JSON de liste d'élèves (noms + groupe optionnel — pas de notes)
+// et alimente rosterStudents, réutilisé par printFiche() pour pré-remplir la fiche terrain.
+function handleRosterImport(file) {
+  if (!file) return;
+  const fb = () => document.getElementById('roster-feedback');
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const text = String(ev.target.result || '');
+    let names = [];
+    try {
+      if (file.name.toLowerCase().endsWith('.json')) {
+        const data = JSON.parse(text);
+        const arr = Array.isArray(data) ? data : (data.eleves || data.students || []);
+        names = arr.map(o => ({
+          name: String(o.Nom_Eleve || o.name || o.nom || '').trim(),
+          group: String(o.Groupe || o.group || '').trim()
+        })).filter(o => o.name);
+      } else {
+        const lines = text.split(/\r?\n/);
+        let headerIdx = -1;
+        for (let i = 0; i < lines.length; i++) {
+          if (/nom/i.test(lines[i]) || /eleve|élève/i.test(lines[i])) { headerIdx = i; break; }
+        }
+        const sep = (headerIdx >= 0 ? lines[headerIdx] : (lines[0] || '')).includes(";") ? ";" : ",";
+        let iName = 0, iGrp = -1, startIdx = 0;
+        if (headerIdx >= 0) {
+          const headers = lines[headerIdx].split(sep).map(h => h.trim().toLowerCase());
+          const found = headers.findIndex(h => h.includes("nom") || h.includes("eleve"));
+          iName = found >= 0 ? found : 0;
+          iGrp  = headers.findIndex(h => h.includes("groupe") || h.includes("group"));
+          startIdx = headerIdx + 1;
+        }
+        for (let i = startIdx; i < lines.length; i++) {
+          const line = lines[i].trim();
+          if (!line) continue;
+          const cols = line.split(sep);
+          const name = (cols[iName] || '').trim();
+          if (!name) continue;
+          names.push({ name, group: iGrp >= 0 ? (cols[iGrp] || '').trim() : '' });
+        }
+      }
+    } catch (e) {
+      if (fb()) fb().innerHTML = "<div class='alert alert-err'><span>❌</span><span>Fichier illisible : " + e.message + "</span></div>";
+      showToast("❌ Fichier roster illisible", 'error');
+      return;
+    }
+    if (!names.length) {
+      if (fb()) fb().innerHTML = "<div class='alert alert-err'><span>❌</span><span>Aucun nom détecté dans le fichier.</span></div>";
+      showToast("Aucun nom détecté dans le fichier", 'error');
+      return;
+    }
+    rosterStudents = names;
+    if (fb()) fb().innerHTML = "<div class='alert alert-ok'><span>✅</span><span>" + names.length + " élève(s) détecté(s) — utilisé(s) pour pré-remplir la fiche terrain.</span></div>";
+    showToast("📋 " + names.length + " élève(s) importé(s) pour la fiche terrain", 'success');
+    setTimeout(() => { closeModal('modal-roster'); lancerOutil(); }, 900);
+  };
+  reader.readAsText(file, "UTF-8");
+}
+
+function lancerOutil() {
+  if (!currentProf || !currentGrp || !currentNiveau) return;
+  // Afficher header et stepper
+  document.querySelector('.site-header').classList.add('visible');
+  document.getElementById('stepper').classList.add('visible');
+  document.body.classList.remove('splash-mode');
+  // Mettre à jour les infos
+  const sub = document.querySelector('.header-sub');
+  if (sub) sub.textContent = `Basketball · ES-BKT · ${currentNiveau} · ${currentGrp} · ${currentProf} · /${getNoteMax()} pts`;
+  const eb = document.getElementById('eb-prof-label');
+  if (eb) eb.textContent = `ADP 2026 · ${currentProf} · ${currentNiveau} · ${currentGrp} · Basketball ES-BKT · note /20`;
+  updateNoteLabels();
+  goToStep(1);
+  showToast(`🏀 Bienvenue, ${currentProf} — ${currentNiveau} · Groupe ${currentGrp} · note /20 pts`, 'success');
+  saveSession();
+}
+
+// ══════════════════════════════════════════════════════════════
+// v05 — FICHE TERRAIN + PROMPT IA
+// ══════════════════════════════════════════════════════════════
+function togglePromptBox() {
+  const box = document.getElementById('promptBox');
+  const btn = document.getElementById('btnGuideIA');
+  if (!box) return;
+  const open = box.style.display === 'none' || box.style.display === '';
+  box.style.display = open ? 'block' : 'none';
+  if (btn) btn.textContent = open ? '✕ Fermer le guide' : '🤖 Guide de conversion IA';
+}
+
+function copyPrompt() {
+  const text = document.getElementById('promptText')?.textContent || '';
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('btnCopy');
+    if (btn) { btn.textContent = '✅ Copié !'; btn.classList.add('copied'); }
+    setTimeout(() => {
+      if (btn) { btn.textContent = '📋 Copier le prompt'; btn.classList.remove('copied'); }
+    }, 2000);
+  }).catch(() => showToast('❌ Copie non supportée — copiez manuellement', 'error'));
+}
+
+function printFiche() {
+  const prof   = currentProf || 'Prof.';
+  const grp    = currentGrp  || '—';
+  const niv    = currentNiveau || '—';
+  const maxNote = getNoteMax();
+  const date   = new Date().toLocaleDateString('fr-FR');
+  const esc = s => String(s==null?'':s).replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]));
+
+  // Source des noms à pré-remplir : 1) liste importée avant lancement (rosterStudents),
+  // 2) sinon les élèves déjà saisis manuellement (students), 3) sinon lignes vides (comportement d'origine).
+  const namesSource = rosterStudents.length
+    ? rosterStudents.map(r => r.name)
+    : (students.length ? students.map(s => s.name).filter(n => n && n.trim()) : []);
+  const totalRows = Math.max(30, namesSource.length);
+  const rows = Array.from({length: totalRows}, (_, i) =>
+    `<tr><td>${i+1}</td><td style="text-align:left">${esc(namesSource[i] || '')}</td><td></td><td></td><td></td><td></td></tr>`
+  ).join('');
+
+  const html = `<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8">
+  <title>Fiche Terrain — Basketball ES-BKT</title>
+  <style>
+    body{font-family:Arial,sans-serif;margin:1.5cm;font-size:10pt;color:#000}
+    h1{font-size:14pt;margin:0 0 .3rem;color:#0d2137}
+    .meta{font-size:9pt;color:#475569;margin-bottom:.8rem}
+    .legend{font-size:8.5pt;margin-bottom:.7rem;padding:.5rem .7rem;background:#f8fafc;border:1px solid #e2e8f0;border-radius:4px}
+    table{width:100%;border-collapse:collapse;font-size:8.5pt}
+    th{background:#0d2137;color:#fff;padding:.35rem .5rem;text-align:center}
+    td{border:1px solid #ccc;padding:.3rem .5rem;text-align:center;height:1.5rem}
+    td:nth-child(2){text-align:left;min-width:120px}
+    tr:nth-child(even) td{background:#f8fafc}
+    .footer{margin-top:.7rem;font-size:7.5pt;color:#94a3b8;text-align:center}
+  </style></head><body>
+  <h1>🏀 Fiche terrain — Évaluation sommative Basketball</h1>
+  <div class="meta">Professeur : <strong>${prof}</strong> &nbsp;·&nbsp; Niveau : <strong>${niv}</strong> &nbsp;·&nbsp; Groupe : <strong>${grp}</strong> &nbsp;·&nbsp; Procédural : <strong>/${maxNote} pts</strong> · Total : <strong>/20 pts</strong> &nbsp;·&nbsp; Date : <strong>${date}</strong></div>
+  <div class="legend">
+    <strong>Barème :</strong> C1 /10 · C2 /10 = Connaissances procédurales · C3 = Connaissances conceptuelles /3 · C4 = Connaissances comportementales /${getBehaviorMax()} · Total /20<br>
+    <span style="font-size:7.5pt;color:#64748b">NB : ⚠ « assurés » ≠ « assumés » — termes EXACTS du référentiel.</span>
+  </div>
+  <table><thead><tr>
+    <th>#</th><th style="text-align:left">Nom / Prénom</th>
+    <th>C1 /10</th>
+    <th>C2 /10</th>
+    <th>C3 /3</th>
+    <th>C4 /${getBehaviorMax()}</th>
+  </tr></thead><tbody>${rows}</tbody></table>
+  <div class="footer">ADP 2026 · CRMEF Souss-Massa · Basketball ES-BKT · COLL2_EQ_07</div>
+  </body></html>`;
+
+  const w = window.open('', '_blank');
+  if (w) { w.document.write(html); w.document.close(); w.print(); }
+  else showToast('⚠️ Autoriser les popups pour télécharger la fiche', 'error');
+}
+
+// ══════════════════════════════════════════════════════════════
+// CONDITION 7 — EXPORT DES RÉSULTATS EXPLOITABLES (PDF propre)
+// Profils, lacunes, SA et décisions produites par l'outil.
+// ══════════════════════════════════════════════════════════════
+function printResults() {
+  const valid = students.filter(s => s.name.trim() && s.c1 !== "" && s.c2 !== "" && (s.cc ?? s.c3 ?? "") !== "" && (s.cb ?? "") !== "");
+  if (!valid.length) { showToast("Aucun résultat à exporter", 'error'); return; }
+
+  const prof = currentProf || 'Prof.';
+  const grp  = currentGrp  || '—';
+  const niv  = currentNiveau || '—';
+  const noteMax = getTotalMax();
+  const date = new Date().toLocaleDateString('fr-FR');
+
+  const profLabel = { A:"Profil A — à consolider", B:"Profil B — en construction", C:"Profil C — confirmé" };
+  const esc = s => String(s==null?'':s).replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]));
+
+  let nA=0,nB=0,nC=0;
+  const rows = valid.map((s,i) => {
+    const prof14 = getProfile(s) || '—';
+    if (prof14==='A') nA++; else if (prof14==='B') nB++; else if (prof14==='C') nC++;
+    const n14 = calcTotal20(s);
+    const lac = getLacune(s);
+    const lacTxt = lac.length ? lac.map(l=>l.label+" ("+l.val+")").join(", ") : "Aucune lacune majeure";
+    const sa = getSA(s);
+    const saTxt = SA_DATA[sa] ? sa : "—";
+    const axe = getAxePrioritaire(s);
+    return `<tr>
+      <td>${i+1}</td>
+      <td class="l">${esc(s.name)}</td>
+      <td>${esc(s.group||'')}</td>
+      <td>${n14==null?'—':n14}</td>
+      <td><span class="prof prof-${prof14}">${prof14}</span></td>
+      <td class="l">${esc(lacTxt)}</td>
+      <td>${esc(saTxt)}</td>
+      <td class="l">${esc(axe)}</td>
+    </tr>`;
+  }).join('');
+
+  const saLegend = Object.keys(SA_DATA).map(k =>
+    `<li><strong>${k}</strong> — ${esc(SA_DATA[k])}</li>`).join('');
+
+  const html = `<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8">
+  <title>Résultats — Décisions Basketball ES-BKT</title>
+  <style>
+    body{font-family:Arial,sans-serif;margin:1.4cm;font-size:9.5pt;color:#000}
+    h1{font-size:14pt;margin:0 0 .2rem;color:#0d2137}
+    h2{font-size:10.5pt;margin:1rem 0 .4rem;color:#1a4f82}
+    .meta{font-size:9pt;color:#475569;margin-bottom:.6rem}
+    .summary{display:flex;gap:.6rem;margin:.6rem 0 .9rem;flex-wrap:wrap}
+    .scard{flex:1;min-width:120px;border:1px solid #cbd5e1;border-radius:6px;padding:.5rem .7rem;text-align:center}
+    .scard .v{font-size:1.3rem;font-weight:700;color:#0d2137}
+    .scard .k{font-size:7.5pt;color:#64748b;text-transform:uppercase;letter-spacing:.04em}
+    table{width:100%;border-collapse:collapse;font-size:8pt;margin-top:.3rem}
+    th{background:#0d2137;color:#fff;padding:.35rem .4rem;text-align:center;vertical-align:middle}
+    td{border:1px solid #ccc;padding:.3rem .4rem;text-align:center;vertical-align:top}
+    td.l{text-align:left}
+    tr:nth-child(even) td{background:#f8fafc}
+    .prof{display:inline-block;min-width:1.3rem;font-weight:700;border-radius:4px;padding:.05rem .35rem;color:#fff}
+    .prof-A{background:#c00000}.prof-B{background:#c07000}.prof-C{background:#375623}
+    .legend{font-size:7.8pt;color:#334155;margin-top:.8rem;line-height:1.5}
+    .legend ul{margin:.3rem 0 0 1rem;padding:0}
+    .bareme{font-size:8pt;color:#475569;margin-top:.5rem;padding:.5rem .7rem;background:#f8fafc;border:1px solid #e2e8f0;border-radius:4px}
+    .footer{margin-top:.9rem;font-size:7.5pt;color:#94a3b8;text-align:center}
+    @media print{button{display:none}}
+  </style></head><body>
+  <h1>🏀 Résultats &amp; décisions — Évaluation sommative Basketball</h1>
+  <div class="meta">Professeur : <strong>${esc(prof)}</strong> &nbsp;·&nbsp; Niveau : <strong>${esc(niv)}</strong> &nbsp;·&nbsp; Groupe : <strong>${esc(grp)}</strong> &nbsp;·&nbsp; Note totale : <strong>/20 pts</strong> &nbsp;·&nbsp; Date : <strong>${date}</strong> &nbsp;·&nbsp; ${valid.length} élève(s)</div>
+
+  <div class="summary">
+    <div class="scard"><div class="v">${nA}</div><div class="k">Profil A — à consolider</div></div>
+    <div class="scard"><div class="v">${nB}</div><div class="k">Profil B — en construction</div></div>
+    <div class="scard"><div class="v">${nC}</div><div class="k">Profil C — confirmé</div></div>
+  </div>
+
+  <h2>Décisions individuelles produites</h2>
+  <table><thead><tr>
+    <th>#</th><th class="l">Nom / Prénom</th><th>Groupe</th><th>Total /20</th>
+    <th>Profil</th><th class="l">Lacunes</th><th>SA</th><th class="l">Axe(s) prioritaire(s)</th>
+  </tr></thead><tbody>${rows}</tbody></table>
+
+  <div class="bareme"><strong>Barème :</strong> ${esc(getBaremeText())}. Total final : 20/20.</div>
+
+  <div class="legend"><strong>Situations d'apprentissage (SA) recommandées :</strong>
+    <ul>${saLegend}</ul>
+  </div>
+
+  <div class="footer">ADP 2026 · CRMEF Souss-Massa · Basketball ES-BKT · COLL2_EQ_07 — Document généré localement, données confidentielles</div>
+  </body></html>`;
+
+  const w = window.open('', '_blank');
+  if (w) { w.document.write(html); w.document.close(); w.print(); }
+  else showToast('⚠️ Autoriser les popups pour exporter les résultats', 'error');
+}
+
+// ══════════════════════════════════════════════════════════════
+// NOTE PROCÉDURALE AUTO — dynamique selon le niveau 1AC/2AC/3AC
+// 1AC : /14 · 2AC : /13 · 3AC : /12
+// ══════════════════════════════════════════════════════════════
+function calcNoteBase14(s) {
+  if (!isComponentValid(s,'c1') || !isComponentValid(s,'c2')) return null;
+  const c1 = parseScoreValue(s.c1);
+  const c2 = parseScoreValue(s.c2);
+  const w = getProceduralWeights();
+  return (c1 * w.c1/10) + (c2 * w.c2/10);
+}
+
+function calcNote14(s) {
+  const procedural = calcNoteBase14(s);
+  if (procedural === null) return null;
+  return +procedural.toFixed(1);
+}
+
+function calcTotal20(s) {
+  if (!isStudentCompleteValid(s)) return null;
+  const procedural = calcNote14(s);
+  const cc = parseScoreValue(s.cc);
+  const cb = parseScoreValue(s.cb);
+  if (procedural === null || isNaN(cc) || isNaN(cb)) return null;
+  return +(procedural + cc + cb).toFixed(1);
+}
+
+function updateNote14Cell(rowId) {
+  const s = students.find(x => x.rowId === rowId);
+  const procCell = document.getElementById('proc-' + rowId);
+  const totalCell = document.getElementById('note14-' + rowId);
+  if (!s) return;
+  const pMax = getNoteMax();
+  const proc = calcNote14(s);
+  if (procCell) {
+    if (proc === null) {
+      procCell.className = 'note14-cell n-empty';
+      procCell.innerHTML = `<span>—</span><span class="n-sub">/${pMax}</span>`;
+    } else {
+      const clsP = proc < (pMax*0.50) ? 'n-low' : proc < (pMax*0.72) ? 'n-mid' : 'n-high';
+      procCell.className = 'note14-cell ' + clsP;
+      procCell.innerHTML = `<span>${proc}</span><span class="n-sub">/${pMax}</span>`;
+    }
+  }
+  if (!totalCell) return;
+  const max = getTotalMax();
+  const n = calcTotal20(s);
+  if (n === null) {
+    totalCell.className = 'note14-cell n-empty';
+    totalCell.innerHTML = `<span>—</span><span class="n-sub">/${max}</span>`;
+  } else {
+    const cls = n < (max*0.50) ? 'n-low' : n < (max*0.72) ? 'n-mid' : 'n-high';
+    totalCell.className = 'note14-cell ' + cls;
+    totalCell.innerHTML = `<span>${n}</span><span class="n-sub">/${max}</span>`;
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+// INIT — Restaurer la session locale puis afficher l'accueil
+// ══════════════════════════════════════════════════════════════
+updateSlider(cycleSeances);
+updateNoteLabels();
+// Restauration automatique de la session sauvegardée (Condition 3).
+try { restoreSession(); } catch (e) { console.warn("Restauration impossible :", e); }
+// Sécurité : sauvegarde avant fermeture/rechargement de la page.
+window.addEventListener("beforeunload", () => { try { if (students.length) saveSession(); } catch(e){} });
+
+</script>
+</body>
+</html>
